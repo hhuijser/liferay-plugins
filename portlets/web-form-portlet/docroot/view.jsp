@@ -183,7 +183,7 @@ String successURL = preferences.getValue("successURL", StringPool.BLANK);
 
 					function fieldValidationFunction<%= i %>(currentFieldValue, fieldsMap) {
 						<c:choose>
-							<c:when test='<%= Validator.isNotNull(fieldValidationScript) %>'>
+							<c:when test='<%= Validator.isNotNull(fieldValidationScript) && WebFormUtil.VALIDATION_SCRIPT_ENABLED %>'>
 								<%= fieldValidationScript %>
 							</c:when>
 							<c:otherwise>
