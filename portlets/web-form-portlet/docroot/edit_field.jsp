@@ -29,11 +29,8 @@ String fieldOptionsXml = LocalizationUtil.getLocalizationXmlFromPreferences(pref
 String fieldOptions = LocalizationUtil.getLocalization(fieldOptionsXml, themeDisplay.getLanguageId());
 String fieldValidationScript = StringPool.BLANK;
 String fieldValidationErrorMessage = StringPool.BLANK;
-
-if (WebFormUtil.VALIDATION_SCRIPT_ENABLED) {
-	fieldValidationScript = PrefsParamUtil.getString(preferences, request, "fieldValidationScript" + formFieldsIndex);
-	fieldValidationErrorMessage = PrefsParamUtil.getString(preferences, request, "fieldValidationErrorMessage" + formFieldsIndex);
-}
+String fieldValidationScript = PrefsParamUtil.getString(preferences, request, "fieldValidationScript" + formFieldsIndex);
+String fieldValidationErrorMessage = PrefsParamUtil.getString(preferences, request, "fieldValidationErrorMessage" + formFieldsIndex);
 %>
 
 <liferay-ui:error key='<%= "fieldSizeInvalid" + formFieldsIndex %>' message="please-enter-no-more-than-75-characters" />
