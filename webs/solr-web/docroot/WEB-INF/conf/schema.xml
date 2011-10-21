@@ -13,6 +13,12 @@
 		<fieldType name="sfloat" class="solr.SortableFloatField" sortMissingLast="true" omitNorms="true" />
 		<fieldType name="sdouble" class="solr.SortableDoubleField" sortMissingLast="true" omitNorms="true" />
 		<fieldType name="date" class="solr.DateField" sortMissingLast="true" omitNorms="true" />
+		<fieldType name="keyword_ci" class="solr.TextField" positionIncrementGap="100">
+			<analyzer>
+				<tokenizer class="solr.KeywordTokenizerFactory" />
+				<filter class="solr.LowerCaseFilterFactory" />
+			</analyzer>
+		</fieldType>
 		<fieldType name="text_ws" class="solr.TextField" positionIncrementGap="100">
 			<analyzer>
 				<tokenizer class="solr.WhitespaceTokenizerFactory" />
@@ -59,10 +65,10 @@
 		<field name="comments" type="text" indexed="true" stored="true" />
 		<field name="content" type="text" indexed="true" stored="true" />
 		<field name="description" type="text" indexed="true" stored="true" />
-		<field name="firstName" type="string" indexed="true" stored="true" />
-		<field name="lastName" type="string" indexed="true" stored="true" />
+		<field name="firstName" type="keyword_ci" indexed="true" stored="true" />
+		<field name="lastName" type="keyword_ci" indexed="true" stored="true" />
 		<field name="leftOrganizationId" type="slong" indexed="true" stored="true" />
-		<field name="name" type="string" indexed="true" stored="true" />
+		<field name="name" type="keyword_ci" indexed="true" stored="true" />
 		<field name="properties" type="string" indexed="true" stored="true" />
 		<field name="rightOrganizationId" type="slong" indexed="true" stored="true" />
 		<field name="title" type="text" indexed="true" stored="true" />
