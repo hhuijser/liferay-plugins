@@ -57,11 +57,13 @@ List<CalEvent> todayEvents = new ArrayList<CalEvent>();
 List<CalEvent> upcomingEvents = new ArrayList<CalEvent>();
 
 for (CalEvent event : events) {
-	Date endDate = new Date(event.getStartDate().getTime() + (Time.HOUR * event.getDurationHour()) + (Time.MINUTE * event.getDurationMinute()));
+	Date startDate = event.getStartDate();
 
-	if (event.isTimeZoneSensitive()) {
-		endDate = Time.getDate(endDate, timeZone);
+	if (!event.isTimeZoneSensitive()) {
+		startDate = new Date(startDate.getTime() - cal.get(Calendar.ZONE_OFFSET));
 	}
+
+	Date endDate = new Date(startDate.getTime() + (Time.HOUR * event.getDurationHour()) + (Time.MINUTE * event.getDurationMinute()));
 
 	if (endDate.compareTo(cal.getTime()) < 0) {
 		continue;
