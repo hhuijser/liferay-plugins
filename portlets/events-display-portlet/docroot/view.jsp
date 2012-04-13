@@ -50,18 +50,20 @@ if (events.size() > 1) {
 
 	Constructor<?> constructor = classObj.getConstructor(TimeZone.class, Locale.class);
 
-	ListUtil.sort(events, (Comparator)constructor.newInstance(timeZone, locale));
+	events = ListUtil.sort(events, (Comparator)constructor.newInstance(timeZone, locale));
 }
 
 List<CalEvent> todayEvents = new ArrayList<CalEvent>();
 List<CalEvent> upcomingEvents = new ArrayList<CalEvent>();
 
 for (CalEvent event : events) {
-	Date endDate = new Date(event.getStartDate().getTime() + (Time.HOUR * event.getDurationHour()) + (Time.MINUTE * event.getDurationMinute()));
+	long startTime = event.getStartDate().getTime();
 
-	if (event.isTimeZoneSensitive()) {
-		endDate = Time.getDate(endDate, timeZone);
+	if (!event.isTimeZoneSensitive()) {
+		startTime = startTime - timeZone.getOffset(startTime);
 	}
+
+	Date endDate = new Date(startTime + (Time.HOUR * event.getDurationHour()) + (Time.MINUTE * event.getDurationMinute()));
 
 	if (endDate.compareTo(cal.getTime()) < 0) {
 		continue;
