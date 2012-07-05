@@ -18,7 +18,6 @@ import com.liferay.calendar.service.CalendarBookingLocalServiceUtil;
 
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
@@ -191,13 +190,13 @@ public class CalendarBookingClp extends BaseModelImpl<CalendarBooking>
 			setLocation(location);
 		}
 
-		Date startDate = (Date)attributes.get("startDate");
+		Long startDate = (Long)attributes.get("startDate");
 
 		if (startDate != null) {
 			setStartDate(startDate);
 		}
 
-		Date endDate = (Date)attributes.get("endDate");
+		Long endDate = (Long)attributes.get("endDate");
 
 		if (endDate != null) {
 			setEndDate(endDate);
@@ -562,19 +561,19 @@ public class CalendarBookingClp extends BaseModelImpl<CalendarBooking>
 		_location = location;
 	}
 
-	public Date getStartDate() {
+	public long getStartDate() {
 		return _startDate;
 	}
 
-	public void setStartDate(Date startDate) {
+	public void setStartDate(long startDate) {
 		_startDate = startDate;
 	}
 
-	public Date getEndDate() {
+	public long getEndDate() {
 		return _endDate;
 	}
 
-	public void setEndDate(Date endDate) {
+	public void setEndDate(long endDate) {
 		_endDate = endDate;
 	}
 
@@ -671,14 +670,6 @@ public class CalendarBookingClp extends BaseModelImpl<CalendarBooking>
 		_statusDate = statusDate;
 	}
 
-	public java.util.Date getUTCStartDate() {
-		throw new UnsupportedOperationException();
-	}
-
-	public java.util.Date getUTCEndDate() {
-		throw new UnsupportedOperationException();
-	}
-
 	public com.liferay.calendar.model.CalendarBooking getParentCalendarBooking() {
 		throw new UnsupportedOperationException();
 	}
@@ -727,6 +718,15 @@ public class CalendarBookingClp extends BaseModelImpl<CalendarBooking>
 		}
 	}
 
+	public boolean isDenied() {
+		if (getStatus() == WorkflowConstants.STATUS_DENIED) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 	public boolean isDraft() {
 		if (getStatus() == WorkflowConstants.STATUS_DRAFT) {
 			return true;
@@ -745,6 +745,24 @@ public class CalendarBookingClp extends BaseModelImpl<CalendarBooking>
 		}
 	}
 
+	public boolean isInactive() {
+		if (getStatus() == WorkflowConstants.STATUS_INACTIVE) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	public boolean isIncomplete() {
+		if (getStatus() == WorkflowConstants.STATUS_INCOMPLETE) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 	public boolean isInTrash() {
 		if (getStatus() == WorkflowConstants.STATUS_IN_TRASH) {
 			return true;
@@ -756,6 +774,15 @@ public class CalendarBookingClp extends BaseModelImpl<CalendarBooking>
 
 	public boolean isPending() {
 		if (getStatus() == WorkflowConstants.STATUS_PENDING) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	public boolean isScheduled() {
+		if (getStatus() == WorkflowConstants.STATUS_SCHEDULED) {
 			return true;
 		}
 		else {
@@ -825,8 +852,15 @@ public class CalendarBookingClp extends BaseModelImpl<CalendarBooking>
 	public int compareTo(CalendarBooking calendarBooking) {
 		int value = 0;
 
-		value = DateUtil.compareTo(getStartDate(),
-				calendarBooking.getStartDate());
+		if (getStartDate() < calendarBooking.getStartDate()) {
+			value = -1;
+		}
+		else if (getStartDate() > calendarBooking.getStartDate()) {
+			value = 1;
+		}
+		else {
+			value = 0;
+		}
 
 		if (value != 0) {
 			return value;
@@ -1067,8 +1101,8 @@ public class CalendarBookingClp extends BaseModelImpl<CalendarBooking>
 	private String _description;
 	private String _descriptionCurrentLanguageId;
 	private String _location;
-	private Date _startDate;
-	private Date _endDate;
+	private long _startDate;
+	private long _endDate;
 	private boolean _allDay;
 	private String _recurrence;
 	private long _firstReminder;
