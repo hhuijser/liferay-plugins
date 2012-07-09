@@ -32,6 +32,9 @@ import com.liferay.calendar.service.CalendarResourceServiceUtil;
 import com.liferay.calendar.service.CalendarServiceUtil;
 import com.liferay.calendar.service.permission.CalendarPermission;
 import com.liferay.calendar.util.ActionKeys;
+import com.liferay.calendar.util.CalendarDataFormat;
+import com.liferay.calendar.util.CalendarDataHandler;
+import com.liferay.calendar.util.CalendarDataHandlerFactory;
 import com.liferay.calendar.util.CalendarResourceUtil;
 import com.liferay.calendar.util.CalendarUtil;
 import com.liferay.calendar.util.JCalendarUtil;
@@ -43,13 +46,19 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.portlet.PortletResponseUtil;
 import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.upload.UploadPortletRequest;
 import com.liferay.portal.kernel.util.CalendarFactoryUtil;
+import com.liferay.portal.kernel.util.CharPool;
+import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
+import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Time;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.User;
@@ -65,6 +74,7 @@ import com.liferay.portal.util.comparator.UserFirstNameComparator;
 import com.liferay.util.bridges.mvc.MVCPortlet;
 import com.liferay.util.dao.orm.CustomSQLUtil;
 
+import java.io.File;
 import java.io.IOException;
 
 import java.util.ArrayList;
@@ -137,63 +147,6 @@ public class CalendarPortlet extends MVCPortlet {
 		super.render(renderRequest, renderResponse);
 	}
 
-	public void serveCalendarResources(
-			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
-		throws Exception {
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		String keywords = ParamUtil.getString(resourceRequest, "keywords");
-
-		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
-
-		long classNameId = PortalUtil.getClassNameId(CalendarResource.class);
-
-		List<CalendarResource> calendarResources =
-			CalendarResourceServiceUtil.search(
-				themeDisplay.getCompanyId(), new long[0],
-				new long[] {classNameId}, keywords, true, true, 0,
-				SearchContainer.DEFAULT_DELTA,
-				new CalendarResourceNameComparator());
-
-		for (CalendarResource calendarResource : calendarResources) {
-			addCalendarJSONObject(
-				resourceRequest, jsonArray, calendarResource.getClassNameId(),
-				calendarResource.getClassPK());
-		}
-
-		long groupClassNameId = PortalUtil.getClassNameId(Group.class);
-
-		String[] params = {"usersGroups:" + themeDisplay.getUserId() + ":long"};
-
-		String name = StringUtil.merge(
-			CustomSQLUtil.keywords(keywords), StringPool.BLANK);
-
-		List<Group> groups = GroupServiceUtil.search(
-			themeDisplay.getCompanyId(), name, null, params, 0,
-			SearchContainer.DEFAULT_DELTA);
-
-		for (Group group : groups) {
-			addCalendarJSONObject(
-				resourceRequest, jsonArray, groupClassNameId,
-				group.getGroupId());
-		}
-
-		long userClassNameId = PortalUtil.getClassNameId(User.class);
-
-		List<User> users = UserLocalServiceUtil.search(
-			themeDisplay.getCompanyId(), keywords, 0, null, 0,
-			SearchContainer.DEFAULT_DELTA, new UserFirstNameComparator());
-
-		for (User user : users) {
-			addCalendarJSONObject(
-				resourceRequest, jsonArray, userClassNameId, user.getUserId());
-		}
-
-		writeJSON(resourceRequest, resourceResponse, jsonArray);
-	}
-
 	@Override
 	public void serveResource(
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
@@ -204,6 +157,12 @@ public class CalendarPortlet extends MVCPortlet {
 
 			if (resourceID.equals("calendarResources")) {
 				serveCalendarResources(resourceRequest, resourceResponse);
+			}
+			else if (resourceID.equals("exportCalendar")) {
+				serveExportCalendar(resourceRequest, resourceResponse);
+			}
+			else if (resourceID.equals("importCalendar")) {
+				serveImportCalendar(resourceRequest, resourceResponse);
 			}
 			else {
 				super.serveResource(resourceRequest, resourceResponse);
@@ -546,6 +505,124 @@ public class CalendarPortlet extends MVCPortlet {
 		}
 
 		return false;
+	}
+
+	protected void serveCalendarResources(
+			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
+		throws Exception {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		String keywords = ParamUtil.getString(resourceRequest, "keywords");
+
+		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
+
+		long classNameId = PortalUtil.getClassNameId(CalendarResource.class);
+
+		List<CalendarResource> calendarResources =
+			CalendarResourceServiceUtil.search(
+				themeDisplay.getCompanyId(), new long[0],
+				new long[] {classNameId}, keywords, true, true, 0,
+				SearchContainer.DEFAULT_DELTA,
+				new CalendarResourceNameComparator());
+
+		for (CalendarResource calendarResource : calendarResources) {
+			addCalendarJSONObject(
+				resourceRequest, jsonArray, calendarResource.getClassNameId(),
+				calendarResource.getClassPK());
+		}
+
+		long groupClassNameId = PortalUtil.getClassNameId(Group.class);
+
+		String[] params = {"usersGroups:" + themeDisplay.getUserId() + ":long"};
+
+		String name = StringUtil.merge(
+			CustomSQLUtil.keywords(keywords), StringPool.BLANK);
+
+		List<Group> groups = GroupServiceUtil.search(
+			themeDisplay.getCompanyId(), name, null, params, 0,
+			SearchContainer.DEFAULT_DELTA);
+
+		for (Group group : groups) {
+			addCalendarJSONObject(
+				resourceRequest, jsonArray, groupClassNameId,
+				group.getGroupId());
+		}
+
+		long userClassNameId = PortalUtil.getClassNameId(User.class);
+
+		List<User> users = UserLocalServiceUtil.search(
+			themeDisplay.getCompanyId(), keywords, 0, null, 0,
+			SearchContainer.DEFAULT_DELTA, new UserFirstNameComparator());
+
+		for (User user : users) {
+			addCalendarJSONObject(
+				resourceRequest, jsonArray, userClassNameId, user.getUserId());
+		}
+
+		writeJSON(resourceRequest, resourceResponse, jsonArray);
+	}
+
+	protected void serveExportCalendar(
+			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
+		throws Exception {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		long calendarId = ParamUtil.getLong(resourceRequest, "calendarId");
+
+		Calendar calendar = CalendarLocalServiceUtil.getCalendar(calendarId);
+
+		String fileName =
+			calendar.getName(themeDisplay.getLocale()) + CharPool.PERIOD +
+				String.valueOf(CalendarDataFormat.ICAL);
+
+		CalendarDataHandler calendarDataHandler =
+			CalendarDataHandlerFactory.getCalendarDataHandler(
+				CalendarDataFormat.ICAL);
+
+		String data = calendarDataHandler.exportCalendar(calendarId);
+
+		String contentType = MimeTypesUtil.getContentType(fileName);
+
+		PortletResponseUtil.sendFile(
+			resourceRequest, resourceResponse, fileName, data.getBytes(),
+			contentType);
+	}
+
+	protected void serveImportCalendar(
+			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
+		throws Exception {
+
+		UploadPortletRequest uploadPortletRequest =
+			PortalUtil.getUploadPortletRequest(resourceRequest);
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		long calendarId = ParamUtil.getLong(resourceRequest, "calendarId");
+
+		File file = uploadPortletRequest.getFile("file");
+
+		String data = FileUtil.read(file);
+
+		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
+
+		if (Validator.isNotNull(data)) {
+			CalendarDataHandler calendarDataHandler =
+				CalendarDataHandlerFactory.getCalendarDataHandler(
+					CalendarDataFormat.ICAL);
+
+			calendarDataHandler.importCalendar(calendarId, data);
+		}
+		else {
+			jsonObject.put(
+				"error", themeDisplay.translate("failed-to-import-empty-file"));
+		}
+
+		writeJSON(resourceRequest, resourceResponse, jsonObject);
 	}
 
 }
