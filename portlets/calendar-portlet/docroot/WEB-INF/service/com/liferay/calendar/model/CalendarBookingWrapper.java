@@ -1162,6 +1162,15 @@ public class CalendarBookingWrapper implements CalendarBooking,
 		return _calendarBooking.getCalendarResource();
 	}
 
+	public java.util.List<com.liferay.calendar.model.CalendarBooking> getChildCalendarBookings()
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _calendarBooking.getChildCalendarBookings();
+	}
+
+	public long getDuration() {
+		return _calendarBooking.getDuration();
+	}
+
 	public com.liferay.calendar.notification.NotificationType getFirstReminderNotificationType() {
 		return _calendarBooking.getFirstReminderNotificationType();
 	}

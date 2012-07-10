@@ -674,6 +674,10 @@ public class CalendarBookingClp extends BaseModelImpl<CalendarBooking>
 		throw new UnsupportedOperationException();
 	}
 
+	public java.util.List<com.liferay.calendar.model.CalendarBooking> getChildCalendarBookings() {
+		throw new UnsupportedOperationException();
+	}
+
 	public boolean isRecurring() {
 		throw new UnsupportedOperationException();
 	}
@@ -683,6 +687,10 @@ public class CalendarBookingClp extends BaseModelImpl<CalendarBooking>
 	}
 
 	public com.liferay.calendar.notification.NotificationType getSecondReminderNotificationType() {
+		throw new UnsupportedOperationException();
+	}
+
+	public long getDuration() {
 		throw new UnsupportedOperationException();
 	}
 

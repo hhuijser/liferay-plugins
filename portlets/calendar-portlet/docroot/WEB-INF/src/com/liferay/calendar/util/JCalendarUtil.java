@@ -80,7 +80,29 @@ public class JCalendarUtil {
 	}
 
 	public static int getTimeZoneOffset(TimeZone timeZone) {
-		return timeZone.getOffset(System.currentTimeMillis());
+		return timeZone.getRawOffset();
+	}
+
+	public static Calendar toLastHourJCalendar(Calendar jCalendar) {
+		Calendar lastHourJCalendar = (Calendar)jCalendar.clone();
+
+		lastHourJCalendar.set(Calendar.HOUR_OF_DAY, 23);
+		lastHourJCalendar.set(Calendar.MINUTE, 59);
+		lastHourJCalendar.set(Calendar.SECOND, 59);
+		lastHourJCalendar.set(Calendar.MILLISECOND, 999);
+
+		return lastHourJCalendar;
+	}
+
+	public static Calendar toMidnightJCalendar(Calendar jCalendar) {
+		Calendar midnightJCalendar = (Calendar)jCalendar.clone();
+
+		midnightJCalendar.set(Calendar.HOUR_OF_DAY, 0);
+		midnightJCalendar.set(Calendar.MINUTE, 0);
+		midnightJCalendar.set(Calendar.SECOND, 0);
+		midnightJCalendar.set(Calendar.MILLISECOND, 0);
+
+		return midnightJCalendar;
 	}
 
 	private static TimeZone _utcTimeZone = TimeZone.getTimeZone(StringPool.UTC);

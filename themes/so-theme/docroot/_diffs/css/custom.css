@@ -693,7 +693,7 @@ input[type=button], input[type=reset], input[type=submit], .aui-state-hover, .co
 }
 
 #toggleFluid, .so-layout-fluid-ad #toggleFluid {
-	background-image: url(../images/custom/toggle-button-bg.png);
+	background-image: url(../images/custom/so_toggle_button_bg.png);
 	background-position: 8px 50%;
 	background-repeat: no-repeat;
 	display: block;
@@ -873,7 +873,7 @@ input[type=button], input[type=reset], input[type=submit], .aui-state-hover, .co
 	}
 
 	.result-tags {
-		background: url(../images/custom/tag_small.png) no-repeat 0 3px;
+		background: url(../images/custom/so_tag_small.png) no-repeat 0 3px;
 		color: #777;
 		font-size: 10px;
 		padding-left: 15px;
@@ -898,7 +898,7 @@ input[type=button], input[type=reset], input[type=submit], .aui-state-hover, .co
 /* Dockbar */
 
 .dockbar {
-	background-image: url(../images/custom/dockbar_bg.png);
+	background-image: url(../images/custom/so_dockbar_bg.png);
 	background-color: #EAEAEA;
 	background-position: bottom left;
 	border-bottom-color: #CDCDCD;
@@ -1432,13 +1432,6 @@ input[type=button], input[type=reset], input[type=submit], .aui-state-hover, .co
 		background-image: none;
 	}
 
-	.breadcrumbs-horizontal li {
-		background: url(@theme_image_path@/arrows/05_right.png) no-repeat scroll 100% 50% transparent;
-		margin-right: 5px;
-		max-width: 50%;
-		padding-right: 15px;
-	}
-
 	.breadcrumbs-horizontal .last {
 		margin-top: 0.2em;
 	}
@@ -1679,7 +1672,7 @@ input[type=button], input[type=reset], input[type=submit], .aui-state-hover, .co
 			text-align: left;
 			text-decoration: none;
 			top: 0.5em;
-			width: 500px;
+			white-space: nowrap;
 			z-index: 1;
 		}
 
@@ -1755,7 +1748,6 @@ input[type=button], input[type=reset], input[type=submit], .aui-state-hover, .co
 		}
 	}
 
-
 	.thread-body {
 		padding: 10px 0;
 	}
@@ -1786,6 +1778,7 @@ input[type=button], input[type=reset], input[type=submit], .aui-state-hover, .co
 	.edit-controls {
 		position: relative;
 		top: -.5em;
+		z-index: 2;
 
 		li {
 			margin: 0;
@@ -1909,8 +1902,12 @@ input[type=button], input[type=reset], input[type=submit], .aui-state-hover, .co
 		margin: 0;
 	}
 
-	.thread .results-row, .results-grid table.taglib-search-iterator, .results-grid .results-row td, .results-grid .results-row.alt td {
-		border-width: 0 0 1px;
+	.private-messaging-container {
+		.results-grid, .results-grid table.taglib-search-iterator, .results-grid .results-row td, .results-grid .results-row.alt td, .thread .results-row {
+			border-left-width: 0;
+			border-right-width: 0;
+			border-top-width: 0;
+		}
 	}
 
 	.message-link:hover {
@@ -2015,7 +2012,10 @@ input[type=button], input[type=reset], input[type=submit], .aui-state-hover, .co
 
 .so-portlet-invite-members {
 	border: 0px solid transparent;
-	padding: 10px;
+}
+
+.so-portlet-invite-members .invite-members {
+	margin: 10px;
 }
 
 .invite-members {

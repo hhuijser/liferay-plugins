@@ -72,6 +72,7 @@ page import="com.liferay.portal.kernel.util.HttpUtil" %><%@
 page import="com.liferay.portal.kernel.util.OrderByComparator" %><%@
 page import="com.liferay.portal.kernel.util.ParamUtil" %><%@
 page import="com.liferay.portal.kernel.util.PrefsParamUtil" %><%@
+page import="com.liferay.portal.kernel.util.StringBundler" %><%@
 page import="com.liferay.portal.kernel.util.StringPool" %><%@
 page import="com.liferay.portal.kernel.util.StringUtil" %><%@
 page import="com.liferay.portal.kernel.util.UnicodeFormatter" %><%@
@@ -121,11 +122,19 @@ if (themeDisplay.isSignedIn()) {
 	}
 }
 
-String dayViewHeaderDateFormat = preferences.getValue("dayViewHeaderDateFormat", "%d %A");
-String navigationHeaderDateFormat = preferences.getValue("navigationHeaderDateFormat", "%A - %d %b %Y");
+int defaultDuration = GetterUtil.getInteger(preferences.getValue("defaultDuration", null), 60);
+String defaultView = preferences.getValue("defaultView", "week");
 boolean isoTimeFormat = GetterUtil.getBoolean(preferences.getValue("isoTimeFormat", null));
+String timeZoneId = preferences.getValue("timeZoneId", user.getTimeZoneId());
+boolean usePortalTimeZone = GetterUtil.getBoolean(preferences.getValue("usePortalTimeZone", null));
+int weekStartsOn = GetterUtil.getInteger(preferences.getValue("weekStartsOn", null), 0);
 
+if (usePortalTimeZone) {
+	timeZoneId = user.getTimeZoneId();
+}
+
+TimeZone userTimeZone = TimeZone.getTimeZone(timeZoneId);
 TimeZone utcTimeZone = TimeZone.getTimeZone(StringPool.UTC);
 
-java.util.Calendar now = CalendarFactoryUtil.getCalendar(timeZone);
+java.util.Calendar now = CalendarFactoryUtil.getCalendar(userTimeZone);
 %>

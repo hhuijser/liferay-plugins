@@ -19,5 +19,14 @@
 			</map>
 		</property>
 	</bean>
+	<bean id="com.liferay.calendar.util.CalendarDataHandlerFactory" class="com.liferay.calendar.util.CalendarDataHandlerFactory">
+		<property name="calendarDataHandlers">
+			<map>
+				<entry key="ics">
+					<bean class="com.liferay.calendar.util.CalendarICalDataHandler" />
+				</entry>
+			</map>
+		</property>
+	</bean>
 	<bean id="com.liferay.calendar.workflow.CalendarBookingApprovalWorkflow" class="com.liferay.calendar.workflow.CalendarBookingApprovalWorkflowImpl" />	
 </beans>

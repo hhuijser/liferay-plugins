@@ -18,10 +18,12 @@ import com.liferay.portal.kernel.portlet.DefaultConfigurationAction;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portlet.PortletPreferencesFactoryUtil;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
+import javax.portlet.PortletPreferences;
 
 /**
  * @author Eduardo Lundgren
@@ -43,8 +45,44 @@ public class ConfigurationActionImpl extends DefaultConfigurationAction {
 		else if (tabs2.equals("templates")) {
 			validateTemplate(actionRequest);
 		}
+		else if (tabs2.equals("user-settings")) {
+			updateUserSettings(actionRequest, actionResponse);
+		}
 
 		super.processAction(portletConfig, actionRequest, actionResponse);
+	}
+
+	protected void updateUserSettings(
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws Exception {
+
+		String portletResource = ParamUtil.getString(
+			actionRequest, "portletResource");
+
+		PortletPreferences preferences =
+			PortletPreferencesFactoryUtil.getPortletSetup(
+				actionRequest, portletResource);
+
+		int defaultDuration = ParamUtil.getInteger(
+			actionRequest, "defaultDuration");
+		String defaultView = ParamUtil.getString(actionRequest, "defaultView");
+		boolean isoTimeFormat = ParamUtil.getBoolean(
+			actionRequest, "isoTimeFormat");
+		String timeZoneId = ParamUtil.getString(actionRequest, "timeZoneId");
+		boolean usePortalTimeZone = ParamUtil.getBoolean(
+			actionRequest, "usePortalTimeZone");
+		int weekStartsOn = ParamUtil.getInteger(actionRequest, "weekStartsOn");
+
+		preferences.setValue(
+			"defaultDuration", String.valueOf(defaultDuration));
+		preferences.setValue("defaultView", defaultView);
+		preferences.setValue("isoTimeFormat", String.valueOf(isoTimeFormat));
+		preferences.setValue("timeZoneId", timeZoneId);
+		preferences.setValue(
+			"usePortalTimeZone", String.valueOf(usePortalTimeZone));
+		preferences.setValue("weekStartsOn", String.valueOf(weekStartsOn));
+
+		preferences.store();
 	}
 
 	protected void validateEmailFrom(ActionRequest actionRequest)
