@@ -55,6 +55,10 @@ public class CalendarBookingImpl extends CalendarBookingBaseImpl {
 			getCalendarBookingId());
 	}
 
+	public long getDuration() {
+		return getEndDate() - getStartDate();
+	}
+
 	public NotificationType getFirstReminderNotificationType() {
 		return NotificationType.parse(getFirstReminderType());
 	}

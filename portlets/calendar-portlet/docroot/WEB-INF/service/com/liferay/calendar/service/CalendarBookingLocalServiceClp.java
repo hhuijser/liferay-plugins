@@ -167,8 +167,8 @@ public class CalendarBookingLocalServiceClp
 
 		_methodParameterTypes30 = new String[] {
 				"long", "long[][]", "long[][]", "long[][]", "long",
-				"java.lang.String", "long", "long", "int[][]", "int", "int",
-				"com.liferay.portal.kernel.util.OrderByComparator"
+				"java.lang.String", "long", "long", "boolean", "int[][]", "int",
+				"int", "com.liferay.portal.kernel.util.OrderByComparator"
 			};
 
 		_methodName31 = "search";
@@ -176,7 +176,7 @@ public class CalendarBookingLocalServiceClp
 		_methodParameterTypes31 = new String[] {
 				"long", "long[][]", "long[][]", "long[][]", "long",
 				"java.lang.String", "java.lang.String", "java.lang.String",
-				"long", "long", "int[][]", "boolean", "int", "int",
+				"long", "long", "boolean", "int[][]", "boolean", "int", "int",
 				"com.liferay.portal.kernel.util.OrderByComparator"
 			};
 
@@ -1133,7 +1133,7 @@ public class CalendarBookingLocalServiceClp
 		long companyId, long[] groupIds, long[] calendarIds,
 		long[] calendarResourceIds, long parentCalendarBookingId,
 		java.lang.String keywords, long startDate, long endDate,
-		int[] statuses, int start, int end,
+		boolean recurring, int[] statuses, int start, int end,
 		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
@@ -1157,6 +1157,8 @@ public class CalendarBookingLocalServiceClp
 					startDate,
 						
 					endDate,
+						
+					recurring,
 						
 					ClpSerializer.translateInput(statuses),
 						
@@ -1191,7 +1193,8 @@ public class CalendarBookingLocalServiceClp
 		long[] calendarResourceIds, long parentCalendarBookingId,
 		java.lang.String title, java.lang.String description,
 		java.lang.String location, long startDate, long endDate,
-		int[] statuses, boolean andOperator, int start, int end,
+		boolean recurring, int[] statuses, boolean andOperator, int start,
+		int end,
 		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
@@ -1219,6 +1222,8 @@ public class CalendarBookingLocalServiceClp
 					startDate,
 						
 					endDate,
+						
+					recurring,
 						
 					ClpSerializer.translateInput(statuses),
 						

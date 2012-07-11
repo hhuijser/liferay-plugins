@@ -1167,6 +1167,10 @@ public class CalendarBookingWrapper implements CalendarBooking,
 		return _calendarBooking.getChildCalendarBookings();
 	}
 
+	public long getDuration() {
+		return _calendarBooking.getDuration();
+	}
+
 	public com.liferay.calendar.notification.NotificationType getFirstReminderNotificationType() {
 		return _calendarBooking.getFirstReminderNotificationType();
 	}

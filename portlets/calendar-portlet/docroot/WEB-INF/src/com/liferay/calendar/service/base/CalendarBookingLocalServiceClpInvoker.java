@@ -179,8 +179,8 @@ public class CalendarBookingLocalServiceClpInvoker {
 
 		_methodParameterTypes74 = new String[] {
 				"long", "long[][]", "long[][]", "long[][]", "long",
-				"java.lang.String", "long", "long", "int[][]", "int", "int",
-				"com.liferay.portal.kernel.util.OrderByComparator"
+				"java.lang.String", "long", "long", "boolean", "int[][]", "int",
+				"int", "com.liferay.portal.kernel.util.OrderByComparator"
 			};
 
 		_methodName75 = "search";
@@ -188,7 +188,7 @@ public class CalendarBookingLocalServiceClpInvoker {
 		_methodParameterTypes75 = new String[] {
 				"long", "long[][]", "long[][]", "long[][]", "long",
 				"java.lang.String", "java.lang.String", "java.lang.String",
-				"long", "long", "int[][]", "boolean", "int", "int",
+				"long", "long", "boolean", "int[][]", "boolean", "int", "int",
 				"com.liferay.portal.kernel.util.OrderByComparator"
 			};
 
@@ -432,10 +432,11 @@ public class CalendarBookingLocalServiceClpInvoker {
 				(long[])arguments[3], ((Long)arguments[4]).longValue(),
 				(java.lang.String)arguments[5],
 				((Long)arguments[6]).longValue(),
-				((Long)arguments[7]).longValue(), (int[])arguments[8],
-				((Integer)arguments[9]).intValue(),
+				((Long)arguments[7]).longValue(),
+				((Boolean)arguments[8]).booleanValue(), (int[])arguments[9],
 				((Integer)arguments[10]).intValue(),
-				(com.liferay.portal.kernel.util.OrderByComparator)arguments[11]);
+				((Integer)arguments[11]).intValue(),
+				(com.liferay.portal.kernel.util.OrderByComparator)arguments[12]);
 		}
 
 		if (_methodName75.equals(name) &&
@@ -446,11 +447,12 @@ public class CalendarBookingLocalServiceClpInvoker {
 				(java.lang.String)arguments[5], (java.lang.String)arguments[6],
 				(java.lang.String)arguments[7],
 				((Long)arguments[8]).longValue(),
-				((Long)arguments[9]).longValue(), (int[])arguments[10],
-				((Boolean)arguments[11]).booleanValue(),
-				((Integer)arguments[12]).intValue(),
+				((Long)arguments[9]).longValue(),
+				((Boolean)arguments[10]).booleanValue(), (int[])arguments[11],
+				((Boolean)arguments[12]).booleanValue(),
 				((Integer)arguments[13]).intValue(),
-				(com.liferay.portal.kernel.util.OrderByComparator)arguments[14]);
+				((Integer)arguments[14]).intValue(),
+				(com.liferay.portal.kernel.util.OrderByComparator)arguments[15]);
 		}
 
 		if (_methodName76.equals(name) &&
