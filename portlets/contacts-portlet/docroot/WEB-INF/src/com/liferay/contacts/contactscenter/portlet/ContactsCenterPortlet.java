@@ -1,15 +1,18 @@
 /**
  * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
+ * This file is part of Liferay Social Office. Liferay Social Office is free
+ * software: you can redistribute it and/or modify it under the terms of the GNU
+ * Affero General Public License as published by the Free Software Foundation,
+ * either version 3 of the License, or (at your option) any later version.
  *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * Liferay Social Office is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * Liferay Social Office. If not, see http://www.gnu.org/licenses/agpl-3.0.html.
  */
 
 package com.liferay.contacts.contactscenter.portlet;
@@ -281,6 +284,13 @@ public class ContactsCenterPortlet extends MVCPortlet {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws PortletException {
 
+		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		if (!themeDisplay.isSignedIn()) {
+			return;
+		}
+
 		try {
 			String actionName = ParamUtil.getString(
 				actionRequest, ActionRequest.ACTION_NAME);
@@ -414,10 +424,14 @@ public class ContactsCenterPortlet extends MVCPortlet {
 			Entry entry = null;
 
 			if (entryId > 0) {
-				entry = EntryLocalServiceUtil.updateEntry(
-					entryId, fullName, emailAddress, comments);
+				entry = EntryLocalServiceUtil.getEntry(entryId);
 
-				message = "you-have-successfully-updated-the-contact";
+				if (entry.getUserId() == themeDisplay.getUserId()) {
+					entry = EntryLocalServiceUtil.updateEntry(
+						entryId, fullName, emailAddress, comments);
+
+					message = "you-have-successfully-updated-the-contact";
+				}
 			}
 			else {
 				entry = EntryLocalServiceUtil.addEntry(
@@ -456,7 +470,7 @@ public class ContactsCenterPortlet extends MVCPortlet {
 			jsonObject.put("success", false);
 		}
 
-		jsonObject.put("message", themeDisplay.translate(message));
+		jsonObject.put("message", translate(actionRequest, message));
 
 		writeJSON(actionRequest, actionResponse, jsonObject);
 	}
@@ -562,7 +576,7 @@ public class ContactsCenterPortlet extends MVCPortlet {
 				message = "please-enter-a-valid-url";
 			}
 
-			jsonObject.put("message", themeDisplay.translate(message));
+			jsonObject.put("message", translate(actionRequest, message));
 
 			jsonObject.put("success", false);
 		}
@@ -579,10 +593,14 @@ public class ContactsCenterPortlet extends MVCPortlet {
 
 		long requestId = ParamUtil.getLong(actionRequest, "requestId");
 
-		int status = ParamUtil.getInteger(actionRequest, "status");
-
 		SocialRequest socialRequest =
 			SocialRequestLocalServiceUtil.getSocialRequest(requestId);
+
+		if (socialRequest.getUserId() != themeDisplay.getUserId()) {
+			return;
+		}
+
+		int status = ParamUtil.getInteger(actionRequest, "status");
 
 		if (SocialRelationLocalServiceUtil.hasRelation(
 				socialRequest.getReceiverUserId(), socialRequest.getUserId(),
@@ -606,10 +624,17 @@ public class ContactsCenterPortlet extends MVCPortlet {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
+		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
 		long entryId = ParamUtil.getLong(actionRequest, "entryId");
 
 		if (entryId > 0) {
-			EntryLocalServiceUtil.deleteEntry(entryId);
+			Entry entry = EntryLocalServiceUtil.getEntry(entryId);
+
+			if (entry.getUserId() == themeDisplay.getUserId()) {
+				EntryLocalServiceUtil.deleteEntry(entryId);
+			}
 		}
 	}
 
@@ -647,7 +672,7 @@ public class ContactsCenterPortlet extends MVCPortlet {
 
 		String message = getRelationMessage(actionRequest);
 
-		jsonObject.put("message", themeDisplay.translate(message));
+		jsonObject.put("message", translate(actionRequest, message));
 
 		return jsonObject;
 	}
