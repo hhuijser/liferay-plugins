@@ -17,13 +17,13 @@ $default-box-shadow-v-offset: 1px;
 }
 
 body {
-	background: #142933;
+	background: url(../images/custom/background.png) 0 0;
 	border-top: 10px solid #193441;
-	font-family: 12px, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font: 12px "Helvetica Neue", Helvetica, Arial, sans-serif;
 
 	&.portal-popup {
 		background-image: none;
-		border-top: none;
+		border-top-width: 0;
 
 		#content #main-content {
 			margin-top: 0;
@@ -36,7 +36,6 @@ body {
 }
 
 #wrapper {
-	background: url(../images/custom/background.png) 0 0;
 	position: relative;
 }
 
@@ -131,16 +130,6 @@ hr {
 	.site-title {
 		margin-top: 0;
 		padding-top: 2em;
-
-		 .logo.default-logo {
-			background: url(../images/custom/logo.png) 0 50% no-repeat;
-			height: 40px;
-			width: 145px;
-
-			img {
-				display: none;
-			}
-		}
 
 		#pageSearch {
 			position: absolute;
@@ -349,10 +338,6 @@ hr {
 
 /* -------- Pod -------- */
 
-.column-text {
-	width: 305px;
-}
-
 .pod {
 	width: 305px;
 
@@ -375,6 +360,8 @@ hr {
 }
 
 .column-text {
+	width: 305px;
+
 	.more {
 		color: #C58E4C;
 		margin: 10px 0;
@@ -501,6 +488,16 @@ ul.arrow {
 }
 
 #footerContent {
+	h4, p {
+		color: #959595;
+		font-size: 1em;
+	}
+
+	.aui-column-content {
+		display: inline-block;
+		width: 100%;
+	}
+
 	a {
 		color: #EE9F44;
 		text-decoration: none;
@@ -514,36 +511,10 @@ ul.arrow {
 	}
 
 	h4 {
-		color: #959595;
-		font-size: 1em;
 		margin-bottom: 1.7em;
 	}
 
-	#blurb {
-		margin-left: -5px;
-		padding: 0 5px;
-		width: 230px;
-
-		p {
-			padding-right: 10px;
-		}
-	}
-
-	#footerContent #socialLinks {
-		margin-right: -5px;
-		padding: 0 5px;
-		width: 230px;
-	}
-
-	#footerNavigation, #siteMeta {
-		margin: 0;
-		padding: 0 5px;
-		width: 230px;
-	}
-
 	p {
-		color: #959595;
-		font-size: 1em;
 		line-height: 1.5;
 	}
 
@@ -578,12 +549,6 @@ ul.arrow {
 			}
 		}
 	}
-}
-
-/* ------- Footer / Links ------ */
-
-.signed-in #signIn, .signed-out #signOut {
-	display: none;
 }
 
 /* ------- Browser Specific Rules ------ */
@@ -624,7 +589,11 @@ ul.arrow {
 }
 
 .firefox #pageSearch .lfr-search-keywords {
-	margin-top: -3px;
+	margin-top: -2px;
+
+	.aui-field-content {
+		margin-top: -1px;
+	}
 }
 
 /* -------- Extras -------- */
