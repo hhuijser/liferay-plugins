@@ -245,7 +245,7 @@ public class JabberImpl implements Jabber {
 
 				String resource = getResource(from);
 
-				if (resource.equalsIgnoreCase(
+				if (!resource.equalsIgnoreCase(
 						PortletPropsValues.JABBER_RESOURCE)) {
 
 					continue;
