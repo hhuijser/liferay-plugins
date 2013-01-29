@@ -168,6 +168,46 @@
 			</replacevalue>
 		</replace>
 
+		<if>
+			<equals arg1="${app.server.type}" arg2="jboss" />
+			<then>
+				<if>
+					<equals arg1="${app.server.jboss.version}" arg2="5.1.0" />
+					<then>
+						<antcall target="build-common-plugin.stripComments">
+							<param name="stripComments.file" value="tmp/WEB-INF/classes/containers/default/container.js" />
+							<param name="stripComments.encoding" value="utf-8" />
+						</antcall>
+						<replace file="tmp/WEB-INF/classes/containers/default/container.js">
+							<replacetoken>"gadgets.uri.iframe.lockedDomainSuffix" :  "-a.example.com:8080",</replacetoken>
+							<replacevalue></replacevalue>
+						</replace>
+						<replace file="tmp/WEB-INF/classes/containers/default/container.js">
+							<replacetoken>"gadgets.uri.iframe.unlockedDomain" : "www.example.com:8080",</replacetoken>
+							<replacevalue></replacevalue>
+						</replace>
+						<replace file="tmp/WEB-INF/classes/containers/default/container.js">
+							<replacetoken>"gadgets.uri.js.host" : "http://www.example.com/",</replacetoken>
+							<replacevalue></replacevalue>
+						</replace>
+						<replace file="tmp/WEB-INF/classes/containers/default/container.js">
+							<replacetoken>"gadgets.uri.js.path" : "/opensocial-portlet/gadgets/js",</replacetoken>
+							<replacevalue></replacevalue>
+						</replace>
+						<replace file="tmp/WEB-INF/classes/containers/default/container.js">
+							<replacetoken>"gadgets.uri.iframe.basePath" : "/opensocial-portlet/gadgets/ifr",
+"gadgets.jsUriTemplate" : "http://%host%/opensocial-portlet/gadgets/js/%js%",
+
+
+"gadgets.uri.iframe.basePath" : "/opensocial-portlet/gadgets/ifr",</replacetoken>
+							<replacevalue>"gadgets.uri.iframe.basePath" : "/opensocial-portlet/gadgets/ifr",
+"gadgets.jsUriTemplate" : "http://%host%/opensocial-portlet/gadgets/js/%js%",</replacevalue>
+						</replace>
+					</then>
+				</if>
+			</then>
+		</if>
+
 		<!-- Configure oauth.json -->
 
 		<antcall target="merge-backup-file">
@@ -212,6 +252,41 @@
 		<replace file="tmp/WEB-INF/classes/shindig.properties">
 			<replacefilter token="/gadgets/" value="/opensocial-portlet/gadgets/" />
 		</replace>
+
+
+		<!-- Fix canonicaldb.json -->
+		<if>
+			<equals arg1="${app.server.type}" arg2="jboss" />
+			<then>
+				<if>
+					<equals arg1="${app.server.jboss.version}" arg2="5.1.0" />
+					<then>
+						<tstamp>
+							<format property="tstamp.value" pattern="yyyyMMddkkmmssSSS" />
+						</tstamp>
+
+						<unjar
+							dest="${tstamp.value}"
+							src="tmp/WEB-INF/lib/shindig-social-api-2.0.2.jar"
+						/>
+
+						<antcall target="build-common-plugin.stripComments">
+							<param name="stripComments.file" value="${tstamp.value}/sampledata/canonicaldb.json" />
+							<param name="stripComments.encoding" value="utf-8" />
+						</antcall>
+
+						<delete file="tmp/WEB-INF/lib/shindig-social-api-2.0.2.jar" />
+
+						<jar
+							basedir="${tstamp.value}"
+							destfile="tmp/WEB-INF/lib/shindig-social-api-2.0.2.jar"
+						/>
+
+						<delete dir="${tstamp.value}" />
+					</then>
+				</if>
+			</then>
+		</if>
 
 		<!-- Fix shiro.tld -->
 
