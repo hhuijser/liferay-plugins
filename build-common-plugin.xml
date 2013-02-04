@@ -1046,6 +1046,56 @@ Please find a solution that does not require portal-impl.jar.
 		<delete dir="${tstamp.value}" />
 	</target>
 
+	<target name="stripComments">
+		<antcall target="stripComments-multiline" >
+			<param name="stripComments.file" value="${stripComments.file}" />
+			<param name="stripComments.encoding" value="${stripComments.encoding}" />
+		</antcall>
+		<antcall target="stripComments-singleline" >
+			<param name="stripComments.file" value="${stripComments.file}" />
+			<param name="stripComments.encoding" value="${stripComments.encoding}" />
+		</antcall>
+		<antcall target="stripComments-newlines" >
+			<param name="stripComments.file" value="${stripComments.file}" />
+			<param name="stripComments.encoding" value="${stripComments.encoding}" />
+		</antcall>
+	</target>
+
+	<target name="stripComments-multiline">
+		<replaceregexp file="${stripComments.file}"
+			match="\s*/[*].*?[*]/\s*"
+			replace=""
+			encoding="${stripComments.encoding}"
+			flags="gs"
+		/>
+	</target>
+
+	<target name="stripComments-newlines">
+		<replaceregexp file="${stripComments.file}"
+			match="\s*[\r\n][\r\n]*\s*"
+			replace="${line.separator}"
+			encoding="${stripComments.encoding}"
+			flags="gs"
+		/>
+	</target>
+
+	<target name="stripComments-singleline">
+		<!-- remove lines entirely of comments -->
+		<replaceregexp file="${stripComments.file}"
+			match="^\s*(//)(.*)$$"
+			replace=""
+			encoding="${stripComments.encoding}"
+			byline="true"
+		/>
+		<!-- remove comments after code, ignores lines with quotes -->
+		<replaceregexp file="${stripComments.file}"
+			match="^([^\u0022]*)(//)(.*)$$"
+			replace="\1"
+			encoding="${stripComments.encoding}"
+			byline="true"
+		/>
+	</target>
+
 	<target name="test">
 		<delete dir="test-classes" />
 		<delete dir="test-results" />
@@ -1205,4 +1255,4 @@ Please find a solution that does not require portal-impl.jar.
 			</then>
 		</if>
 	</target>
-</project>
+	</project>
