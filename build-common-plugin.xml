@@ -1046,6 +1046,35 @@ Please find a solution that does not require portal-impl.jar.
 		<delete dir="${tstamp.value}" />
 	</target>
 
+	<target name="strip-comments">
+		<replaceregexp file="${strip-comments.file}"
+			match="\s*/[*].*?[*]/\s*"
+			replace=""
+			encoding="${strip-comments.encoding}"
+			flags="gs"
+		/>
+		<!-- remove lines entirely of comments -->
+		<replaceregexp file="${strip-comments.file}"
+			match="^\s*(//)(.*)$$"
+			replace=""
+			encoding="${strip-comments.encoding}"
+			byline="true"
+		/>
+		<!-- remove comments after code, ignores lines with quotes -->
+		<replaceregexp file="${strip-comments.file}"
+			match="^([^\u0022]*)(//)(.*)$$"
+			replace="\1"
+			encoding="${strip-comments.encoding}"
+			byline="true"
+		/>
+		<replaceregexp file="${strip-comments.file}"
+			match="\s*[\r\n][\r\n]*\s*"
+			replace="${line.separator}"
+			encoding="${strip-comments.encoding}"
+			flags="gs"
+		/>
+	</target>
+
 	<target name="test">
 		<delete dir="test-classes" />
 		<delete dir="test-results" />
@@ -1205,4 +1234,4 @@ Please find a solution that does not require portal-impl.jar.
 			</then>
 		</if>
 	</target>
-</project>
+	</project>
