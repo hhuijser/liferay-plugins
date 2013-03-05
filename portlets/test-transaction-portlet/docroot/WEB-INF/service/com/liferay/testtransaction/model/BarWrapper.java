@@ -206,7 +206,7 @@ public class BarWrapper implements Bar, ModelWrapper<Bar> {
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedModel}
+	 * @deprecated As of 6.1.0, renamed to {@link #getWrappedModel()}
 	 */
 	public Bar getWrappedBar() {
 		return _bar;

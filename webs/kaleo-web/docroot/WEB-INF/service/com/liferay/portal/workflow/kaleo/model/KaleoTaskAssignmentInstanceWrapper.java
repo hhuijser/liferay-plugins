@@ -619,7 +619,7 @@ public class KaleoTaskAssignmentInstanceWrapper
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedModel}
+	 * @deprecated As of 6.1.0, renamed to {@link #getWrappedModel()}
 	 */
 	public KaleoTaskAssignmentInstance getWrappedKaleoTaskAssignmentInstance() {
 		return _kaleoTaskAssignmentInstance;

@@ -62,14 +62,15 @@ public class FooServiceWrapper implements FooService,
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link #getWrappedService()}
 	 */
 	public FooService getWrappedFooService() {
 		return _fooService;
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #setWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link
+	 * #setWrappedService(FooService)}
 	 */
 	public void setWrappedFooService(FooService fooService) {
 		_fooService = fooService;

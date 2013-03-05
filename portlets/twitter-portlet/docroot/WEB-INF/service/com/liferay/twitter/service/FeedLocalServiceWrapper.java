@@ -264,14 +264,15 @@ public class FeedLocalServiceWrapper implements FeedLocalService,
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link #getWrappedService()}
 	 */
 	public FeedLocalService getWrappedFeedLocalService() {
 		return _feedLocalService;
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #setWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link
+	 * #setWrappedService(FeedLocalService)}
 	 */
 	public void setWrappedFeedLocalService(FeedLocalService feedLocalService) {
 		_feedLocalService = feedLocalService;

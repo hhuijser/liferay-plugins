@@ -529,7 +529,7 @@ public class MeetupsEntryWrapper implements MeetupsEntry,
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedModel}
+	 * @deprecated As of 6.1.0, renamed to {@link #getWrappedModel()}
 	 */
 	public MeetupsEntry getWrappedMeetupsEntry() {
 		return _meetupsEntry;

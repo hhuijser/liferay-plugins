@@ -316,14 +316,15 @@ public class KBCommentLocalServiceWrapper implements KBCommentLocalService,
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link #getWrappedService()}
 	 */
 	public KBCommentLocalService getWrappedKBCommentLocalService() {
 		return _kbCommentLocalService;
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #setWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link
+	 * #setWrappedService(KBCommentLocalService)}
 	 */
 	public void setWrappedKBCommentLocalService(
 		KBCommentLocalService kbCommentLocalService) {

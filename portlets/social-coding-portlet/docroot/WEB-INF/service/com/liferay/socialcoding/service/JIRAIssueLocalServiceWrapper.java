@@ -388,14 +388,15 @@ public class JIRAIssueLocalServiceWrapper implements JIRAIssueLocalService,
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link #getWrappedService()}
 	 */
 	public JIRAIssueLocalService getWrappedJIRAIssueLocalService() {
 		return _jiraIssueLocalService;
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #setWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link
+	 * #setWrappedService(JIRAIssueLocalService)}
 	 */
 	public void setWrappedJIRAIssueLocalService(
 		JIRAIssueLocalService jiraIssueLocalService) {

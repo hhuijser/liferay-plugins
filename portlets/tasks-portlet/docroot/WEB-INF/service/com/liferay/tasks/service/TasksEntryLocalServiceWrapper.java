@@ -402,14 +402,15 @@ public class TasksEntryLocalServiceWrapper implements TasksEntryLocalService,
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link #getWrappedService()}
 	 */
 	public TasksEntryLocalService getWrappedTasksEntryLocalService() {
 		return _tasksEntryLocalService;
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #setWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link
+	 * #setWrappedService(TasksEntryLocalService)}
 	 */
 	public void setWrappedTasksEntryLocalService(
 		TasksEntryLocalService tasksEntryLocalService) {

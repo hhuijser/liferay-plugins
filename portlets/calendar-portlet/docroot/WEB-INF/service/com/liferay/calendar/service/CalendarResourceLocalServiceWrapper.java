@@ -366,14 +366,15 @@ public class CalendarResourceLocalServiceWrapper
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link #getWrappedService()}
 	 */
 	public CalendarResourceLocalService getWrappedCalendarResourceLocalService() {
 		return _calendarResourceLocalService;
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #setWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link
+	 * #setWrappedService(CalendarResourceLocalService)}
 	 */
 	public void setWrappedCalendarResourceLocalService(
 		CalendarResourceLocalService calendarResourceLocalService) {

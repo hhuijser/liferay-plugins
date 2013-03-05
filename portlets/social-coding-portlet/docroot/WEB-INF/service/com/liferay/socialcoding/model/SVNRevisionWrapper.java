@@ -320,7 +320,7 @@ public class SVNRevisionWrapper implements SVNRevision,
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedModel}
+	 * @deprecated As of 6.1.0, renamed to {@link #getWrappedModel()}
 	 */
 	public SVNRevision getWrappedSVNRevision() {
 		return _svnRevision;

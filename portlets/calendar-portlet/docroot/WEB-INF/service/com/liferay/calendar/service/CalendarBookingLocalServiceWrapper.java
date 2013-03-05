@@ -510,14 +510,15 @@ public class CalendarBookingLocalServiceWrapper
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link #getWrappedService()}
 	 */
 	public CalendarBookingLocalService getWrappedCalendarBookingLocalService() {
 		return _calendarBookingLocalService;
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #setWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link
+	 * #setWrappedService(CalendarBookingLocalService)}
 	 */
 	public void setWrappedCalendarBookingLocalService(
 		CalendarBookingLocalService calendarBookingLocalService) {
