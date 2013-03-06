@@ -357,7 +357,7 @@ public class JIRAActionWrapper implements JIRAAction, ModelWrapper<JIRAAction> {
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedModel}
+	 * @deprecated As of 6.1.0, renamed to {@link #getWrappedModel()}
 	 */
 	public JIRAAction getWrappedJIRAAction() {
 		return _jiraAction;

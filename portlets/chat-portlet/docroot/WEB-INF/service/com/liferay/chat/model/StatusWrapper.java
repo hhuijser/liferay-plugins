@@ -403,7 +403,7 @@ public class StatusWrapper implements Status, ModelWrapper<Status> {
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedModel}
+	 * @deprecated As of 6.1.0, renamed to {@link #getWrappedModel()}
 	 */
 	public Status getWrappedStatus() {
 		return _status;

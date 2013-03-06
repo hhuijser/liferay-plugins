@@ -340,14 +340,15 @@ public class MemberRequestLocalServiceWrapper
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link #getWrappedService()}
 	 */
 	public MemberRequestLocalService getWrappedMemberRequestLocalService() {
 		return _memberRequestLocalService;
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #setWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link
+	 * #setWrappedService(MemberRequestLocalService)}
 	 */
 	public void setWrappedMemberRequestLocalService(
 		MemberRequestLocalService memberRequestLocalService) {

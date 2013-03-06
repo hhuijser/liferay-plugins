@@ -297,14 +297,15 @@ public class MeetupsEntryLocalServiceWrapper implements MeetupsEntryLocalService
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link #getWrappedService()}
 	 */
 	public MeetupsEntryLocalService getWrappedMeetupsEntryLocalService() {
 		return _meetupsEntryLocalService;
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #setWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link
+	 * #setWrappedService(MeetupsEntryLocalService)}
 	 */
 	public void setWrappedMeetupsEntryLocalService(
 		MeetupsEntryLocalService meetupsEntryLocalService) {

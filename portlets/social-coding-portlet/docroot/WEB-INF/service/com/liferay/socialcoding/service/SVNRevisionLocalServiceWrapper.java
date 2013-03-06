@@ -315,14 +315,15 @@ public class SVNRevisionLocalServiceWrapper implements SVNRevisionLocalService,
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link #getWrappedService()}
 	 */
 	public SVNRevisionLocalService getWrappedSVNRevisionLocalService() {
 		return _svnRevisionLocalService;
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #setWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link
+	 * #setWrappedService(SVNRevisionLocalService)}
 	 */
 	public void setWrappedSVNRevisionLocalService(
 		SVNRevisionLocalService svnRevisionLocalService) {

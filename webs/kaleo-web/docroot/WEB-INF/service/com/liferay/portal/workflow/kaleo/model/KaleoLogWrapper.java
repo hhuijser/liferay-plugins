@@ -948,7 +948,7 @@ public class KaleoLogWrapper implements KaleoLog, ModelWrapper<KaleoLog> {
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedModel}
+	 * @deprecated As of 6.1.0, renamed to {@link #getWrappedModel()}
 	 */
 	public KaleoLog getWrappedKaleoLog() {
 		return _kaleoLog;

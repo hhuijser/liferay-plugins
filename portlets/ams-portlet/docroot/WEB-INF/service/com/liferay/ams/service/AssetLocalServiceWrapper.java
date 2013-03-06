@@ -248,14 +248,15 @@ public class AssetLocalServiceWrapper implements AssetLocalService,
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link #getWrappedService()}
 	 */
 	public AssetLocalService getWrappedAssetLocalService() {
 		return _assetLocalService;
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #setWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link
+	 * #setWrappedService(AssetLocalService)}
 	 */
 	public void setWrappedAssetLocalService(AssetLocalService assetLocalService) {
 		_assetLocalService = assetLocalService;

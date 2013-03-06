@@ -282,14 +282,15 @@ public class KBArticleServiceWrapper implements KBArticleService,
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link #getWrappedService()}
 	 */
 	public KBArticleService getWrappedKBArticleService() {
 		return _kbArticleService;
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #setWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link
+	 * #setWrappedService(KBArticleService)}
 	 */
 	public void setWrappedKBArticleService(KBArticleService kbArticleService) {
 		_kbArticleService = kbArticleService;

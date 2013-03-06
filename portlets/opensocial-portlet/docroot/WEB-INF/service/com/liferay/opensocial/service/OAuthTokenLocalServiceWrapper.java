@@ -304,14 +304,15 @@ public class OAuthTokenLocalServiceWrapper implements OAuthTokenLocalService,
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link #getWrappedService()}
 	 */
 	public OAuthTokenLocalService getWrappedOAuthTokenLocalService() {
 		return _oAuthTokenLocalService;
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #setWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link
+	 * #setWrappedService(OAuthTokenLocalService)}
 	 */
 	public void setWrappedOAuthTokenLocalService(
 		OAuthTokenLocalService oAuthTokenLocalService) {

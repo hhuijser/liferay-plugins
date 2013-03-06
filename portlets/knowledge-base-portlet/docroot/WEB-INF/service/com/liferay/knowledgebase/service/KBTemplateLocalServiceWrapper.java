@@ -336,14 +336,15 @@ public class KBTemplateLocalServiceWrapper implements KBTemplateLocalService,
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link #getWrappedService()}
 	 */
 	public KBTemplateLocalService getWrappedKBTemplateLocalService() {
 		return _kbTemplateLocalService;
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #setWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link
+	 * #setWrappedService(KBTemplateLocalService)}
 	 */
 	public void setWrappedKBTemplateLocalService(
 		KBTemplateLocalService kbTemplateLocalService) {

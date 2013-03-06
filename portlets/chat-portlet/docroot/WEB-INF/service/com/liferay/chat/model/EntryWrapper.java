@@ -321,7 +321,7 @@ public class EntryWrapper implements Entry, ModelWrapper<Entry> {
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedModel}
+	 * @deprecated As of 6.1.0, renamed to {@link #getWrappedModel()}
 	 */
 	public Entry getWrappedEntry() {
 		return _entry;

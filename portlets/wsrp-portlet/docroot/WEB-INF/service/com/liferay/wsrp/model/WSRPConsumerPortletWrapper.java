@@ -360,7 +360,7 @@ public class WSRPConsumerPortletWrapper implements WSRPConsumerPortlet,
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedModel}
+	 * @deprecated As of 6.1.0, renamed to {@link #getWrappedModel()}
 	 */
 	public WSRPConsumerPortlet getWrappedWSRPConsumerPortlet() {
 		return _wsrpConsumerPortlet;

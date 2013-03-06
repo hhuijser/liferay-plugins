@@ -321,14 +321,15 @@ public class WSRPProducerLocalServiceWrapper implements WSRPProducerLocalService
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link #getWrappedService()}
 	 */
 	public WSRPProducerLocalService getWrappedWSRPProducerLocalService() {
 		return _wsrpProducerLocalService;
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #setWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link
+	 * #setWrappedService(WSRPProducerLocalService)}
 	 */
 	public void setWrappedWSRPProducerLocalService(
 		WSRPProducerLocalService wsrpProducerLocalService) {

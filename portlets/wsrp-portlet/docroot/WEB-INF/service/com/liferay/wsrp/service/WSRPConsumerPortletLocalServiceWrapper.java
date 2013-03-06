@@ -359,14 +359,15 @@ public class WSRPConsumerPortletLocalServiceWrapper
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link #getWrappedService()}
 	 */
 	public WSRPConsumerPortletLocalService getWrappedWSRPConsumerPortletLocalService() {
 		return _wsrpConsumerPortletLocalService;
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #setWrappedService}
+	 * @deprecated As of 6.1.0, renamed to {@link
+	 * #setWrappedService(WSRPConsumerPortletLocalService)}
 	 */
 	public void setWrappedWSRPConsumerPortletLocalService(
 		WSRPConsumerPortletLocalService wsrpConsumerPortletLocalService) {
