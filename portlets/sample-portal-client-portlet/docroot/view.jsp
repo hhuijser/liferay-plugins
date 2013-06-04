@@ -18,8 +18,12 @@
 <%@ page import="com.liferay.client.soap.portal.service.http.OrganizationServiceSoap" %>
 <%@ page import="com.liferay.client.soap.portal.service.http.OrganizationServiceSoapServiceLocator" %>
 <%@ page import="com.liferay.portal.kernel.util.GetterUtil" %>
+<%@ page import="com.liferay.portal.model.CompanyConstants" %>
+<%@ page import="com.liferay.portal.util.PortalUtil" %>
 
 <%@ page import="java.net.URL" %>
+
+<%@ page import="javax.xml.rpc.Stub" %>
 
 You belong to the following organizations:
 
@@ -32,12 +36,13 @@ long userId = GetterUtil.getLong(remoteUser);
 
 OrganizationServiceSoapServiceLocator locator = new OrganizationServiceSoapServiceLocator();
 
-OrganizationServiceSoap soap = locator.getPortal_OrganizationService(_getURL(remoteUser, "Portal_OrganizationService"));
+OrganizationServiceSoap soap = locator.getPortal_OrganizationService(new URL("http://localhost:8080/api/axis/Portal_OrganizationService"));
+
+_setCredentials(request, remoteUser, (Stub) soap);
 
 OrganizationSoap[] organizations = soap.getUserOrganizations(userId);
 
-for (int i = 0; i < organizations.length; i++) {
-	OrganizationSoap organization = organizations[i];
+for (OrganizationSoap organization : organizations) {
 %>
 
 	<%= organization.getName() %><br />
@@ -47,20 +52,17 @@ for (int i = 0; i < organizations.length; i++) {
 %>
 
 <%!
-private URL _getURL(String remoteUser, String serviceName) throws Exception {
+private void _setCredentials(HttpServletRequest request, String remoteUser, Stub stub) throws Exception {
+	String authType = PortalUtil.getCompany(request).getAuthType();
 
-	// Unathenticated url
-
-	String url = "http://localhost:8080/api/axis/" + serviceName;
-
-	// Authenticated url
-
-	if (false) {
-		String password = "test";
-
-		url = "http://" + remoteUser + ":" + password + "@localhost:8080/api/axis/" + serviceName;
+	if (authType.equals(CompanyConstants.AUTH_TYPE_EA)) {
+		remoteUser = PortalUtil.getUser(request).getEmailAddress();
+	}
+	else if (authType.equals(CompanyConstants.AUTH_TYPE_SN)) {
+		remoteUser = PortalUtil.getUser(request).getScreenName();
 	}
 
-	return new URL(url);
+	stub._setProperty(Stub.USERNAME_PROPERTY, remoteUser);
+	stub._setProperty(Stub.PASSWORD_PROPERTY, "test");
 }
 %>
