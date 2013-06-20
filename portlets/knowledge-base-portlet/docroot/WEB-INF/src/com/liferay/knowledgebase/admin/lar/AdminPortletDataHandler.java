@@ -529,6 +529,12 @@ public class AdminPortletDataHandler extends BasePortletDataHandler {
 					curUserId, parentResourcePrimKey, curKBArticle.getTitle(),
 					curKBArticle.getContent(), curKBArticle.getDescription(),
 					curSections, curDirName, serviceContext);
+
+				importedKBArticle.setPriority(curKBArticle.getPriority());
+				importedKBArticle.setStatus(curKBArticle.getStatus());
+
+				importedKBArticle = KBArticleLocalServiceUtil.updateKBArticle(
+					importedKBArticle);
 			}
 			else {
 				importedKBArticle = KBArticleLocalServiceUtil.updateKBArticle(
