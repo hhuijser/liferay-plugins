@@ -35,7 +35,7 @@ zipsString = StringUtil.merge(zips, StringPool.NEW_LINE);
 		ValidatorException ve = (ValidatorException)errorException;
 		%>
 
-		<liferay-ui:message key="the-following-are-invalid-cities-or-zip-codes" />
+		<liferay-ui:message key="failed-to-retrieve-the-following-cities-or-zip-codes" />
 
 		<%
 		Enumeration<String> enu = ve.getFailedKeys();
@@ -57,7 +57,7 @@ zipsString = StringUtil.merge(zips, StringPool.NEW_LINE);
 	</div>
 
 	<aui:fieldset>
-		<aui:input cssClass="lfr-input-text-container" label="world-weather-online-api-key" name="preferences--apiKey--" value="<%= apiKey %>" />
+		<aui:input cssClass="lfr-input-text-container" label="world-weather-online-api-key" name="preferences--apiKey--" required="true" value="<%= apiKey %>" />
 
 		<aui:input cssClass="lfr-textarea-container" label="enter-one-city-or-zip-code-per-line" name="preferences--zips--" type="textarea" value="<%= zipsString %>" />
 
