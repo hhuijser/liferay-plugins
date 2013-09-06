@@ -1,4 +1,3 @@
-<%--
 /**
  * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
@@ -12,6 +11,19 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
---%>
 
-<%@ include file="/html/portlet/admin/view.portal.jsp" %>
+package com.liferay.portal.workflow.kaleo.hook.upgrade.v1_2_0;
+
+import com.liferay.portal.kernel.upgrade.UpgradeProcess;
+
+/**
+ * @author Kenneth Chang
+ */
+public class UpgradeKaleoLog extends UpgradeProcess {
+
+	@Override
+	protected void doUpgrade() throws Exception {
+		runSQL("alter_column_type KaleoLog comment TEXT null");
+	}
+
+}
