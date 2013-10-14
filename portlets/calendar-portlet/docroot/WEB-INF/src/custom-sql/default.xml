@@ -33,13 +33,17 @@
 				{CalendarBooking.*}
 			FROM
 				CalendarBooking
+			INNER JOIN
+				Company ON
+					(Company.companyId = CalendarBooking.companyId)
 			WHERE
 				(
-					(recurrence IS NOT NULL) OR
-					(startTime >= ?)
+					(CalendarBooking.recurrence IS NOT NULL) OR
+					(CalendarBooking.startTime >= ?)
 				) AND
-				(firstReminder > 0) AND
-				(status = 0)
+				(CalendarBooking.firstReminder > 0) AND
+				(CalendarBooking.status = 0) AND
+				(Company.active_ != 0)
 		]]>
 	</sql>
 	<sql id="com.liferay.calendar.service.persistence.CalendarBookingFinder.findByC_G_C_C_P_T_D_L_S_E_S">
