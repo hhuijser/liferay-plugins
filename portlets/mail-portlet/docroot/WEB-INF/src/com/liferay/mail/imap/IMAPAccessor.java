@@ -653,6 +653,13 @@ public class IMAPAccessor {
 						_user.getUserId(), folderId, sender, to, cc, bcc,
 						sentDate, subject, StringPool.BLANK, flags,
 						remoteMessageId);
+
+					try {
+						storeContents(folderId, new long[] {remoteMessageId});
+					}
+					catch (IOException ioe) {
+						throw new MailException(ioe);
+					}
 				}
 			}
 
