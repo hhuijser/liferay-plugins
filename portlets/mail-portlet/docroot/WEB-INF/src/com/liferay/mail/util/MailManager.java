@@ -422,16 +422,6 @@ public class MailManager {
 
 		Message message = MessageLocalServiceUtil.getMessage(messageId);
 
-		if (Validator.isNull(message.getBody())) {
-			Mailbox mailbox = MailboxFactoryUtil.getMailbox(
-				_user.getUserId(), message.getAccountId(),
-				_passwordRetriever.getPassword(message.getAccountId()));
-
-			mailbox.synchronizeMessage(message.getMessageId());
-
-			message = MessageLocalServiceUtil.getMessage(messageId);
-		}
-
 		List<Attachment> attachments =
 			AttachmentLocalServiceUtil.getAttachments(messageId);
 
