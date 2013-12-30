@@ -188,6 +188,27 @@ public interface MessageModel extends AuditedModel, BaseModel<Message> {
 	public void setAccountId(long accountId);
 
 	/**
+	 * Returns the attachment of this message.
+	 *
+	 * @return the attachment of this message
+	 */
+	public boolean getAttachment();
+
+	/**
+	 * Returns <code>true</code> if this message is attachment.
+	 *
+	 * @return <code>true</code> if this message is attachment; <code>false</code> otherwise
+	 */
+	public boolean isAttachment();
+
+	/**
+	 * Sets whether this message is attachment.
+	 *
+	 * @param attachment the attachment of this message
+	 */
+	public void setAttachment(boolean attachment);
+
+	/**
 	 * Returns the folder ID of this message.
 	 *
 	 * @return the folder ID of this message

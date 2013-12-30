@@ -60,6 +60,7 @@
 		<field name="createDate" type="Date" />
 		<field name="modifiedDate" type="Date" />
 		<field name="accountId" type="long" />
+		<field name="attachment" type="boolean" />
 		<field name="folderId" type="long" />
 		<field name="sender" type="String">
 			<hint-collection name="TEXTAREA" />

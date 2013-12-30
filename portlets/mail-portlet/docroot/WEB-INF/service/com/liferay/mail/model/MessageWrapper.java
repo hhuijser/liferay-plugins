@@ -56,6 +56,7 @@ public class MessageWrapper implements Message, ModelWrapper<Message> {
 		attributes.put("createDate", getCreateDate());
 		attributes.put("modifiedDate", getModifiedDate());
 		attributes.put("accountId", getAccountId());
+		attributes.put("attachment", getAttachment());
 		attributes.put("folderId", getFolderId());
 		attributes.put("sender", getSender());
 		attributes.put("to", getTo());
@@ -114,6 +115,12 @@ public class MessageWrapper implements Message, ModelWrapper<Message> {
 
 		if (accountId != null) {
 			setAccountId(accountId);
+		}
+
+		Boolean attachment = (Boolean)attributes.get("attachment");
+
+		if (attachment != null) {
+			setAttachment(attachment);
 		}
 
 		Long folderId = (Long)attributes.get("folderId");
@@ -369,6 +376,36 @@ public class MessageWrapper implements Message, ModelWrapper<Message> {
 	@Override
 	public void setAccountId(long accountId) {
 		_message.setAccountId(accountId);
+	}
+
+	/**
+	* Returns the attachment of this message.
+	*
+	* @return the attachment of this message
+	*/
+	@Override
+	public boolean getAttachment() {
+		return _message.getAttachment();
+	}
+
+	/**
+	* Returns <code>true</code> if this message is attachment.
+	*
+	* @return <code>true</code> if this message is attachment; <code>false</code> otherwise
+	*/
+	@Override
+	public boolean isAttachment() {
+		return _message.isAttachment();
+	}
+
+	/**
+	* Sets whether this message is attachment.
+	*
+	* @param attachment the attachment of this message
+	*/
+	@Override
+	public void setAttachment(boolean attachment) {
+		_message.setAttachment(attachment);
 	}
 
 	/**

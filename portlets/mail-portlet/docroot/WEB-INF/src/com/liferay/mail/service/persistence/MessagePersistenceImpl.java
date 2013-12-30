@@ -1647,6 +1647,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 		messageImpl.setCreateDate(message.getCreateDate());
 		messageImpl.setModifiedDate(message.getModifiedDate());
 		messageImpl.setAccountId(message.getAccountId());
+		messageImpl.setAttachment(message.isAttachment());
 		messageImpl.setFolderId(message.getFolderId());
 		messageImpl.setSender(message.getSender());
 		messageImpl.setTo(message.getTo());
