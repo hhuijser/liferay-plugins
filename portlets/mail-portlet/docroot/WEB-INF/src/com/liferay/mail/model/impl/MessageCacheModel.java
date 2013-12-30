@@ -37,7 +37,7 @@ import java.util.Date;
 public class MessageCacheModel implements CacheModel<Message>, Externalizable {
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(39);
+		StringBundler sb = new StringBundler(41);
 
 		sb.append("{messageId=");
 		sb.append(messageId);
@@ -53,6 +53,8 @@ public class MessageCacheModel implements CacheModel<Message>, Externalizable {
 		sb.append(modifiedDate);
 		sb.append(", accountId=");
 		sb.append(accountId);
+		sb.append(", attachment=");
+		sb.append(attachment);
 		sb.append(", folderId=");
 		sb.append(folderId);
 		sb.append(", sender=");
@@ -112,6 +114,7 @@ public class MessageCacheModel implements CacheModel<Message>, Externalizable {
 		}
 
 		messageImpl.setAccountId(accountId);
+		messageImpl.setAttachment(attachment);
 		messageImpl.setFolderId(folderId);
 
 		if (sender == null) {
@@ -194,6 +197,7 @@ public class MessageCacheModel implements CacheModel<Message>, Externalizable {
 		createDate = objectInput.readLong();
 		modifiedDate = objectInput.readLong();
 		accountId = objectInput.readLong();
+		attachment = objectInput.readBoolean();
 		folderId = objectInput.readLong();
 		sender = objectInput.readUTF();
 		to = objectInput.readUTF();
@@ -225,6 +229,7 @@ public class MessageCacheModel implements CacheModel<Message>, Externalizable {
 		objectOutput.writeLong(createDate);
 		objectOutput.writeLong(modifiedDate);
 		objectOutput.writeLong(accountId);
+		objectOutput.writeBoolean(attachment);
 		objectOutput.writeLong(folderId);
 
 		if (sender == null) {
@@ -296,6 +301,7 @@ public class MessageCacheModel implements CacheModel<Message>, Externalizable {
 	public long createDate;
 	public long modifiedDate;
 	public long accountId;
+	public boolean attachment;
 	public long folderId;
 	public String sender;
 	public String to;

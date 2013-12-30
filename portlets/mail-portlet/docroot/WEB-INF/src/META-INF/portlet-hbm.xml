@@ -77,6 +77,7 @@
 		<property name="createDate" type="org.hibernate.type.TimestampType" />
 		<property name="modifiedDate" type="org.hibernate.type.TimestampType" />
 		<property name="accountId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="attachment" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
 		<property name="folderId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 		<property name="sender" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="to" type="com.liferay.portal.dao.orm.hibernate.StringType" column="to_" />

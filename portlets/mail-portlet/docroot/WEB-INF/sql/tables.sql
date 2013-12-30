@@ -60,6 +60,7 @@ create table Mail_Message (
 	createDate DATE null,
 	modifiedDate DATE null,
 	accountId LONG,
+	attachment BOOLEAN,
 	folderId LONG,
 	sender STRING null,
 	to_ TEXT null,

@@ -69,6 +69,7 @@ public class MessageModelImpl extends BaseModelImpl<Message>
 			{ "createDate", Types.TIMESTAMP },
 			{ "modifiedDate", Types.TIMESTAMP },
 			{ "accountId", Types.BIGINT },
+			{ "attachment", Types.BOOLEAN },
 			{ "folderId", Types.BIGINT },
 			{ "sender", Types.VARCHAR },
 			{ "to_", Types.CLOB },
@@ -82,7 +83,7 @@ public class MessageModelImpl extends BaseModelImpl<Message>
 			{ "size_", Types.BIGINT },
 			{ "remoteMessageId", Types.BIGINT }
 		};
-	public static final String TABLE_SQL_CREATE = "create table Mail_Message (messageId LONG not null primary key,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,accountId LONG,folderId LONG,sender STRING null,to_ TEXT null,cc TEXT null,bcc TEXT null,sentDate DATE null,subject STRING null,preview VARCHAR(75) null,body TEXT null,flags VARCHAR(75) null,size_ LONG,remoteMessageId LONG)";
+	public static final String TABLE_SQL_CREATE = "create table Mail_Message (messageId LONG not null primary key,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,accountId LONG,attachment BOOLEAN,folderId LONG,sender STRING null,to_ TEXT null,cc TEXT null,bcc TEXT null,sentDate DATE null,subject STRING null,preview VARCHAR(75) null,body TEXT null,flags VARCHAR(75) null,size_ LONG,remoteMessageId LONG)";
 	public static final String TABLE_SQL_DROP = "drop table Mail_Message";
 	public static final String ORDER_BY_JPQL = " ORDER BY message.sentDate ASC";
 	public static final String ORDER_BY_SQL = " ORDER BY Mail_Message.sentDate ASC";
@@ -149,6 +150,7 @@ public class MessageModelImpl extends BaseModelImpl<Message>
 		attributes.put("createDate", getCreateDate());
 		attributes.put("modifiedDate", getModifiedDate());
 		attributes.put("accountId", getAccountId());
+		attributes.put("attachment", getAttachment());
 		attributes.put("folderId", getFolderId());
 		attributes.put("sender", getSender());
 		attributes.put("to", getTo());
@@ -210,6 +212,12 @@ public class MessageModelImpl extends BaseModelImpl<Message>
 
 		if (accountId != null) {
 			setAccountId(accountId);
+		}
+
+		Boolean attachment = (Boolean)attributes.get("attachment");
+
+		if (attachment != null) {
+			setAttachment(attachment);
 		}
 
 		Long folderId = (Long)attributes.get("folderId");
@@ -380,6 +388,21 @@ public class MessageModelImpl extends BaseModelImpl<Message>
 	@Override
 	public void setAccountId(long accountId) {
 		_accountId = accountId;
+	}
+
+	@Override
+	public boolean getAttachment() {
+		return _attachment;
+	}
+
+	@Override
+	public boolean isAttachment() {
+		return _attachment;
+	}
+
+	@Override
+	public void setAttachment(boolean attachment) {
+		_attachment = attachment;
 	}
 
 	@Override
@@ -606,6 +629,7 @@ public class MessageModelImpl extends BaseModelImpl<Message>
 		messageImpl.setCreateDate(getCreateDate());
 		messageImpl.setModifiedDate(getModifiedDate());
 		messageImpl.setAccountId(getAccountId());
+		messageImpl.setAttachment(getAttachment());
 		messageImpl.setFolderId(getFolderId());
 		messageImpl.setSender(getSender());
 		messageImpl.setTo(getTo());
@@ -731,6 +755,8 @@ public class MessageModelImpl extends BaseModelImpl<Message>
 
 		messageCacheModel.accountId = getAccountId();
 
+		messageCacheModel.attachment = getAttachment();
+
 		messageCacheModel.folderId = getFolderId();
 
 		messageCacheModel.sender = getSender();
@@ -815,7 +841,7 @@ public class MessageModelImpl extends BaseModelImpl<Message>
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(39);
+		StringBundler sb = new StringBundler(41);
 
 		sb.append("{messageId=");
 		sb.append(getMessageId());
@@ -831,6 +857,8 @@ public class MessageModelImpl extends BaseModelImpl<Message>
 		sb.append(getModifiedDate());
 		sb.append(", accountId=");
 		sb.append(getAccountId());
+		sb.append(", attachment=");
+		sb.append(getAttachment());
 		sb.append(", folderId=");
 		sb.append(getFolderId());
 		sb.append(", sender=");
@@ -862,7 +890,7 @@ public class MessageModelImpl extends BaseModelImpl<Message>
 
 	@Override
 	public String toXmlString() {
-		StringBundler sb = new StringBundler(61);
+		StringBundler sb = new StringBundler(64);
 
 		sb.append("<model><model-name>");
 		sb.append("com.liferay.mail.model.Message");
@@ -895,6 +923,10 @@ public class MessageModelImpl extends BaseModelImpl<Message>
 		sb.append(
 			"<column><column-name>accountId</column-name><column-value><![CDATA[");
 		sb.append(getAccountId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>attachment</column-name><column-value><![CDATA[");
+		sb.append(getAttachment());
 		sb.append("]]></column-value></column>");
 		sb.append(
 			"<column><column-name>folderId</column-name><column-value><![CDATA[");
@@ -964,6 +996,7 @@ public class MessageModelImpl extends BaseModelImpl<Message>
 	private Date _createDate;
 	private Date _modifiedDate;
 	private long _accountId;
+	private boolean _attachment;
 	private long _folderId;
 	private long _originalFolderId;
 	private boolean _setOriginalFolderId;

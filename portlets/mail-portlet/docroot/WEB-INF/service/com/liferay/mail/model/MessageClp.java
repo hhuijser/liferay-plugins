@@ -83,6 +83,7 @@ public class MessageClp extends BaseModelImpl<Message> implements Message {
 		attributes.put("createDate", getCreateDate());
 		attributes.put("modifiedDate", getModifiedDate());
 		attributes.put("accountId", getAccountId());
+		attributes.put("attachment", getAttachment());
 		attributes.put("folderId", getFolderId());
 		attributes.put("sender", getSender());
 		attributes.put("to", getTo());
@@ -144,6 +145,12 @@ public class MessageClp extends BaseModelImpl<Message> implements Message {
 
 		if (accountId != null) {
 			setAccountId(accountId);
+		}
+
+		Boolean attachment = (Boolean)attributes.get("attachment");
+
+		if (attachment != null) {
+			setAttachment(attachment);
 		}
 
 		Long folderId = (Long)attributes.get("folderId");
@@ -386,6 +393,34 @@ public class MessageClp extends BaseModelImpl<Message> implements Message {
 				Method method = clazz.getMethod("setAccountId", long.class);
 
 				method.invoke(_messageRemoteModel, accountId);
+			}
+			catch (Exception e) {
+				throw new UnsupportedOperationException(e);
+			}
+		}
+	}
+
+	@Override
+	public boolean getAttachment() {
+		return _attachment;
+	}
+
+	@Override
+	public boolean isAttachment() {
+		return _attachment;
+	}
+
+	@Override
+	public void setAttachment(boolean attachment) {
+		_attachment = attachment;
+
+		if (_messageRemoteModel != null) {
+			try {
+				Class<?> clazz = _messageRemoteModel.getClass();
+
+				Method method = clazz.getMethod("setAttachment", boolean.class);
+
+				method.invoke(_messageRemoteModel, attachment);
 			}
 			catch (Exception e) {
 				throw new UnsupportedOperationException(e);
@@ -783,6 +818,7 @@ public class MessageClp extends BaseModelImpl<Message> implements Message {
 		clone.setCreateDate(getCreateDate());
 		clone.setModifiedDate(getModifiedDate());
 		clone.setAccountId(getAccountId());
+		clone.setAttachment(getAttachment());
 		clone.setFolderId(getFolderId());
 		clone.setSender(getSender());
 		clone.setTo(getTo());
@@ -851,7 +887,7 @@ public class MessageClp extends BaseModelImpl<Message> implements Message {
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(39);
+		StringBundler sb = new StringBundler(41);
 
 		sb.append("{messageId=");
 		sb.append(getMessageId());
@@ -867,6 +903,8 @@ public class MessageClp extends BaseModelImpl<Message> implements Message {
 		sb.append(getModifiedDate());
 		sb.append(", accountId=");
 		sb.append(getAccountId());
+		sb.append(", attachment=");
+		sb.append(getAttachment());
 		sb.append(", folderId=");
 		sb.append(getFolderId());
 		sb.append(", sender=");
@@ -898,7 +936,7 @@ public class MessageClp extends BaseModelImpl<Message> implements Message {
 
 	@Override
 	public String toXmlString() {
-		StringBundler sb = new StringBundler(61);
+		StringBundler sb = new StringBundler(64);
 
 		sb.append("<model><model-name>");
 		sb.append("com.liferay.mail.model.Message");
@@ -931,6 +969,10 @@ public class MessageClp extends BaseModelImpl<Message> implements Message {
 		sb.append(
 			"<column><column-name>accountId</column-name><column-value><![CDATA[");
 		sb.append(getAccountId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>attachment</column-name><column-value><![CDATA[");
+		sb.append(getAttachment());
 		sb.append("]]></column-value></column>");
 		sb.append(
 			"<column><column-name>folderId</column-name><column-value><![CDATA[");
@@ -994,6 +1036,7 @@ public class MessageClp extends BaseModelImpl<Message> implements Message {
 	private Date _createDate;
 	private Date _modifiedDate;
 	private long _accountId;
+	private boolean _attachment;
 	private long _folderId;
 	private String _sender;
 	private String _to;

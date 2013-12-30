@@ -137,6 +137,7 @@
 		<!-- Other fields -->
 
 		<column name="accountId" type="long" />
+		<column name="attachment" type="boolean" />
 		<column name="folderId" type="long" />
 		<column name="sender" type="String" />
 		<column name="to" type="String" />

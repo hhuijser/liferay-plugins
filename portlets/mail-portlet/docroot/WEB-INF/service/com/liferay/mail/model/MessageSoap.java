@@ -37,6 +37,7 @@ public class MessageSoap implements Serializable {
 		soapModel.setCreateDate(model.getCreateDate());
 		soapModel.setModifiedDate(model.getModifiedDate());
 		soapModel.setAccountId(model.getAccountId());
+		soapModel.setAttachment(model.getAttachment());
 		soapModel.setFolderId(model.getFolderId());
 		soapModel.setSender(model.getSender());
 		soapModel.setTo(model.getTo());
@@ -157,6 +158,18 @@ public class MessageSoap implements Serializable {
 		_accountId = accountId;
 	}
 
+	public boolean getAttachment() {
+		return _attachment;
+	}
+
+	public boolean isAttachment() {
+		return _attachment;
+	}
+
+	public void setAttachment(boolean attachment) {
+		_attachment = attachment;
+	}
+
 	public long getFolderId() {
 		return _folderId;
 	}
@@ -260,6 +273,7 @@ public class MessageSoap implements Serializable {
 	private Date _createDate;
 	private Date _modifiedDate;
 	private long _accountId;
+	private boolean _attachment;
 	private long _folderId;
 	private String _sender;
 	private String _to;
