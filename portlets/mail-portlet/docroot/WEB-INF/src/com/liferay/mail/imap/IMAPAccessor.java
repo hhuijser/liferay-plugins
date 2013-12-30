@@ -649,10 +649,24 @@ public class IMAPAccessor {
 						folderId, remoteMessageId);
 				}
 				catch (NoSuchMessageException nsme) {
-					MessageLocalServiceUtil.addMessage(
-						_user.getUserId(), folderId, sender, to, cc, bcc,
-						sentDate, subject, StringPool.BLANK, flags,
-						remoteMessageId);
+					com.liferay.mail.model.Message message =
+						MessageLocalServiceUtil.addMessage(
+							_user.getUserId(), folderId, sender, to, cc, bcc,
+							sentDate, subject, StringPool.BLANK, flags,
+							remoteMessageId);
+					try {
+						if (isContainAttachMent(jxMessage)) {
+							message.setAttachment(true);
+
+							MessageLocalServiceUtil.updateMessage(message);
+						}
+					}
+					catch (MessagingException me) {
+						throw new MailException(me);
+					}
+					catch (IOException ioe) {
+						throw new SystemException(ioe);
+					}
 				}
 			}
 
@@ -1069,6 +1083,49 @@ public class IMAPAccessor {
 		throws MessagingException, PortalException, SystemException {
 
 		return openFolder(getFolder(folderId));
+	}
+
+	private boolean isContainAttachMent(Part part)
+		throws IOException, MessagingException {
+
+		boolean attachflag = false;
+
+		if (part.isMimeType(ContentTypes.MULTIPART_WILDCARD)) {
+			Multipart multiPart = (Multipart)part.getContent();
+
+			for (int i = 0; i < multiPart.getCount(); i++) {
+				BodyPart bodyPart = multiPart.getBodyPart(i);
+
+				String disposition = bodyPart.getDisposition();
+
+				if ((disposition != null) &&
+					((disposition.equalsIgnoreCase(Part.ATTACHMENT)) ||
+					 (disposition.equalsIgnoreCase(Part.INLINE)))) {
+
+					attachflag = true;
+				}
+				else if (bodyPart.isMimeType(ContentTypes.MULTIPART_WILDCARD)) {
+					attachflag = isContainAttachMent((Part)bodyPart);
+				}
+				else {
+					String contentType = bodyPart.getContentType();
+
+					String contentTypeLowerCase = StringUtil.toLowerCase(
+						contentType);
+
+					if (contentTypeLowerCase.contains("application") ||
+						contentTypeLowerCase.contains("name")) {
+
+						attachflag = true;
+					}
+				}
+			}
+		}
+		else if (part.isMimeType(ContentTypes.MESSAGE_RFC822)) {
+			attachflag = isContainAttachMent((Part)part.getContent());
+		}
+
+		return attachflag;
 	}
 
 	private static Log _log = LogFactoryUtil.getLog(IMAPAccessor.class);
