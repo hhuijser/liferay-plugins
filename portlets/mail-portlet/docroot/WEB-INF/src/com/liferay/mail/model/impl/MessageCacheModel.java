@@ -37,7 +37,7 @@ import java.util.Date;
 public class MessageCacheModel implements CacheModel<Message>, Externalizable {
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(39);
+		StringBundler sb = new StringBundler(41);
 
 		sb.append("{messageId=");
 		sb.append(messageId);
@@ -77,6 +77,8 @@ public class MessageCacheModel implements CacheModel<Message>, Externalizable {
 		sb.append(size);
 		sb.append(", remoteMessageId=");
 		sb.append(remoteMessageId);
+		sb.append(", attachment=");
+		sb.append(attachment);
 		sb.append("}");
 
 		return sb.toString();
@@ -179,6 +181,7 @@ public class MessageCacheModel implements CacheModel<Message>, Externalizable {
 
 		messageImpl.setSize(size);
 		messageImpl.setRemoteMessageId(remoteMessageId);
+		messageImpl.setAttachment(attachment);
 
 		messageImpl.resetOriginalValues();
 
@@ -206,6 +209,7 @@ public class MessageCacheModel implements CacheModel<Message>, Externalizable {
 		flags = objectInput.readUTF();
 		size = objectInput.readLong();
 		remoteMessageId = objectInput.readLong();
+		attachment = objectInput.readBoolean();
 	}
 
 	@Override
@@ -287,6 +291,7 @@ public class MessageCacheModel implements CacheModel<Message>, Externalizable {
 
 		objectOutput.writeLong(size);
 		objectOutput.writeLong(remoteMessageId);
+		objectOutput.writeBoolean(attachment);
 	}
 
 	public long messageId;
@@ -308,4 +313,5 @@ public class MessageCacheModel implements CacheModel<Message>, Externalizable {
 	public String flags;
 	public long size;
 	public long remoteMessageId;
+	public boolean attachment;
 }

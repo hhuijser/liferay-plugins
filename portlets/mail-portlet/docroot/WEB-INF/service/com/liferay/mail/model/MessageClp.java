@@ -95,6 +95,7 @@ public class MessageClp extends BaseModelImpl<Message> implements Message {
 		attributes.put("flags", getFlags());
 		attributes.put("size", getSize());
 		attributes.put("remoteMessageId", getRemoteMessageId());
+		attributes.put("attachment", getAttachment());
 
 		attributes.put("entityCacheEnabled", isEntityCacheEnabled());
 		attributes.put("finderCacheEnabled", isFinderCacheEnabled());
@@ -216,6 +217,12 @@ public class MessageClp extends BaseModelImpl<Message> implements Message {
 
 		if (remoteMessageId != null) {
 			setRemoteMessageId(remoteMessageId);
+		}
+
+		Boolean attachment = (Boolean)attributes.get("attachment");
+
+		if (attachment != null) {
+			setAttachment(attachment);
 		}
 
 		_entityCacheEnabled = GetterUtil.getBoolean("entityCacheEnabled");
@@ -670,6 +677,34 @@ public class MessageClp extends BaseModelImpl<Message> implements Message {
 	}
 
 	@Override
+	public boolean getAttachment() {
+		return _attachment;
+	}
+
+	@Override
+	public boolean isAttachment() {
+		return _attachment;
+	}
+
+	@Override
+	public void setAttachment(boolean attachment) {
+		_attachment = attachment;
+
+		if (_messageRemoteModel != null) {
+			try {
+				Class<?> clazz = _messageRemoteModel.getClass();
+
+				Method method = clazz.getMethod("setAttachment", boolean.class);
+
+				method.invoke(_messageRemoteModel, attachment);
+			}
+			catch (Exception e) {
+				throw new UnsupportedOperationException(e);
+			}
+		}
+	}
+
+	@Override
 	public boolean hasFlag(int flag) {
 		try {
 			String methodName = "hasFlag";
@@ -795,6 +830,7 @@ public class MessageClp extends BaseModelImpl<Message> implements Message {
 		clone.setFlags(getFlags());
 		clone.setSize(getSize());
 		clone.setRemoteMessageId(getRemoteMessageId());
+		clone.setAttachment(getAttachment());
 
 		return clone;
 	}
@@ -851,7 +887,7 @@ public class MessageClp extends BaseModelImpl<Message> implements Message {
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(39);
+		StringBundler sb = new StringBundler(41);
 
 		sb.append("{messageId=");
 		sb.append(getMessageId());
@@ -891,6 +927,8 @@ public class MessageClp extends BaseModelImpl<Message> implements Message {
 		sb.append(getSize());
 		sb.append(", remoteMessageId=");
 		sb.append(getRemoteMessageId());
+		sb.append(", attachment=");
+		sb.append(getAttachment());
 		sb.append("}");
 
 		return sb.toString();
@@ -898,7 +936,7 @@ public class MessageClp extends BaseModelImpl<Message> implements Message {
 
 	@Override
 	public String toXmlString() {
-		StringBundler sb = new StringBundler(61);
+		StringBundler sb = new StringBundler(64);
 
 		sb.append("<model><model-name>");
 		sb.append("com.liferay.mail.model.Message");
@@ -980,6 +1018,10 @@ public class MessageClp extends BaseModelImpl<Message> implements Message {
 			"<column><column-name>remoteMessageId</column-name><column-value><![CDATA[");
 		sb.append(getRemoteMessageId());
 		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>attachment</column-name><column-value><![CDATA[");
+		sb.append(getAttachment());
+		sb.append("]]></column-value></column>");
 
 		sb.append("</model>");
 
@@ -1006,6 +1048,7 @@ public class MessageClp extends BaseModelImpl<Message> implements Message {
 	private String _flags;
 	private long _size;
 	private long _remoteMessageId;
+	private boolean _attachment;
 	private BaseModel<?> _messageRemoteModel;
 	private boolean _entityCacheEnabled;
 	private boolean _finderCacheEnabled;
