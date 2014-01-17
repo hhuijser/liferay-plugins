@@ -14,8 +14,9 @@
 
 package com.liferay.sync.engine.service;
 
-import com.liferay.sync.engine.model.SyncGroup;
-import com.liferay.sync.engine.service.persistence.SyncGroupPersistence;
+import com.liferay.sync.engine.model.Account;
+import com.liferay.sync.engine.service.persistence.AccountPersistence;
+import com.liferay.sync.engine.util.Encryptor;
 
 import java.sql.SQLException;
 
@@ -25,29 +26,42 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Shinn Lok
  */
-public class SyncGroupService {
+public class AccountService {
 
-	public static SyncGroup addSyncGroup(
-			long syncAccountId, long groupId, String filePath)
+	public static Account addAccount(String login, String password, String url)
 		throws Exception {
 
-		SyncGroup syncGroup = new SyncGroup();
+		Account account = new Account();
 
-		syncGroup.setGroupId(groupId);
-		syncGroup.setFilePath(filePath);
-		syncGroup.setSyncAccountId(syncAccountId);
+		account.setLogin(login);
+		account.setPassword(Encryptor.encrypt(password));
+		account.setUrl(url);
 
-		_syncGroupPersistence.create(syncGroup);
+		_accountPersistence.create(account);
 
-		return syncGroup;
+		return account;
 	}
 
-	public static SyncGroup getSyncGroup(long syncAccountId, long groupId) {
-		SyncGroup syncGroup = null;
+	public static Account fetchAccount(long accountId) {
+		try {
+			return _accountPersistence.queryForId(accountId);
+		}
+		catch (SQLException sqle) {
+			if (_logger.isDebugEnabled()) {
+				_logger.debug(sqle.getMessage(), sqle);
+			}
+
+			return null;
+		}
+	}
+
+	public static AccountPersistence getAccountPersistence() {
+		if (_accountPersistence != null) {
+			return _accountPersistence;
+		}
 
 		try {
-			syncGroup = _syncGroupPersistence.getSyncGroup(
-				syncAccountId, groupId);
+			_accountPersistence = new AccountPersistence();
 		}
 		catch (SQLException sqle) {
 			if (_logger.isDebugEnabled()) {
@@ -55,29 +69,12 @@ public class SyncGroupService {
 			}
 		}
 
-		return syncGroup;
+		return _accountPersistence;
 	}
 
-	public static SyncGroupPersistence getSyncGroupPersistence() {
-		if (_syncGroupPersistence != null) {
-			return _syncGroupPersistence;
-		}
-
-		try {
-			_syncGroupPersistence = new SyncGroupPersistence();
-		}
-		catch (SQLException sqle) {
-			if (_logger.isDebugEnabled()) {
-				_logger.debug(sqle.getMessage(), sqle);
-			}
-		}
-
-		return _syncGroupPersistence;
-	}
-
+	private static AccountPersistence _accountPersistence =
+		getAccountPersistence();
 	private static Logger _logger = LoggerFactory.getLogger(
-		SyncGroupService.class);
-	private static SyncGroupPersistence _syncGroupPersistence =
-		getSyncGroupPersistence();
+		AccountService.class);
 
 }

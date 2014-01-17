@@ -14,38 +14,17 @@
 
 package com.liferay.sync.engine.service.persistence;
 
-import com.liferay.sync.engine.model.SyncGroup;
+import com.liferay.sync.engine.model.File;
 
 import java.sql.SQLException;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author Shinn Lok
  */
-public class SyncGroupPersistence extends BasePersistenceImpl<SyncGroup, Long> {
+public class FilePersistence extends BasePersistenceImpl<File, Long> {
 
-	public SyncGroupPersistence() throws SQLException {
-		super(SyncGroup.class);
-	}
-
-	public SyncGroup getSyncGroup(long syncAccountId, long groupId)
-		throws SQLException {
-
-		Map<String, Object> fieldValues = new HashMap<String, Object>();
-
-		fieldValues.put("groupId", groupId);
-		fieldValues.put("syncAccountId", syncAccountId);
-
-		List<SyncGroup> groups = queryForFieldValues(fieldValues);
-
-		if ((groups == null) || (groups.size() == 0)) {
-			return null;
-		}
-
-		return groups.get(0);
+	public FilePersistence() throws SQLException {
+		super(File.class);
 	}
 
 }
