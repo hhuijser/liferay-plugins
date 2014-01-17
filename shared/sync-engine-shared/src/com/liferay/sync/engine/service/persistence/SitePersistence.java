@@ -14,18 +14,36 @@
 
 package com.liferay.sync.engine.service.persistence;
 
-import com.liferay.sync.engine.model.SyncDLObject;
+import com.liferay.sync.engine.model.Site;
 
 import java.sql.SQLException;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Shinn Lok
  */
-public class SyncDLObjectPersistence
-	extends BasePersistenceImpl<SyncDLObject, Long> {
+public class SitePersistence extends BasePersistenceImpl<Site, Long> {
 
-	public SyncDLObjectPersistence() throws SQLException {
-		super(SyncDLObject.class);
+	public SitePersistence() throws SQLException {
+		super(Site.class);
+	}
+
+	public Site fetchSite(long accountId, long groupId) throws SQLException {
+		Map<String, Object> fieldValues = new HashMap<String, Object>();
+
+		fieldValues.put("accountId", accountId);
+		fieldValues.put("groupId", groupId);
+
+		List<Site> sites = queryForFieldValues(fieldValues);
+
+		if ((sites == null) || sites.isEmpty()) {
+			return null;
+		}
+
+		return sites.get(0);
 	}
 
 }
