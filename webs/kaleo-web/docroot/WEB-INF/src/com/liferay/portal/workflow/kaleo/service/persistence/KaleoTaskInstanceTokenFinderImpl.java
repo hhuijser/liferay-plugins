@@ -282,7 +282,7 @@ public class KaleoTaskInstanceTokenFinderImpl
 				sb.toString());
 		}
 
-		SQLQuery q = session.createSynchronizedSQLQuery(sql);
+		SQLQuery q = session.createSQLQuery(sql);
 
 		if (count) {
 			q.addScalar(COUNT_COLUMN_NAME, Type.LONG);

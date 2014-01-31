@@ -80,7 +80,7 @@ public class SyncDLObjectFinderImpl
 
 			sql = sb.toString();
 
-			SQLQuery q = session.createSynchronizedSQLQuery(sql);
+			SQLQuery q = session.createSQLQuery(sql);
 
 			q.addEntity("SyncDLObject", SyncDLObjectImpl.class);
 
