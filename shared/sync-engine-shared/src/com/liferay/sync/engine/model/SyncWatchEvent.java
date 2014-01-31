@@ -40,12 +40,16 @@ public class SyncWatchEvent {
 	public static final String OVERFLOW =
 		StandardWatchEventKinds.OVERFLOW.name();
 
-	public String getFilePath() {
-		return filePath;
+	public String getFilePathName() {
+		return filePathName;
 	}
 
-	public String getKind() {
-		return kind;
+	public String getFileType() {
+		return fileType;
+	}
+
+	public String getKindName() {
+		return kindName;
 	}
 
 	public long getSyncAccountId() {
@@ -60,12 +64,16 @@ public class SyncWatchEvent {
 		return timestamp;
 	}
 
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
+	public void setFilePathName(String filePathName) {
+		this.filePathName = filePathName;
 	}
 
-	public void setKind(String kind) {
-		this.kind = kind;
+	public void setFileType(String fileType) {
+		this.fileType = fileType;
+	}
+
+	public void setKindName(String kindName) {
+		this.kindName = kindName;
 	}
 
 	public void setSyncAccountId(long syncAccountId) {
@@ -81,10 +89,13 @@ public class SyncWatchEvent {
 	}
 
 	@DatabaseField(useGetSet = true, width = 16777216)
-	protected String filePath;
+	protected String filePathName;
 
 	@DatabaseField(useGetSet = true)
-	protected String kind;
+	protected String fileType;
+
+	@DatabaseField(useGetSet = true)
+	protected String kindName;
 
 	@DatabaseField(useGetSet = true)
 	protected long syncAccountId;
