@@ -60,8 +60,12 @@ public class SyncFile {
 		return extraSettings;
 	}
 
-	public String getFilePath() {
-		return filePath;
+	public String getFileKey() {
+		return fileKey;
+	}
+
+	public String getFilePathName() {
+		return filePathName;
 	}
 
 	public long getLockExpirationDate() {
@@ -152,8 +156,12 @@ public class SyncFile {
 		this.extraSettings = extraSettings;
 	}
 
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
+	public void setFileKey(String fileKey) {
+		this.fileKey = fileKey;
+	}
+
+	public void setFilePathName(String filePathName) {
+		this.filePathName = filePathName;
 	}
 
 	public void setLockExpirationDate(long lockExpirationDate) {
@@ -237,8 +245,11 @@ public class SyncFile {
 	@DatabaseField(useGetSet = true, width = 16777216)
 	protected String extraSettings;
 
+	@DatabaseField(useGetSet = true)
+	protected String fileKey;
+
 	@DatabaseField(useGetSet = true, width = 16777216)
-	protected String filePath;
+	protected String filePathName;
 
 	@DatabaseField(useGetSet = true)
 	protected long lockExpirationDate;
