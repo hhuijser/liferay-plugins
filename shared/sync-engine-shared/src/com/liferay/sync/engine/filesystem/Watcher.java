@@ -50,15 +50,14 @@ public class Watcher implements Runnable {
 			WatchEventListener watchEventListener)
 		throws IOException {
 
+		_recursive = recursive;
+		_watchEventListener = watchEventListener;
+
 		FileSystem fileSystem = FileSystems.getDefault();
 
 		_watchService = fileSystem.newWatchService();
 
-		_recursive = recursive;
-
 		register(filePath, recursive);
-
-		_watchEventListener = watchEventListener;
 	}
 
 	public void close() throws IOException {
@@ -77,7 +76,7 @@ public class Watcher implements Runnable {
 			try {
 				watchKey = _watchService.take();
 			}
-			catch (InterruptedException ie) {
+			catch (Exception e) {
 				return;
 			}
 
@@ -124,7 +123,8 @@ public class Watcher implements Runnable {
 					_logger.trace("Unregistered file path {}", filePath);
 				}
 
-				fireWatchEventListener(filePath, SyncWatchEvent.ENTRY_DELETE);
+				fireWatchEventListener(
+					SyncWatchEvent.EVENT_TYPE_DELETE, filePath);
 
 				if (_filePaths.isEmpty()) {
 					break;
@@ -133,16 +133,16 @@ public class Watcher implements Runnable {
 		}
 	}
 
-	protected void fireWatchEventListener(Path filePath, String kindName) {
-		_watchEventListener.watchEvent(filePath, kindName);
-	}
-
 	protected void fireWatchEventListener(
 		Path filePath, WatchEvent<Path> watchEvent) {
 
 		WatchEvent.Kind<?> kind = watchEvent.kind();
 
-		fireWatchEventListener(filePath, kind.name());
+		fireWatchEventListener(kind.name(), filePath);
+	}
+
+	protected void fireWatchEventListener(String eventType, Path filePath) {
+		_watchEventListener.watchEvent(eventType, filePath);
 	}
 
 	protected void register(Path filePath, boolean recursive)
@@ -175,7 +175,7 @@ public class Watcher implements Runnable {
 
 			_filePaths.put(watchKey, filePath);
 
-			fireWatchEventListener(filePath, SyncWatchEvent.ENTRY_CREATE);
+			fireWatchEventListener(SyncWatchEvent.EVENT_TYPE_CREATE, filePath);
 
 			if (_logger.isTraceEnabled()) {
 				_logger.trace("Registered file path {}", filePath);
