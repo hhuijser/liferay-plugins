@@ -15,6 +15,7 @@
 package com.liferay.portal.workflow.kaleo.parser;
 
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.workflow.WorkflowDefinitionFileException;
 import com.liferay.portal.kernel.workflow.WorkflowException;
 import com.liferay.portal.workflow.kaleo.definition.Definition;
 import com.liferay.portal.workflow.kaleo.definition.Fork;
@@ -41,12 +42,12 @@ public class ForkNodeValidator extends BaseNodeValidator<Fork> {
 		throws WorkflowException {
 
 		if (fork.getIncomingTransitionsCount() == 0) {
-			throw new WorkflowException(
+			throw new WorkflowDefinitionFileException(
 				"No incoming transition found for fork " + fork.getName());
 		}
 
 		if (fork.getOutgoingTransitionsCount() < 2) {
-			throw new WorkflowException(
+			throw new WorkflowDefinitionFileException(
 				"Less than 2 outgoing transitions found for fork " +
 					fork.getName());
 		}
@@ -114,7 +115,7 @@ public class ForkNodeValidator extends BaseNodeValidator<Fork> {
 		if ((sourceNodes.size() != targetNodes.size()) ||
 			!sourceNodes.containsAll(targetNodes)) {
 
-			throw new WorkflowException(
+			throw new WorkflowDefinitionFileException(
 				"There are errors between fork " + fork.getName() +
 					" and join " + join.getName());
 		}
@@ -155,7 +156,7 @@ public class ForkNodeValidator extends BaseNodeValidator<Fork> {
 					join = (Join)targetNode;
 				}
 				else if (!Validator.equals(join, targetNode)) {
-					throw new WorkflowException(
+					throw new WorkflowDefinitionFileException(
 						"Fork " + fork.getName() + " and join " +
 							targetNode.getName() + " are not paired");
 				}
@@ -169,7 +170,7 @@ public class ForkNodeValidator extends BaseNodeValidator<Fork> {
 		}
 
 		if (join == null) {
-			throw new WorkflowException(
+			throw new WorkflowDefinitionFileException(
 				"No matching join found for fork " + fork.getName());
 		}
 

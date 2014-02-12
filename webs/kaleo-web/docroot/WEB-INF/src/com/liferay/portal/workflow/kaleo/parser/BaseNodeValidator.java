@@ -14,6 +14,7 @@
 
 package com.liferay.portal.workflow.kaleo.parser;
 
+import com.liferay.portal.kernel.workflow.WorkflowDefinitionFileException;
 import com.liferay.portal.kernel.workflow.WorkflowException;
 import com.liferay.portal.workflow.kaleo.definition.Definition;
 import com.liferay.portal.workflow.kaleo.definition.Node;
@@ -43,7 +44,7 @@ public abstract class BaseNodeValidator<T extends Node>
 		throws WorkflowException {
 
 		if (transition.getTargetNode() == null) {
-			throw new WorkflowException(
+			throw new WorkflowDefinitionFileException(
 				"Unable to find target node for transition " +
 					transition.getName());
 		}

@@ -17,7 +17,7 @@ package com.liferay.portal.workflow.kaleo.deployment;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.workflow.WorkflowDefinition;
-import com.liferay.portal.kernel.workflow.WorkflowException;
+import com.liferay.portal.kernel.workflow.WorkflowDefinitionFileException;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.workflow.kaleo.NoSuchDefinitionException;
 import com.liferay.portal.workflow.kaleo.definition.Condition;
@@ -103,7 +103,7 @@ public class DefaultWorkflowDeployer implements WorkflowDeployer {
 					transition.getSourceNode().getName());
 
 				if (sourceKaleoNode == null) {
-					throw new WorkflowException(
+					throw new WorkflowDefinitionFileException(
 						"Unable to find source node " +
 							transition.getSourceNode());
 				}
@@ -112,7 +112,7 @@ public class DefaultWorkflowDeployer implements WorkflowDeployer {
 					transition.getTargetNode().getName());
 
 				if (targetKaleoNode == null) {
-					throw new WorkflowException(
+					throw new WorkflowDefinitionFileException(
 						"Unable to find target node " +
 							transition.getTargetNode());
 				}
@@ -127,7 +127,8 @@ public class DefaultWorkflowDeployer implements WorkflowDeployer {
 		State initialState = definition.getInitialState();
 
 		if (initialState == null) {
-			throw new WorkflowException("No initial state found in definition");
+			throw new WorkflowDefinitionFileException(
+				"No initial state found in definition");
 		}
 
 		String startKaleoNodeName = initialState.getName();

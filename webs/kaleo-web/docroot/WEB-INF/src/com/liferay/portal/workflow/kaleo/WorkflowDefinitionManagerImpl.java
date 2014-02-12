@@ -14,6 +14,8 @@
 
 package com.liferay.portal.workflow.kaleo;
 
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayInputStream;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.workflow.WorkflowDefinition;
@@ -39,7 +41,7 @@ public class WorkflowDefinitionManagerImpl
 	@Override
 	public WorkflowDefinition deployWorkflowDefinition(
 			long companyId, long userId, String title, byte[] bytes)
-		throws WorkflowException {
+		throws PortalException, SystemException {
 
 		ServiceContext serviceContext = new ServiceContext();
 

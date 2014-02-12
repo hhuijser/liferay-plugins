@@ -14,6 +14,7 @@
 
 package com.liferay.portal.workflow.kaleo.parser;
 
+import com.liferay.portal.kernel.workflow.WorkflowDefinitionFileException;
 import com.liferay.portal.kernel.workflow.WorkflowException;
 import com.liferay.portal.workflow.kaleo.definition.Definition;
 import com.liferay.portal.workflow.kaleo.definition.Join;
@@ -29,12 +30,12 @@ public class JoinNodeValidator extends BaseNodeValidator<Join> {
 		throws WorkflowException {
 
 		if (join.getIncomingTransitionsCount() == 0) {
-			throw new WorkflowException(
+			throw new WorkflowDefinitionFileException(
 				"No incoming transition found for join " + join.getName());
 		}
 
 		if (join.getOutgoingTransitionsCount() == 0) {
-			throw new WorkflowException(
+			throw new WorkflowDefinitionFileException(
 				"No outgoing transition found for join " + join.getName());
 		}
 	}

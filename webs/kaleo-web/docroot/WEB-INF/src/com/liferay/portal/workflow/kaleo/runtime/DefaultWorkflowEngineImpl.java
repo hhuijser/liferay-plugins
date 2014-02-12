@@ -93,23 +93,18 @@ public class DefaultWorkflowEngineImpl
 	public WorkflowDefinition deployWorkflowDefinition(
 			String title, InputStream inputStream,
 			ServiceContext serviceContext)
-		throws WorkflowException {
+		throws PortalException, SystemException {
 
-		try {
-			Definition definition = _workflowModelParser.parse(inputStream);
+		Definition definition = _workflowModelParser.parse(inputStream);
 
-			if (_workflowValidator != null) {
-				_workflowValidator.validate(definition);
-			}
-
-			WorkflowDefinition workflowDefinition = _workflowDeployer.deploy(
-				title, definition, serviceContext);
-
-			return workflowDefinition;
+		if (_workflowValidator != null) {
+			_workflowValidator.validate(definition);
 		}
-		catch (Exception e) {
-			throw new WorkflowException(e);
-		}
+
+		WorkflowDefinition workflowDefinition = _workflowDeployer.deploy(
+			title, definition, serviceContext);
+
+		return workflowDefinition;
 	}
 
 	@Override
@@ -505,15 +500,10 @@ public class DefaultWorkflowEngineImpl
 	public void validateWorkflowDefinition(InputStream inputStream)
 		throws WorkflowException {
 
-		try {
-			Definition definition = _workflowModelParser.parse(inputStream);
+		Definition definition = _workflowModelParser.parse(inputStream);
 
-			if (_workflowValidator != null) {
-				_workflowValidator.validate(definition);
-			}
-		}
-		catch (Exception e) {
-			throw new WorkflowException(e);
+		if (_workflowValidator != null) {
+			_workflowValidator.validate(definition);
 		}
 	}
 

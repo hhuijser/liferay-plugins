@@ -14,6 +14,8 @@
 
 package com.liferay.portal.workflow.kaleo.runtime;
 
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.workflow.WorkflowDefinition;
 import com.liferay.portal.kernel.workflow.WorkflowException;
@@ -43,7 +45,7 @@ public interface WorkflowEngine {
 	public WorkflowDefinition deployWorkflowDefinition(
 			String title, InputStream inputStream,
 			ServiceContext serviceContext)
-		throws WorkflowException;
+		throws PortalException, SystemException;
 
 	public ExecutionContext executeTimerWorkflowInstance(
 			long kaleoTimerInstanceTokenId, ServiceContext serviceContext,

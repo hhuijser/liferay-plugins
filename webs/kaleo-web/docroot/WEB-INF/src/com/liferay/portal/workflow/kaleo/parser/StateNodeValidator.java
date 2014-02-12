@@ -15,6 +15,7 @@
 package com.liferay.portal.workflow.kaleo.parser;
 
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.workflow.WorkflowDefinitionFileException;
 import com.liferay.portal.kernel.workflow.WorkflowException;
 import com.liferay.portal.workflow.kaleo.definition.Definition;
 import com.liferay.portal.workflow.kaleo.definition.State;
@@ -33,7 +34,7 @@ public class StateNodeValidator extends BaseNodeValidator<State> {
 			validateInitialState(definition, state);
 		}
 		else if (state.getIncomingTransitionsCount() == 0) {
-			throw new WorkflowException(
+			throw new WorkflowDefinitionFileException(
 				"No incoming transition found for state " + state.getName());
 		}
 	}
@@ -44,19 +45,19 @@ public class StateNodeValidator extends BaseNodeValidator<State> {
 		State initialState = definition.getInitialState();
 
 		if (!Validator.equals(initialState, state)) {
-			throw new WorkflowException(
+			throw new WorkflowDefinitionFileException(
 				"Multiple initial states " + state.getName() + " and " +
 					initialState.getName());
 		}
 
 		if (state.getIncomingTransitionsCount() > 0) {
-			throw new WorkflowException(
+			throw new WorkflowDefinitionFileException(
 				"An incoming transition was found for initial state " +
 					state.getName());
 		}
 
 		if (state.getOutgoingTransitionsCount() == 0) {
-			throw new WorkflowException(
+			throw new WorkflowDefinitionFileException(
 				"No outgoing transition found for initial state " +
 					state.getName());
 		}

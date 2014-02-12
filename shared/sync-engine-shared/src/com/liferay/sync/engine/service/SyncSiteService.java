@@ -14,8 +14,13 @@
 
 package com.liferay.sync.engine.service;
 
+import com.liferay.sync.engine.model.SyncFile;
 import com.liferay.sync.engine.model.SyncSite;
 import com.liferay.sync.engine.service.persistence.SyncSitePersistence;
+import com.liferay.sync.engine.util.FileUtil;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import java.sql.SQLException;
 
@@ -31,16 +36,29 @@ import org.slf4j.LoggerFactory;
 public class SyncSiteService {
 
 	public static SyncSite addSyncSite(
-			String filePath, long groupId, long syncAccountId)
+			String filePathName, long groupId, long syncAccountId)
 		throws Exception {
+
+		// Sync site
 
 		SyncSite syncSite = new SyncSite();
 
-		syncSite.setFilePath(filePath);
+		syncSite.setFilePathName(filePathName);
 		syncSite.setGroupId(groupId);
 		syncSite.setSyncAccountId(syncAccountId);
 
 		_syncSitePersistence.create(syncSite);
+
+		// Sync file
+
+		if (Files.notExists(Paths.get(filePathName))) {
+			Files.createDirectory(Paths.get(filePathName));
+		}
+
+		SyncFileService.addSyncFile(
+			null, null, filePathName, FileUtil.getFileKey(filePathName),
+			filePathName, null, filePathName, 0, groupId,
+			syncSite.getSyncAccountId(), SyncFile.TYPE_FOLDER);
 
 		return syncSite;
 	}
@@ -58,7 +76,22 @@ public class SyncSiteService {
 
 	public static SyncSite fetchSyncSite(long groupId, long syncAccountId) {
 		try {
-			return _syncSitePersistence.fetchSyncSite(groupId, syncAccountId);
+			return _syncSitePersistence.fetchByG_S(groupId, syncAccountId);
+		}
+		catch (SQLException sqle) {
+			if (_logger.isDebugEnabled()) {
+				_logger.debug(sqle.getMessage(), sqle);
+			}
+
+			return null;
+		}
+	}
+
+	public static SyncSite fetchSyncSite(
+		String filePathName, long syncAccountId) {
+
+		try {
+			return _syncSitePersistence.fetchByF_S(filePathName, syncAccountId);
 		}
 		catch (SQLException sqle) {
 			if (_logger.isDebugEnabled()) {
@@ -71,7 +104,7 @@ public class SyncSiteService {
 
 	public static List<SyncSite> findSyncSites(long syncAccountId) {
 		try {
-			return _syncSitePersistence.findSyncSites(syncAccountId);
+			return _syncSitePersistence.findBySyncAccountId(syncAccountId);
 		}
 		catch (SQLException sqle) {
 			if (_logger.isDebugEnabled()) {

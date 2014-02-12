@@ -14,6 +14,7 @@
 
 package com.liferay.portal.workflow.kaleo.parser;
 
+import com.liferay.portal.kernel.workflow.WorkflowDefinitionFileException;
 import com.liferay.portal.kernel.workflow.WorkflowException;
 import com.liferay.portal.workflow.kaleo.definition.Assignment;
 import com.liferay.portal.workflow.kaleo.definition.Definition;
@@ -32,19 +33,19 @@ public class TaskNodeValidator extends BaseNodeValidator<Task> {
 		throws WorkflowException {
 
 		if (task.getIncomingTransitionsCount() == 0) {
-			throw new WorkflowException(
+			throw new WorkflowDefinitionFileException(
 				"No incoming transition found for task " + task.getName());
 		}
 
 		if (task.getOutgoingTransitionsCount() == 0) {
-			throw new WorkflowException(
+			throw new WorkflowDefinitionFileException(
 				"No outgoing transition found for task " + task.getName());
 		}
 
 		Set<Assignment> assignments = task.getAssignments();
 
 		if ((assignments == null) || assignments.isEmpty()) {
-			throw new WorkflowException(
+			throw new WorkflowDefinitionFileException(
 				"No assignments for task " + task.getName());
 		}
 	}
