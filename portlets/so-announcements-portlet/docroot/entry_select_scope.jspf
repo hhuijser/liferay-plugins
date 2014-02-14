@@ -31,7 +31,7 @@
 
 			<%
 			for (Group curGroup : groups) {
-				if ((curGroup.isOrganization() || (curGroup.isRegularSite() && curGroup.isSite())) && GroupPermissionUtil.contains(permissionChecker, curGroup.getGroupId(), ActionKeys.MANAGE_ANNOUNCEMENTS)) {
+				if (((curGroup.isOrganization() && curGroup.isSite()) || curGroup.isRegularSite()) && GroupPermissionUtil.contains(permissionChecker, curGroup.getGroupId(), ActionKeys.MANAGE_ANNOUNCEMENTS)) {
 			%>
 
 					<aui:option label="<%= HtmlUtil.escape(curGroup.getDescriptiveName(locale)) %>" selected="<%= classPK == curGroup.getGroupId() %>" value="<%= PortalUtil.getClassNameId(Group.class) + StringPool.COMMA + curGroup.getGroupId() %>" />
@@ -82,14 +82,14 @@
 						continue;
 					}
 				}
-
-				if (RolePermissionUtil.contains(permissionChecker, role.getRoleId(), ActionKeys.MANAGE_ANNOUNCEMENTS)) {
+				else if (!RolePermissionUtil.contains(permissionChecker, role.getRoleId(), ActionKeys.MANAGE_ANNOUNCEMENTS)) {
+					continue;
+				}
 			%>
 
-					<aui:option label="<%= HtmlUtil.escape(role.getTitle(locale)) %>" selected="<%= classPK == role.getRoleId() %>" value="<%= PortalUtil.getClassNameId(Role.class) + StringPool.COMMA + role.getRoleId() %>" />
+				<aui:option label="<%= HtmlUtil.escape(role.getTitle(locale)) %>" selected="<%= classPK == role.getRoleId() %>" value="<%= PortalUtil.getClassNameId(Role.class) + StringPool.COMMA + role.getRoleId() %>" />
 
 			<%
-				}
 			}
 			%>
 

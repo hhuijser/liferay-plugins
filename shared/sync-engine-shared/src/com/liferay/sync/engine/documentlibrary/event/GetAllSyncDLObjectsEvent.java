@@ -20,8 +20,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.liferay.sync.engine.documentlibrary.model.SyncDLObjectUpdate;
 import com.liferay.sync.engine.model.SyncFile;
 import com.liferay.sync.engine.service.SyncFileService;
-import com.liferay.sync.engine.util.FilePathUtil;
+import com.liferay.sync.engine.util.FilePathNameUtil;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -44,24 +49,41 @@ public class GetAllSyncDLObjectsEvent extends BaseEvent {
 
 		for (SyncFile syncFile : syncDLObjectUpdate.getSyncDLObjects()) {
 			SyncFile parentSyncFile = SyncFileService.fetchSyncFile(
-				syncFile.getParentFolderId(), syncFile.getRepositoryId(),
-				getSyncAccountId());
+				syncFile.getRepositoryId(), getSyncAccountId(),
+				syncFile.getParentFolderId());
 
-			String filePath = null;
+			String filePathName = null;
 
 			if (parentSyncFile != null) {
-				filePath = FilePathUtil.getFilePath(
-					parentSyncFile.getFilePath(), syncFile.getName());
+				filePathName = FilePathNameUtil.getFilePathName(
+					parentSyncFile.getFilePathName(), syncFile.getName());
 			}
 
-			syncFile.setFilePath(filePath);
+			syncFile.setFilePathName(filePathName);
 
 			syncFile.setSyncAccountId(getSyncAccountId());
 
 			SyncFileService.update(syncFile);
 
+			String type = syncFile.getType();
+
+			if (type.equals(SyncFile.TYPE_FOLDER)) {
+				Path filePath = Paths.get(filePathName);
+
+				if (Files.notExists(filePath)) {
+					Files.createDirectory(filePath);
+				}
+
+				continue;
+			}
+
+			Map<String, Object> parameters = new HashMap<String, Object>();
+
+			parameters.put("patch", false);
+			parameters.put("syncFile", syncFile);
+
 			DownloadFileEvent downloadFileEvent = new DownloadFileEvent(
-				getSyncAccountId(), syncFile, false);
+				getSyncAccountId(), parameters);
 
 			downloadFileEvent.run();
 		}
