@@ -25,8 +25,12 @@ import com.liferay.sync.engine.service.persistence.BasePersistenceImpl;
 @DatabaseTable(daoClass = BasePersistenceImpl.class, tableName = "SyncAccount")
 public class SyncAccount {
 
-	public String getFilePath() {
-		return filePath;
+	public String getFilePathName() {
+		return filePathName;
+	}
+
+	public int getInterval() {
+		return interval;
 	}
 
 	public String getLogin() {
@@ -45,8 +49,12 @@ public class SyncAccount {
 		return url;
 	}
 
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
+	public void setFilePathName(String filePathName) {
+		this.filePathName = filePathName;
+	}
+
+	public void setInterval(int interval) {
+		this.interval = interval;
 	}
 
 	public void setLogin(String login) {
@@ -66,7 +74,10 @@ public class SyncAccount {
 	}
 
 	@DatabaseField(useGetSet = true, width = 16777216)
-	protected String filePath;
+	protected String filePathName;
+
+	@DatabaseField(useGetSet = true)
+	protected int interval;
 
 	@DatabaseField(useGetSet = true, width = 16777216)
 	protected String login;

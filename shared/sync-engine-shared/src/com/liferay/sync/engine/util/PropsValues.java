@@ -25,7 +25,13 @@ public class PropsValues {
 	public static String SYNC_DATABASE_NAME = PropsUtil.get(
 		PropsKeys.SYNC_DATABASE_NAME);
 
+	public static String[] SYNC_IGNORE_FILE_NAMES = PropsUtil.get(
+		PropsKeys.SYNC_IGNORE_FILE_NAMES).split(",");
+
 	public static String SYNC_LOGGER_CONFIGURATION_FILE = PropsUtil.get(
 		PropsKeys.SYNC_LOGGER_CONFIGURATION_FILE);
+
+	public static String SYNC_PRODUCT_NAME = PropsUtil.get(
+		PropsKeys.SYNC_PRODUCT_NAME);
 
 }
