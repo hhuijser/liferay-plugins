@@ -14,57 +14,17 @@
 
 package com.liferay.sync.engine.documentlibrary.event;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import com.liferay.sync.engine.documentlibrary.model.SyncDLObjectUpdate;
-import com.liferay.sync.engine.model.SyncFile;
-import com.liferay.sync.engine.service.SyncFileService;
-import com.liferay.sync.engine.util.FilePathUtil;
-
 import java.util.Map;
 
 /**
  * @author Shinn Lok
  */
-public class GetAllSyncDLObjectsEvent extends BaseEvent {
+public class GetAllSyncDLObjectsEvent extends BaseSyncDLObjectUpdateEvent {
 
 	public GetAllSyncDLObjectsEvent(
 		long syncAccountId, Map<String, Object> parameters) {
 
 		super(syncAccountId, _URL_PATH, parameters);
-	}
-
-	@Override
-	protected void processResponse(String response) throws Exception {
-		ObjectMapper objectMapper = new ObjectMapper();
-
-		SyncDLObjectUpdate syncDLObjectUpdate = objectMapper.readValue(
-			response, new TypeReference<SyncDLObjectUpdate>() {});
-
-		for (SyncFile syncFile : syncDLObjectUpdate.getSyncDLObjects()) {
-			SyncFile parentSyncFile = SyncFileService.fetchSyncFile(
-				syncFile.getParentFolderId(), syncFile.getRepositoryId(),
-				getSyncAccountId());
-
-			String filePath = null;
-
-			if (parentSyncFile != null) {
-				filePath = FilePathUtil.getFilePath(
-					parentSyncFile.getFilePath(), syncFile.getName());
-			}
-
-			syncFile.setFilePath(filePath);
-
-			syncFile.setSyncAccountId(getSyncAccountId());
-
-			SyncFileService.update(syncFile);
-
-			DownloadFileEvent downloadFileEvent = new DownloadFileEvent(
-				getSyncAccountId(), syncFile, false);
-
-			downloadFileEvent.run();
-		}
 	}
 
 	private static final String _URL_PATH =

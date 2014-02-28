@@ -26,7 +26,11 @@ import com.liferay.sync.engine.service.persistence.BasePersistenceImpl;
  */
 @DatabaseTable(daoClass = BasePersistenceImpl.class, tableName = "SyncSite")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SyncSite {
+public class SyncSite extends StateAwareModel {
+
+	public static final int STATE_CONNECTED = 1;
+
+	public static final int STATE_DISCONNECTED = 0;
 
 	public long getCompanyId() {
 		return companyId;
@@ -40,8 +44,8 @@ public class SyncSite {
 		return enabled;
 	}
 
-	public String getFilePath() {
-		return filePath;
+	public String getFilePathName() {
+		return filePathName;
 	}
 
 	public String getFriendlyURL() {
@@ -92,8 +96,8 @@ public class SyncSite {
 		this.enabled = enabled;
 	}
 
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
+	public void setFilePathName(String filePathName) {
+		this.filePathName = filePathName;
 	}
 
 	public void setFriendlyURL(String friendlyURL) {
@@ -142,7 +146,7 @@ public class SyncSite {
 	protected boolean enabled;
 
 	@DatabaseField(useGetSet = true, width = 16777216)
-	protected String filePath;
+	protected String filePathName;
 
 	@DatabaseField(useGetSet = true)
 	protected String friendlyURL;

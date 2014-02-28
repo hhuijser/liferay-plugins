@@ -15,16 +15,18 @@
 package com.liferay.sync.engine.documentlibrary.event;
 
 import com.liferay.sync.engine.BaseTestCase;
-import com.liferay.sync.engine.model.SyncAccount;
 import com.liferay.sync.engine.model.SyncFile;
-import com.liferay.sync.engine.service.SyncAccountService;
+import com.liferay.sync.engine.model.SyncSite;
 import com.liferay.sync.engine.service.SyncFileService;
+import com.liferay.sync.engine.service.SyncSiteService;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
+import java.util.HashMap;
 import java.util.List;
-
-import org.apache.commons.io.FileUtils;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -45,25 +47,17 @@ public class GetAllSyncDLObjectsEventTest extends BaseTestCase {
 	public void setUp() throws Exception {
 		super.setUp();
 
-		_filePath = System.getProperty("user.home") + "/liferay-sync-test";
-
-		_syncAccount = SyncAccountService.addSyncAccount(
-			_filePath, "test@liferay.com", "test",
-			"http://localhost:8080/api/jsonws");
-
-		_filePathSyncFile = SyncFileService.addSyncFile(
-			_syncAccount.getFilePath(), "test", 0, 0,
-			_syncAccount.getSyncAccountId(), SyncFile.TYPE_FOLDER, 0);
+		_syncSite = SyncSiteService.addSyncSite(
+			10158, filePathName + "/test-site", 10185,
+			syncAccount.getSyncAccountId());
 	}
 
 	@After
+	@Override
 	public void tearDown() throws Exception {
-		File file = new File(_filePath);
+		super.tearDown();
 
-		FileUtils.deleteDirectory(file);
-
-		SyncAccountService.deleteSyncAccount(_syncAccount.getSyncAccountId());
-		SyncFileService.deleteSyncFile(_filePathSyncFile.getSyncFileId());
+		SyncSiteService.deleteSyncSite(_syncSite.getSyncSiteId());
 
 		for (SyncFile syncFile : _syncFiles) {
 			SyncFileService.deleteSyncFile(syncFile.getSyncFileId());
@@ -72,26 +66,31 @@ public class GetAllSyncDLObjectsEventTest extends BaseTestCase {
 
 	@Test
 	public void testRun() throws Exception {
-		setMockPostResponse("dependencies/get_all_sync_dl_objects.json");
+		setGetResponse("dependencies/get_all_sync_dl_objects.json");
+		setPostResponse("dependencies/get_all_sync_dl_objects.json");
+
+		Map<String, Object> parameters = new HashMap<String, Object>();
+
+		parameters.put("folderId", 0);
+		parameters.put("repositoryId", _syncSite.getGroupId());
 
 		GetAllSyncDLObjectsEvent getAllSyncDLObjectsEvent =
-			new GetAllSyncDLObjectsEvent(_syncAccount.getSyncAccountId(), null);
+			new GetAllSyncDLObjectsEvent(
+				syncAccount.getSyncAccountId(), parameters);
 
 		getAllSyncDLObjectsEvent.run();
 
 		_syncFiles = SyncFileService.findSyncFiles(
-			_syncAccount.getSyncAccountId());
+			syncAccount.getSyncAccountId());
 
-		Assert.assertEquals(_syncFiles.size(), 2);
+		Assert.assertEquals(3, _syncFiles.size());
 
-		File file = new File(_filePath + "/Document_1.txt");
+		Path filePath = Paths.get(_syncSite.getFilePathName() + "/test.txt");
 
-		Assert.assertTrue(file.exists());
+		Assert.assertTrue(Files.exists(filePath));
 	}
 
-	private String _filePath;
-	private SyncFile _filePathSyncFile;
-	private SyncAccount _syncAccount;
 	private List<SyncFile> _syncFiles;
+	private SyncSite _syncSite;
 
 }
