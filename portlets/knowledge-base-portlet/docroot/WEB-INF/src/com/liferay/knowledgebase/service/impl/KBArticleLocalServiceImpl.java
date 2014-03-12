@@ -49,6 +49,7 @@ import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.search.SearchEngineUtil;
+import com.liferay.portal.kernel.systemevent.SystemEventHierarchyEntryThreadLocal;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.FileUtil;
@@ -80,10 +81,10 @@ import com.liferay.portlet.documentlibrary.FileNameException;
 import com.liferay.portlet.documentlibrary.NoSuchDirectoryException;
 import com.liferay.portlet.documentlibrary.store.DLStoreUtil;
 
+import java.io.File;
 import java.io.InputStream;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -276,7 +277,7 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 			new KBArticlePriorityComparator());
 
 		for (KBArticle kbArticle : kbArticles) {
-			deleteKBArticle(kbArticle);
+			kbArticleLocalService.deleteKBArticle(kbArticle);
 		}
 
 		// Subscriptions
@@ -304,7 +305,7 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 			new KBArticlePriorityComparator());
 
 		for (KBArticle siblingKBArticle : siblingKBArticles) {
-			deleteKBArticle(siblingKBArticle);
+			kbArticleLocalService.deleteKBArticle(siblingKBArticle);
 		}
 
 		// Resources
@@ -367,7 +368,7 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 		KBArticle kbArticle = getLatestKBArticle(
 			resourcePrimKey, WorkflowConstants.STATUS_ANY);
 
-		return deleteKBArticle(kbArticle);
+		return kbArticleLocalService.deleteKBArticle(kbArticle);
 	}
 
 	public void deleteKBArticles(long[] resourcePrimKeys)
@@ -377,8 +378,21 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 			resourcePrimKeys, WorkflowConstants.STATUS_ANY, null);
 
 		for (KBArticle kbArticle : kbArticles) {
-			deleteKBArticle(kbArticle);
+			kbArticleLocalService.deleteKBArticle(kbArticle);
 		}
+	}
+
+	@Override
+	public KBArticle fetchLatestKBArticle(long resourcePrimKey, int status)
+		throws PortalException, SystemException {
+
+		if (status == WorkflowConstants.STATUS_ANY) {
+			return kbArticlePersistence.fetchByResourcePrimKey_First(
+				resourcePrimKey, new KBArticleVersionComparator());
+		}
+
+		return kbArticlePersistence.fetchByR_S_First(
+			resourcePrimKey, status, new KBArticleVersionComparator());
 	}
 
 	public List<KBArticle> getCompanyKBArticles(
@@ -811,6 +825,7 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 
 			kbArticle = kbArticlePersistence.create(kbArticleId);
 
+			kbArticle.setUuid(serviceContext.getUuid());
 			kbArticle.setResourcePrimKey(oldKBArticle.getResourcePrimKey());
 			kbArticle.setGroupId(oldKBArticle.getGroupId());
 			kbArticle.setCompanyId(user.getCompanyId());
@@ -998,8 +1013,15 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 			userId, kbArticle, assetEntry.getCategoryIds(),
 			assetEntry.getTagNames());
 
-		assetEntryLocalService.deleteEntry(
-			KBArticle.class.getName(), kbArticle.getKbArticleId());
+		SystemEventHierarchyEntryThreadLocal.push(KBArticle.class);
+
+		try {
+			assetEntryLocalService.deleteEntry(
+				KBArticle.class.getName(), kbArticle.getKbArticleId());
+		}
+		finally {
+			SystemEventHierarchyEntryThreadLocal.pop(KBArticle.class);
+		}
 
 		assetEntryLocalService.updateVisible(
 			KBArticle.class.getName(), kbArticle.getResourcePrimKey(), true);
@@ -1226,23 +1248,46 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 	protected void checkAttachments(long companyId)
 		throws PortalException, SystemException {
 
-		String dirName = _TEMP_DIR_NAME_PREFIX.concat(StringPool.SLASH).concat(
-			String.valueOf(counterLocalService.increment()));
+		if (!DLStoreUtil.hasDirectory(
+				companyId, CompanyConstants.SYSTEM, _TEMP_DIR_NAME_PREFIX)) {
 
-		DLStoreUtil.addDirectory(companyId, CompanyConstants.SYSTEM, dirName);
-
-		String[] fileNames = DLStoreUtil.getFileNames(
-			companyId, CompanyConstants.SYSTEM, _TEMP_DIR_NAME_PREFIX);
-
-		Arrays.sort(fileNames);
-
-		for (int i = 0; i < fileNames.length - 50; i++) {
-			DLStoreUtil.deleteDirectory(
-				companyId, CompanyConstants.SYSTEM, fileNames[i]);
+			return;
 		}
 
-		DLStoreUtil.deleteDirectory(
-			companyId, CompanyConstants.SYSTEM, dirName);
+		Date now = new Date();
+
+		String[] dirNames = DLStoreUtil.getFileNames(
+			companyId, CompanyConstants.SYSTEM, _TEMP_DIR_NAME_PREFIX);
+
+		for (String dirName : dirNames) {
+			String[] fileNames = DLStoreUtil.getFileNames(
+				companyId, CompanyConstants.SYSTEM, dirName);
+
+			File file = null;
+
+			for (String fileName : fileNames) {
+				try {
+					file = DLStoreUtil.getFile(
+						companyId, CompanyConstants.SYSTEM, fileName);
+				}
+				catch (Exception e) {
+					if (_log.isWarnEnabled()) {
+						_log.warn("Unable to get temp file: " + e.getMessage());
+					}
+				}
+
+				if (file != null) {
+					break;
+				}
+			}
+
+			if ((file != null) &&
+				(now.getTime() - file.lastModified()) > Time.DAY) {
+
+				DLStoreUtil.deleteDirectory(
+					companyId, CompanyConstants.SYSTEM, dirName);
+			}
+		}
 	}
 
 	protected void deleteAssets(KBArticle kbArticle)
