@@ -50,6 +50,8 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
+import com.liferay.portlet.asset.AssetCategoryException;
+import com.liferay.portlet.asset.AssetTagException;
 import com.liferay.portlet.documentlibrary.DuplicateFileException;
 import com.liferay.portlet.documentlibrary.FileNameException;
 import com.liferay.portlet.documentlibrary.FileSizeException;
@@ -373,64 +375,77 @@ public class AdminPortlet extends MVCPortlet {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
+		try {
+			ThemeDisplay themeDisplay =
+				(ThemeDisplay)actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
-		String portletId = PortalUtil.getPortletId(actionRequest);
+			String portletId = PortalUtil.getPortletId(actionRequest);
 
-		String cmd = ParamUtil.getString(actionRequest, Constants.CMD);
+			String cmd = ParamUtil.getString(actionRequest, Constants.CMD);
 
-		long resourcePrimKey = ParamUtil.getLong(
-			actionRequest, "resourcePrimKey");
+			long resourcePrimKey = ParamUtil.getLong(
+				actionRequest, "resourcePrimKey");
 
-		long parentResourcePrimKey = ParamUtil.getLong(
-			actionRequest, "parentResourcePrimKey");
-		String title = ParamUtil.getString(actionRequest, "title");
-		String content = ParamUtil.getString(actionRequest, "content");
-		String description = ParamUtil.getString(actionRequest, "description");
-		String[] sections = actionRequest.getParameterValues("sections");
-		String dirName = ParamUtil.getString(actionRequest, "dirName");
-		int workflowAction = ParamUtil.getInteger(
-			actionRequest, "workflowAction");
+			long parentResourcePrimKey = ParamUtil.getLong(
+				actionRequest, "parentResourcePrimKey");
+			String title = ParamUtil.getString(actionRequest, "title");
+			String content = ParamUtil.getString(actionRequest, "content");
+			String description = ParamUtil.getString(
+				actionRequest, "description");
+			String[] sections = actionRequest.getParameterValues("sections");
+			String dirName = ParamUtil.getString(actionRequest, "dirName");
+			int workflowAction = ParamUtil.getInteger(
+				actionRequest, "workflowAction");
 
-		KBArticle kbArticle = null;
+			KBArticle kbArticle = null;
 
-		ServiceContext serviceContext = ServiceContextFactory.getInstance(
-			KBArticle.class.getName(), actionRequest);
+			ServiceContext serviceContext = ServiceContextFactory.getInstance(
+				KBArticle.class.getName(), actionRequest);
 
-		if (cmd.equals(Constants.ADD)) {
-			kbArticle = KBArticleServiceUtil.addKBArticle(
-				portletId, parentResourcePrimKey, title, content, description,
-				sections, dirName, serviceContext);
+			if (cmd.equals(Constants.ADD)) {
+				kbArticle = KBArticleServiceUtil.addKBArticle(
+					portletId, parentResourcePrimKey, title, content,
+					description, sections, dirName, serviceContext);
+			}
+			else if (cmd.equals(Constants.UPDATE)) {
+				kbArticle = KBArticleServiceUtil.updateKBArticle(
+					resourcePrimKey, title, content, description, sections,
+					dirName, serviceContext);
+			}
+
+			if (!cmd.equals(Constants.ADD) && !cmd.equals(Constants.UPDATE)) {
+				return;
+			}
+
+			if (workflowAction == WorkflowConstants.ACTION_SAVE_DRAFT) {
+				String namespace = actionResponse.getNamespace();
+				String redirect = getRedirect(actionRequest, actionResponse);
+
+				String editURL = PortalUtil.getLayoutFullURL(themeDisplay);
+
+				editURL = HttpUtil.setParameter(
+					editURL, "p_p_id", PortletKeys.KNOWLEDGE_BASE_ADMIN);
+				editURL = HttpUtil.setParameter(
+					editURL, namespace + "mvcPath",
+					templatePath + "edit_article.jsp");
+				editURL = HttpUtil.setParameter(
+					editURL, namespace + "redirect", redirect);
+				editURL = HttpUtil.setParameter(
+					editURL, namespace + "resourcePrimKey",
+					kbArticle.getResourcePrimKey());
+
+				actionRequest.setAttribute(WebKeys.REDIRECT, editURL);
+			}
 		}
-		else if (cmd.equals(Constants.UPDATE)) {
-			kbArticle = KBArticleServiceUtil.updateKBArticle(
-				resourcePrimKey, title, content, description, sections, dirName,
-				serviceContext);
-		}
+		catch (Exception e) {
+			if (e instanceof AssetCategoryException ||
+				e instanceof AssetTagException) {
 
-		if (!cmd.equals(Constants.ADD) && !cmd.equals(Constants.UPDATE)) {
-			return;
-		}
-
-		if (workflowAction == WorkflowConstants.ACTION_SAVE_DRAFT) {
-			String namespace = actionResponse.getNamespace();
-			String redirect = getRedirect(actionRequest, actionResponse);
-
-			String editURL = PortalUtil.getLayoutFullURL(themeDisplay);
-
-			editURL = HttpUtil.setParameter(
-				editURL, "p_p_id", PortletKeys.KNOWLEDGE_BASE_ADMIN);
-			editURL = HttpUtil.setParameter(
-				editURL, namespace + "mvcPath",
-				templatePath + "edit_article.jsp");
-			editURL = HttpUtil.setParameter(
-				editURL, namespace + "redirect", redirect);
-			editURL = HttpUtil.setParameter(
-				editURL, namespace + "resourcePrimKey",
-				kbArticle.getResourcePrimKey());
-
-			actionRequest.setAttribute(WebKeys.REDIRECT, editURL);
+				SessionErrors.add(actionRequest, e.getClass(), e);
+			}
+			else {
+				throw e;
+			}
 		}
 	}
 
