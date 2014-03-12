@@ -22,7 +22,6 @@ import com.liferay.microblogs.service.permission.MicroblogsEntryPermission;
 import com.liferay.microblogs.util.WebKeys;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
-import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.User;
 import com.liferay.portal.security.permission.ActionKeys;
@@ -75,12 +74,12 @@ public class MicroblogsEntryAssetRenderer extends BaseAssetRenderer {
 
 	@Override
 	public String getSummary(Locale locale) {
-		return HtmlUtil.stripHtml(_entry.getContent());
+		return _entry.getContent();
 	}
 
 	@Override
 	public String getTitle(Locale locale) {
-		return HtmlUtil.stripHtml(_entry.getContent());
+		return _entry.getContent();
 	}
 
 	@Override

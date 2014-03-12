@@ -63,8 +63,8 @@ if (entry == null) {
 				<%
 				String distributionScope = ParamUtil.getString(request, "distributionScope");
 
-				long classNameId = -1;
-				long classPK = -1;
+				long classNameId = 0;
+				long classPK = 0;
 
 				String[] distributionScopeArray = StringUtil.split(distributionScope);
 
@@ -72,12 +72,17 @@ if (entry == null) {
 					classNameId = GetterUtil.getLong(distributionScopeArray[0]);
 					classPK = GetterUtil.getLong(distributionScopeArray[1]);
 				}
+				else if (!group.isUser()) {
+					classNameId = PortalUtil.getClassNameId(Group.class);
+					classPK = themeDisplay.getScopeGroupId();
+				}
 
 				boolean submitOnChange = false;
 				%>
 
-				<%@ include file="/entry_select_scope.jspf" %>
-
+				<div class="distribution-scope-container">
+					<%@ include file="/entry_select_scope.jspf" %>
+				</div>
 			</c:otherwise>
 		</c:choose>
 
