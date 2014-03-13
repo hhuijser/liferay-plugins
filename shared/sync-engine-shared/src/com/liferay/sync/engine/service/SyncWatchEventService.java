@@ -31,15 +31,15 @@ import org.slf4j.LoggerFactory;
 public class SyncWatchEventService {
 
 	public static SyncWatchEvent addSyncWatchEvent(
-			String filePath, String fileType, String kindName,
+			String eventType, String filePathName, String fileType,
 			long syncAccountId)
 		throws Exception {
 
 		SyncWatchEvent syncWatchEvent = new SyncWatchEvent();
 
-		syncWatchEvent.setFilePath(filePath);
+		syncWatchEvent.setEventType(eventType);
+		syncWatchEvent.setFilePathName(filePathName);
 		syncWatchEvent.setFileType(fileType);
-		syncWatchEvent.setKindName(kindName);
 		syncWatchEvent.setSyncAccountId(syncAccountId);
 		syncWatchEvent.setTimestamp(System.currentTimeMillis());
 
@@ -72,9 +72,40 @@ public class SyncWatchEventService {
 		}
 	}
 
+	public static SyncWatchEvent fetchSyncWatchEvent(
+		String eventType, String filePathName, long timestamp) {
+
+		try {
+			return _syncWatchEventPersistence.fetchByE_F_T(
+				eventType, filePathName, timestamp);
+		}
+		catch (SQLException sqle) {
+			if (_logger.isDebugEnabled()) {
+				_logger.debug(sqle.getMessage(), sqle);
+			}
+
+			return null;
+		}
+	}
+
 	public static List<SyncWatchEvent> findAll() {
 		try {
 			return _syncWatchEventPersistence.queryForAll();
+		}
+		catch (SQLException sqle) {
+			if (_logger.isDebugEnabled()) {
+				_logger.debug(sqle.getMessage(), sqle);
+			}
+
+			return Collections.emptyList();
+		}
+	}
+
+	public static List<SyncWatchEvent> findAll(
+		String orderByColumn, boolean ascending) {
+
+		try {
+			return _syncWatchEventPersistence.findAll(orderByColumn, ascending);
 		}
 		catch (SQLException sqle) {
 			if (_logger.isDebugEnabled()) {
