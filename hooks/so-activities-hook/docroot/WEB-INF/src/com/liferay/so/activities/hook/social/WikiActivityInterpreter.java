@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.model.LayoutConstants;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PortletKeys;
@@ -223,10 +224,6 @@ public class WikiActivityInterpreter extends SOSocialActivityInterpreter {
 			(activitySet.getType() ==
 				SocialActivityConstants.TYPE_ADD_COMMENT)) {
 
-			if (!hasPermissions(activitySet, serviceContext)) {
-				return null;
-			}
-
 			return getBody(
 				activitySet.getClassName(), activitySet.getClassPK(),
 				serviceContext);
@@ -249,7 +246,9 @@ public class WikiActivityInterpreter extends SOSocialActivityInterpreter {
 
 		sb.append(
 			StringUtil.shorten(
-				assetRenderer.getSummary(serviceContext.getLocale()), 200));
+				HtmlUtil.escape(
+					assetRenderer.getSummary(
+						serviceContext.getLocale()), 200)));
 
 		sb.append("</div></div>");
 
@@ -268,10 +267,9 @@ public class WikiActivityInterpreter extends SOSocialActivityInterpreter {
 			return null;
 		}
 
-		long plid = PortalUtil.getPlidFromPortletId(
-			groupId, false, PortletKeys.WIKI);
+		long plid = PortalUtil.getPlidFromPortletId(groupId, PortletKeys.WIKI);
 
-		if (plid <= 0) {
+		if (plid == LayoutConstants.DEFAULT_PLID) {
 			return null;
 		}
 
@@ -379,10 +377,9 @@ public class WikiActivityInterpreter extends SOSocialActivityInterpreter {
 			return null;
 		}
 
-		long plid = PortalUtil.getPlidFromPortletId(
-			groupId, false, PortletKeys.WIKI);
+		long plid = PortalUtil.getPlidFromPortletId(groupId, PortletKeys.WIKI);
 
-		if (plid <= 0) {
+		if (plid == LayoutConstants.DEFAULT_PLID) {
 			return HtmlUtil.escape(node.getName());
 		}
 

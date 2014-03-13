@@ -83,36 +83,6 @@ public class SolrIndexSearcher extends BaseIndexSearcher {
 		catch (Exception e) {
 			_log.error(e, e);
 
-			throw new SearchException(e.getMessage());
-		}
-	}
-
-	@Override
-	public Hits search(
-			String searchEngineId, long companyId, Query query, Sort[] sorts,
-			int start, int end)
-		throws SearchException {
-
-		try {
-			SolrQuery solrQuery = translateQuery(
-				companyId, query, sorts, start, end);
-
-			QueryResponse queryResponse = _solrServer.query(
-				solrQuery, METHOD.POST);
-
-			boolean allResults = false;
-
-			if (solrQuery.getRows() == 0) {
-				allResults = true;
-			}
-
-			return subset(
-				solrQuery, query, query.getQueryConfig(), queryResponse,
-				allResults);
-		}
-		catch (Exception e) {
-			_log.error(e, e);
-
 			if (!_swallowException) {
 				throw new SearchException(e.getMessage());
 			}
@@ -268,9 +238,7 @@ public class SolrIndexSearcher extends BaseIndexSearcher {
 			snippet = StringPool.BLANK;
 		}
 
-		Pattern pattern = Pattern.compile("<em>(.*?)</em>");
-
-		Matcher matcher = pattern.matcher(snippet);
+		Matcher matcher = _pattern.matcher(snippet);
 
 		while (matcher.find()) {
 			queryTerms.add(matcher.group(1));
@@ -479,6 +447,7 @@ public class SolrIndexSearcher extends BaseIndexSearcher {
 
 	private static Log _log = LogFactoryUtil.getLog(SolrIndexSearcher.class);
 
+	private Pattern _pattern = Pattern.compile("<em>(.*?)</em>");
 	private SolrServer _solrServer;
 	private boolean _swallowException;
 
