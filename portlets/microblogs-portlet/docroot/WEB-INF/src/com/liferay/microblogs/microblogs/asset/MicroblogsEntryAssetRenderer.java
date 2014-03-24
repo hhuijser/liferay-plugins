@@ -74,11 +74,6 @@ public class MicroblogsEntryAssetRenderer extends BaseAssetRenderer {
 	}
 
 	@Override
-	public String getSummary(Locale locale) {
-		return _entry.getContent();
-	}
-
-	@Override
 	public String getSummary(
 		PortletRequest portletRequest, PortletResponse portletResponse) {
 
