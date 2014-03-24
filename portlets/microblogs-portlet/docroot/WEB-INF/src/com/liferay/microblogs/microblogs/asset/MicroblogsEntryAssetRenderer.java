@@ -35,6 +35,7 @@ import com.liferay.portlet.asset.model.BaseAssetRenderer;
 import java.util.Locale;
 
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -74,6 +75,13 @@ public class MicroblogsEntryAssetRenderer extends BaseAssetRenderer {
 
 	@Override
 	public String getSummary(Locale locale) {
+		return _entry.getContent();
+	}
+
+	@Override
+	public String getSummary(
+		PortletRequest portletRequest, PortletResponse portletResponse) {
+
 		return _entry.getContent();
 	}
 
