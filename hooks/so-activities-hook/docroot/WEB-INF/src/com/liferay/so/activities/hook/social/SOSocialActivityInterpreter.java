@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.parsers.bbcode.BBCodeTranslatorUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.HtmlUtil;
+import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -55,6 +56,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 
 /**
  * @author Brian Wing Shun Chan
@@ -227,7 +231,15 @@ public abstract class SOSocialActivityInterpreter
 		AssetRenderer assetRenderer = getAssetRenderer(
 			className, activity.getClassPK());
 
-		String body = assetRenderer.getSummary(serviceContext.getLocale());
+		PortletRequest portletRequest =
+			(PortletRequest)serviceContext.getRequest().getAttribute(
+				JavaConstants.JAVAX_PORTLET_REQUEST);
+
+		PortletResponse portletResponse =
+			(PortletResponse)serviceContext.getRequest().getAttribute(
+				JavaConstants.JAVAX_PORTLET_RESPONSE);
+
+		String body = assetRenderer.getSummary(portletRequest, portletResponse);
 
 		if (className.equals(MBMessage.class.getName())) {
 			MBMessage mbMessage = MBMessageLocalServiceUtil.getMBMessage(

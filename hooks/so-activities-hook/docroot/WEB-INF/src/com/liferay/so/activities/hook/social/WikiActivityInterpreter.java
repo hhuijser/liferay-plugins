@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.HtmlUtil;
+import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.MathUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
@@ -44,6 +45,7 @@ import com.liferay.portlet.wiki.service.WikiPageResourceLocalServiceUtil;
 import com.liferay.so.activities.util.SocialActivityKeyConstants;
 
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 import javax.portlet.PortletURL;
 
 /**
@@ -244,10 +246,18 @@ public class WikiActivityInterpreter extends SOSocialActivityInterpreter {
 
 		AssetRenderer assetRenderer = getAssetRenderer(className, classPK);
 
+		PortletRequest portletRequest =
+			(PortletRequest)serviceContext.getRequest().getAttribute(
+				JavaConstants.JAVAX_PORTLET_REQUEST);
+
+		PortletResponse portletResponse =
+			(PortletResponse)serviceContext.getRequest().getAttribute(
+				JavaConstants.JAVAX_PORTLET_RESPONSE);
+
 		sb.append(
 			StringUtil.shorten(
 				HtmlUtil.escape(
-					assetRenderer.getSummary(serviceContext.getLocale()),
+					assetRenderer.getSummary(portletRequest, portletResponse),
 				200)));
 
 		sb.append("</div></div>");

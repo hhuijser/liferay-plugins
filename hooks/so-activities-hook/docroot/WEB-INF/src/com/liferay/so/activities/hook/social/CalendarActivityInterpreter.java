@@ -18,6 +18,7 @@ import com.liferay.calendar.model.CalendarBooking;
 import com.liferay.calendar.service.CalendarBookingLocalServiceUtil;
 import com.liferay.calendar.service.permission.CalendarPermission;
 import com.liferay.portal.kernel.util.HtmlUtil;
+import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -36,6 +37,7 @@ import com.liferay.so.activities.util.SocialActivityKeyConstants;
 import java.text.Format;
 
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 import javax.portlet.PortletURL;
 
 /**
@@ -131,10 +133,18 @@ public class CalendarActivityInterpreter extends SOSocialActivityInterpreter {
 
 		AssetRenderer assetRenderer = getAssetRenderer(className, classPK);
 
+		PortletRequest portletRequest =
+			(PortletRequest)serviceContext.getRequest().getAttribute(
+				JavaConstants.JAVAX_PORTLET_REQUEST);
+
+		PortletResponse portletResponse =
+			(PortletResponse)serviceContext.getRequest().getAttribute(
+				JavaConstants.JAVAX_PORTLET_RESPONSE);
+
 		sb.append(
 			StringUtil.shorten(
 				HtmlUtil.escape(
-					assetRenderer.getSummary(serviceContext.getLocale()),
+					assetRenderer.getSummary(portletRequest, portletResponse),
 				200)));
 
 		sb.append("</div></div>");

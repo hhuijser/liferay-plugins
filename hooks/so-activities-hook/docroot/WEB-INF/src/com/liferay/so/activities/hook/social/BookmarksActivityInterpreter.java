@@ -17,6 +17,7 @@ package com.liferay.so.activities.hook.social;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.HttpUtil;
+import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -36,6 +37,9 @@ import java.io.IOException;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -160,9 +164,17 @@ public class BookmarksActivityInterpreter extends SOSocialActivityInterpreter {
 		AssetRenderer assetRenderer = getAssetRenderer(
 			activity.getClassName(), activity.getClassPK());
 
+		PortletRequest portletRequest =
+			(PortletRequest)serviceContext.getRequest().getAttribute(
+				JavaConstants.JAVAX_PORTLET_REQUEST);
+
+		PortletResponse portletResponse =
+			(PortletResponse)serviceContext.getRequest().getAttribute(
+				JavaConstants.JAVAX_PORTLET_RESPONSE);
+
 		String body = StringUtil.shorten(
 			HtmlUtil.escape(
-				assetRenderer.getSummary(serviceContext.getLocale())),
+				assetRenderer.getSummary(portletRequest, portletResponse)),
 			200);
 
 		return new SocialActivityFeedEntry(title, body);

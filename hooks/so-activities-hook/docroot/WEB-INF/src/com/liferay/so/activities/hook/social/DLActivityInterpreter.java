@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portal.kernel.repository.model.Folder;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.HttpUtil;
+import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -33,6 +34,9 @@ import com.liferay.portlet.social.model.SocialActivitySet;
 import com.liferay.portlet.social.service.SocialActivityLocalServiceUtil;
 import com.liferay.portlet.social.service.SocialActivitySetLocalServiceUtil;
 import com.liferay.so.activities.util.SocialActivityKeyConstants;
+
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 
 /**
  * @author Evan Thibodeau
@@ -131,10 +135,18 @@ public class DLActivityInterpreter extends SOSocialActivityInterpreter {
 
 		AssetRenderer assetRenderer = getAssetRenderer(className, classPK);
 
+		PortletRequest portletRequest =
+			(PortletRequest)serviceContext.getRequest().getAttribute(
+				JavaConstants.JAVAX_PORTLET_REQUEST);
+
+		PortletResponse portletResponse =
+			(PortletResponse)serviceContext.getRequest().getAttribute(
+				JavaConstants.JAVAX_PORTLET_RESPONSE);
+
 		sb.append(
 			StringUtil.shorten(
 				HtmlUtil.escape(
-					assetRenderer.getSummary(serviceContext.getLocale()),
+					assetRenderer.getSummary(portletRequest, portletResponse),
 				200)));
 
 		sb.append("</div></div></div>");
