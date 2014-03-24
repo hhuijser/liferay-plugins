@@ -59,11 +59,6 @@ public class KBArticleAssetRenderer extends BaseAssetRenderer {
 	}
 
 	@Override
-	public String getSummary(Locale locale) {
-		return _kbArticle.getContent();
-	}
-
-	@Override
 	public String getSummary(
 		PortletRequest portletRequest, PortletResponse portletResponse) {
 
