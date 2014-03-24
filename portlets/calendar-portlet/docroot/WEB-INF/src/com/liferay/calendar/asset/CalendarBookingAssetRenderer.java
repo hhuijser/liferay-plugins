@@ -79,11 +79,6 @@ public class CalendarBookingAssetRenderer
 	}
 
 	@Override
-	public String getSummary(Locale locale) {
-		return _calendarBooking.getDescription(locale);
-	}
-
-	@Override
 	public String getSummary(
 		PortletRequest portletRequest, PortletResponse portletResponse) {
 
