@@ -19,11 +19,13 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.HtmlUtil;
+import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.MathUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.model.LayoutConstants;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PortletKeys;
@@ -43,6 +45,7 @@ import com.liferay.portlet.wiki.service.WikiPageResourceLocalServiceUtil;
 import com.liferay.so.activities.util.SocialActivityKeyConstants;
 
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 import javax.portlet.PortletURL;
 
 /**
@@ -223,10 +226,6 @@ public class WikiActivityInterpreter extends SOSocialActivityInterpreter {
 			(activitySet.getType() ==
 				SocialActivityConstants.TYPE_ADD_COMMENT)) {
 
-			if (!hasPermissions(activitySet, serviceContext)) {
-				return null;
-			}
-
 			return getBody(
 				activitySet.getClassName(), activitySet.getClassPK(),
 				serviceContext);
@@ -247,9 +246,19 @@ public class WikiActivityInterpreter extends SOSocialActivityInterpreter {
 
 		AssetRenderer assetRenderer = getAssetRenderer(className, classPK);
 
+		PortletRequest portletRequest =
+			(PortletRequest)serviceContext.getRequest().getAttribute(
+				JavaConstants.JAVAX_PORTLET_REQUEST);
+
+		PortletResponse portletResponse =
+			(PortletResponse)serviceContext.getRequest().getAttribute(
+				JavaConstants.JAVAX_PORTLET_RESPONSE);
+
 		sb.append(
 			StringUtil.shorten(
-				assetRenderer.getSummary(serviceContext.getLocale()), 200));
+				HtmlUtil.escape(
+					assetRenderer.getSummary(portletRequest, portletResponse),
+				200)));
 
 		sb.append("</div></div>");
 
@@ -268,10 +277,9 @@ public class WikiActivityInterpreter extends SOSocialActivityInterpreter {
 			return null;
 		}
 
-		long plid = PortalUtil.getPlidFromPortletId(
-			groupId, false, PortletKeys.WIKI);
+		long plid = PortalUtil.getPlidFromPortletId(groupId, PortletKeys.WIKI);
 
-		if (plid <= 0) {
+		if (plid == LayoutConstants.DEFAULT_PLID) {
 			return null;
 		}
 
@@ -379,10 +387,9 @@ public class WikiActivityInterpreter extends SOSocialActivityInterpreter {
 			return null;
 		}
 
-		long plid = PortalUtil.getPlidFromPortletId(
-			groupId, false, PortletKeys.WIKI);
+		long plid = PortalUtil.getPlidFromPortletId(groupId, PortletKeys.WIKI);
 
-		if (plid <= 0) {
+		if (plid == LayoutConstants.DEFAULT_PLID) {
 			return HtmlUtil.escape(node.getName());
 		}
 

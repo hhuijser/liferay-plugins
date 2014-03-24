@@ -22,7 +22,6 @@ import com.liferay.knowledgebase.util.PortletKeys;
 import com.liferay.knowledgebase.util.WebKeys;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
-import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portlet.asset.model.BaseAssetRenderer;
@@ -30,6 +29,7 @@ import com.liferay.portlet.asset.model.BaseAssetRenderer;
 import java.util.Locale;
 
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -59,8 +59,10 @@ public class KBArticleAssetRenderer extends BaseAssetRenderer {
 	}
 
 	@Override
-	public String getSummary(Locale locale) {
-		return HtmlUtil.stripHtml(_kbArticle.getContent());
+	public String getSummary(
+		PortletRequest portletRequest, PortletResponse portletResponse) {
+
+		return _kbArticle.getContent();
 	}
 
 	@Override

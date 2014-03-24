@@ -51,6 +51,7 @@ import com.liferay.calendar.util.RSSUtil;
 import com.liferay.calendar.util.WebKeys;
 import com.liferay.calendar.util.comparator.CalendarResourceNameComparator;
 import com.liferay.calendar.workflow.CalendarBookingWorkflowConstants;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -212,6 +213,9 @@ public class CalendarPortlet extends MVCPortlet {
 			if (resourceID.equals("calendarBookingInvitees")) {
 				serveCalendarBookingInvitees(resourceRequest, resourceResponse);
 			}
+			else if (resourceID.equals("calendarBookings")) {
+				serveCalendarBookings(resourceRequest, resourceResponse);
+			}
 			else if (resourceID.equals("calendarBookingsRSS")) {
 				serveCalendarBookingsRSS(resourceRequest, resourceResponse);
 			}
@@ -277,15 +281,10 @@ public class CalendarPortlet extends MVCPortlet {
 				enableComments, enableRatings, serviceContext);
 		}
 
-		boolean saveAndContinue = ParamUtil.getBoolean(
-			actionRequest, "saveAndContinue");
+		String redirect = getEditCalendarURL(
+			actionRequest, actionResponse, calendar);
 
-		if (saveAndContinue) {
-			String redirect = getEditCalendarURL(
-				actionRequest, actionResponse, calendar);
-
-			actionRequest.setAttribute(WebKeys.REDIRECT, redirect);
-		}
+		actionRequest.setAttribute(WebKeys.REDIRECT, redirect);
 	}
 
 	public void updateCalendarBooking(
@@ -363,13 +362,18 @@ public class CalendarPortlet extends MVCPortlet {
 						calendarBooking.getStartTime());
 
 				calendarBooking =
+					CalendarBookingServiceUtil.
+						getNewStartTimeAndDurationCalendarBooking(
+							calendarBookingId, offset, duration);
+
+				calendarBooking =
 					CalendarBookingServiceUtil.updateCalendarBooking(
 						calendarBookingId, calendarId, childCalendarIds,
 						titleMap, descriptionMap, location,
-						(calendarBooking.getStartTime() + offset),
-						(calendarBooking.getStartTime() + offset + duration),
-						allDay, recurrence, reminders[0], remindersType[0],
-						reminders[1], remindersType[1], status, serviceContext);
+						calendarBooking.getStartTime(),
+						calendarBooking.getEndTime(), allDay, recurrence,
+						reminders[0], remindersType[0], reminders[1],
+						remindersType[1], status, serviceContext);
 			}
 		}
 
@@ -610,7 +614,11 @@ public class CalendarPortlet extends MVCPortlet {
 		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		String editCalendarURL = PortalUtil.getLayoutFullURL(themeDisplay);
+		String editCalendarURL = getRedirect(actionRequest, actionResponse);
+
+		if (Validator.isNull(editCalendarURL)) {
+			editCalendarURL = PortalUtil.getLayoutFullURL(themeDisplay);
+		}
 
 		String namespace = actionResponse.getNamespace();
 
@@ -622,6 +630,9 @@ public class CalendarPortlet extends MVCPortlet {
 		editCalendarURL = HttpUtil.setParameter(
 			editCalendarURL, namespace + "redirect",
 			getRedirect(actionRequest, actionResponse));
+		editCalendarURL = HttpUtil.setParameter(
+			editCalendarURL, namespace + "backURL",
+			ParamUtil.getString(actionRequest, "backURL"));
 		editCalendarURL = HttpUtil.setParameter(
 			editCalendarURL, namespace + "calendarId",
 			calendar.getCalendarId());
@@ -828,6 +839,32 @@ public class CalendarPortlet extends MVCPortlet {
 
 			jsonArray.put(jsonObject);
 		}
+
+		writeJSON(resourceRequest, resourceResponse, jsonArray);
+	}
+
+	protected void serveCalendarBookings(
+			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
+		throws IOException, PortalException, SystemException {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
+				WebKeys.THEME_DISPLAY);
+
+		long[] calendarIds = ParamUtil.getLongValues(
+			resourceRequest, "calendarIds");
+		long endTime = ParamUtil.getLong(resourceRequest, "endTime");
+		long startTime = ParamUtil.getLong(resourceRequest, "startTime");
+		int[] statuses = ParamUtil.getIntegerValues(
+			resourceRequest, "statuses");
+
+		List<CalendarBooking> calendarBookings =
+			CalendarBookingServiceUtil.search(
+				themeDisplay.getCompanyId(), new long[0], calendarIds,
+				new long[0], -1, null, startTime, endTime, true, statuses,
+				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+
+		JSONArray jsonArray = CalendarUtil.toCalendarBookingsJSONArray(
+			themeDisplay, calendarBookings, getTimeZone(resourceRequest));
 
 		writeJSON(resourceRequest, resourceResponse, jsonArray);
 	}

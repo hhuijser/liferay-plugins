@@ -56,10 +56,10 @@ else {
 			<input id="<portlet:namespace />dialogKeywords" size="30" type="text" value="<%= HtmlUtil.escape(keywords) %>" />
 
 			<span class="sites-tabs">
-				<aui:select label="" name="tabs1">
-					<aui:option label="all-sites" selected='<%= tabs1.equals("all-sites") %>' value="all-sites" />
-					<aui:option label="my-sites" selected='<%= tabs1.equals("my-sites") %>' value="my-sites" />
-					<aui:option label="my-favorites" selected='<%= tabs1.equals("my-favorites") %>' value="my-favorites" />
+				<aui:select label="" name="tabs1" value="<%= tabs1 %>">
+					<aui:option label="all-sites" value="all-sites" />
+					<aui:option label="my-sites" value="my-sites" />
+					<aui:option label="my-favorites" value="my-favorites" />
 				</aui:select>
 			</span>
 		</div>
@@ -147,14 +147,32 @@ else {
 			);
 		}
 		else {
+			var getSiteActionHtml = function(actionClassNames, actionLinkClassName, actionTitle, actionURL) {
+				var siteActionTemplate =
+					'<span class="{actionClassNames}" title="{actionTitle}">' +
+						'<a class="{actionLinkClassName}" href="{actionURL}">' +
+						'</a>' +
+					'</span>';
+
+				return A.Lang.sub(
+					siteActionTemplate,
+					{
+						actionClassNames: actionClassNames,
+						actionLinkClassName: actionLinkClassName,
+						actionTitle: actionTitle,
+						actionURL: actionURL,
+					}
+				);
+			};
+
 			var siteTemplate =
 				'<li class="{classNames}">' +
-					'{favoriteHtml}' +
-					'{joinHtml}' +
-					'{leaveHtml}' +
-					'{requestHtml}' +
-					'{requestedHtml}' +
-					'{deleteHtml}' +
+					'{favoriteHTML}' +
+					'{joinHTML}' +
+					'{leaveHTML}' +
+					'{requestHTML}' +
+					'{requestedHTML}' +
+					'{deleteHTML}' +
 					'<span class="name">{siteName}</span>' +
 					'<span class="description">{siteDescription}</span>'
 				'</li>';
@@ -164,18 +182,43 @@ else {
 					results,
 					function(result, index) {
 						var classNames = [];
-						var joinHtml = '';
+						var joinHTML = '';
 
 						if (result.socialOfficeGroup) {
 							classNames.push('social-office-enabled');
 						}
 
-						if (!result.joinUrl) {
+						if (!result.joinURL) {
 							classNames.push('member');
 						}
 
 						if ((index % 2) == 1) {
 							classNames.push('alt');
+						}
+
+						var deleteHTML = '<span class="action-not-allowed"></span>';
+
+						if (result.deleteURL) {
+							if (result.deleteURL == '<%= StringPool.FALSE %>') {
+								deleteHTML = getSiteActionHtml('delete', 'disabled', Liferay.Language.get("you-cannot-delete-the-current-site"), '#')
+							}
+							else {
+								deleteHTML = getSiteActionHtml('action delete', 'delete-site', Liferay.Language.get("delete-site"), result.deleteURL);
+							}
+						}
+
+						var favoriteHTML;
+
+						if (result.favoriteURL == '<%= StringPool.BLANK %>') {
+							favoriteHTML = getSiteActionHtml('favorite', 'disabled', Liferay.Language.get("you-must-be-a-member-of-the-site-to-add-to-favorites"), '#');
+						}
+						else {
+							if (result.favoriteURL) {
+								favoriteHTML = getSiteActionHtml('action favorite', '', Liferay.Language.get("add-to-favorites"), result.favoriteURL);
+							}
+							else {
+								favoriteHTML = getSiteActionHtml('action unfavorite', '', Liferay.Language.get("remove-from-favorites"), result.unfavoriteURL);
+							}
 						}
 
 						var name = result.name;
@@ -191,20 +234,32 @@ else {
 							name = '<a href="' + result.privateLayoutsURL + '">' + name + '</a>';
 						}
 
+						var leaveHTML = '';
+
+						var leaveURLOnly = !result.joinURL && !result.membershipRequested && !result.requestUrl;
+
+						if (leaveURLOnly) {
+							if (result.leaveURL) {
+								leaveHTML = getSiteActionHtml('action leave', 'leave-site', Liferay.Language.get("leave-site"), result.leaveURL)
+							}
+							else {
+								leaveHTML = getSiteActionHtml('action leave', 'disabled', Liferay.Language.get("you-cannot-leave-the-site-as-a-user-group-member-or-organization-member"), '#');
+							}
+						}
+
 						return A.Lang.sub(
 							siteTemplate,
 							{
 								classNames: classNames.join(' '),
-								deleteHtml: (result.deleteURL ? '<span class="action delete"><a class="delete-site" href="' + result.deleteURL + '"><liferay-ui:message key="delete" /></a></span>' : '<span class="action-not-allowed"></span>'),
-								joinHtml: (result.joinUrl ? '<span class="action join"><a class="join-site" href="' + result.joinUrl + '"><liferay-ui:message key="join" /></a></span>' : ''),
-								leaveHtml: (result.leaveUrl ? '<span class="action leave"><a class="leave-site" href="' + result.leaveUrl + '"><liferay-ui:message key="leave" /></a></span>' : ''),
-								requestHtml: (result.requestUrl ? '<span class="action request"><a class="request-site" href="' + result.requestUrl + '"><liferay-ui:message key="request-membership" /></a></span>' : ''),
-								requestedHtml: (result.membershipRequested ? '<span class="action requested"><a><liferay-ui:message key="membership-requested" /></a></span>' : ''),
+								deleteHTML: deleteHTML,
+								favoriteHTML: favoriteHTML,
+								joinHTML: (result.joinURL ? getSiteActionHtml('action join', 'join-site', Liferay.Language.get("join-site"), result.joinURL) : ''),
+								leaveHTML: leaveHTML,
+								requestHTML: (result.requestUrl ? getSiteActionHtml('action request', 'request-site', Liferay.Language.get("request-membership"), result.requestUrl) : ''),
+								requestedHTML: (result.membershipRequested ? getSiteActionHtml('action requested', '', Liferay.Language.get("membership-requested"), '#') : ''),
 								siteDescription: result.description,
-								siteName: name,
-								favoriteHtml: (result.favoriteURL ? '<span class="action favorite"><a class="favorite-site" href="' + result.favoriteURL + '"><liferay-ui:message key="favorite" /></a></span>' : '<span class="action unfavorite"><a class="unfavorite-site" href="' + result.unfavoriteURL + '"><liferay-ui:message key="unfavorite" /></a></span>')
+								siteName: name
 							}
-
 						);
 					}
 				).join('')

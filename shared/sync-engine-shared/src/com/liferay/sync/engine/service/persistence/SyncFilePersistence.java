@@ -31,15 +31,49 @@ public class SyncFilePersistence extends BasePersistenceImpl<SyncFile, Long> {
 		super(SyncFile.class);
 	}
 
-	public SyncFile fetchSyncFile(
-			long parentFolderId, long repositoryId, long syncAccountId)
+	public SyncFile fetchByFK_S(String fileKey, long syncAccountId)
 		throws SQLException {
 
 		Map<String, Object> fieldValues = new HashMap<String, Object>();
 
-		fieldValues.put("parentFolderId", parentFolderId);
+		fieldValues.put("fileKey", fileKey);
+		fieldValues.put("syncAccountId", syncAccountId);
+
+		List<SyncFile> syncFiles = queryForFieldValues(fieldValues);
+
+		if ((syncFiles == null) || syncFiles.isEmpty()) {
+			return null;
+		}
+
+		return syncFiles.get(0);
+	}
+
+	public SyncFile fetchByFPN_S(String filePathName, long syncAccountId)
+		throws SQLException {
+
+		Map<String, Object> fieldValues = new HashMap<String, Object>();
+
+		fieldValues.put("filePathName", filePathName);
+		fieldValues.put("syncAccountId", syncAccountId);
+
+		List<SyncFile> syncFiles = queryForFieldValues(fieldValues);
+
+		if ((syncFiles == null) || syncFiles.isEmpty()) {
+			return null;
+		}
+
+		return syncFiles.get(0);
+	}
+
+	public SyncFile fetchByR_S_T(
+			long repositoryId, long syncAccountId, long typePK)
+		throws SQLException {
+
+		Map<String, Object> fieldValues = new HashMap<String, Object>();
+
 		fieldValues.put("repositoryId", repositoryId);
 		fieldValues.put("syncAccountId", syncAccountId);
+		fieldValues.put("typePK", typePK);
 
 		List<SyncFile> syncFiles = queryForFieldValues(fieldValues);
 
@@ -50,24 +84,18 @@ public class SyncFilePersistence extends BasePersistenceImpl<SyncFile, Long> {
 		return syncFiles.get(0);
 	}
 
-	public SyncFile fetchSyncFile(String filePath, long syncAccountId)
+	public List<SyncFile> findByC_S(String checksum, long syncAccountId)
 		throws SQLException {
 
 		Map<String, Object> fieldValues = new HashMap<String, Object>();
 
-		fieldValues.put("filePath", filePath);
+		fieldValues.put("checksum", checksum);
 		fieldValues.put("syncAccountId", syncAccountId);
 
-		List<SyncFile> syncFiles = queryForFieldValues(fieldValues);
-
-		if ((syncFiles == null) || syncFiles.isEmpty()) {
-			return null;
-		}
-
-		return syncFiles.get(0);
+		return queryForFieldValues(fieldValues);
 	}
 
-	public List<SyncFile> findSyncFiles(long syncAccountId)
+	public List<SyncFile> findBySyncAccountId(long syncAccountId)
 		throws SQLException {
 
 		return queryForEq("syncAccountId", syncAccountId);
