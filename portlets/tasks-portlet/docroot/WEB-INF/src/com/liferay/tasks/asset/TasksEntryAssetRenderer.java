@@ -64,11 +64,6 @@ public class TasksEntryAssetRenderer extends BaseAssetRenderer {
 	}
 
 	@Override
-	public String getSummary(Locale locale) {
-		return _entry.getTitle();
-	}
-
-	@Override
 	public String getSummary(
 		PortletRequest portletRequest, PortletResponse portletResponse) {
 
