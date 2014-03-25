@@ -24,6 +24,7 @@ String backURL = PortalUtil.getCurrentURL(request);
 			align: {
 				points: [A.WidgetPositionAlign.TL, A.WidgetPositionAlign.BL]
 			},
+			constrain: true,
 			items: [
 				{
 					caption: '<liferay-ui:message key="add-calendar" />',
@@ -33,16 +34,30 @@ String backURL = PortalUtil.getCurrentURL(request);
 						var calendarResourceId = instance.calendarResourceId;
 
 						if (calendarResourceId) {
-							<portlet:renderURL var="editCalendarURL">
+							<portlet:renderURL var="editCalendarURL" windowState="<%= LiferayWindowState.POP_UP.toString() %>">
 								<portlet:param name="mvcPath" value="/edit_calendar.jsp" />
-								<portlet:param name="redirect" value="<%= currentURL %>" />
 								<portlet:param name="calendarResourceId" value="{calendarResourceId}" />
 							</portlet:renderURL>
 
-							window.location.href = A.Lang.sub(
-								decodeURIComponent('<%= editCalendarURL %>'),
+							Liferay.Util.openWindow(
 								{
-									calendarResourceId: calendarResourceId
+									dialog: {
+										after: {
+											destroy: function(event) {
+												window.location.reload();
+											}
+										},
+										destroyOnHide: true,
+										modal: true
+									},
+									refreshWindow: window,
+									title: Liferay.Language.get('add-calendar'),
+									uri: A.Lang.sub(
+										decodeURIComponent('<%= editCalendarURL %>'),
+										{
+											calendarResourceId: calendarResourceId
+										}
+									)
 								}
 							);
 						}
@@ -102,10 +117,10 @@ String backURL = PortalUtil.getCurrentURL(request);
 							dialog: {
 								after: {
 									destroy: function(event) {
-										scheduler.load();
+										<portlet:namespace />scheduler.load();
 									}
 								},
-								destroyOnClose: true,
+								destroyOnHide: true,
 								modal: true
 							},
 							refreshWindow: window,
@@ -147,7 +162,6 @@ String backURL = PortalUtil.getCurrentURL(request);
 
 					<portlet:renderURL var="editCalendarURL" windowState="<%= LiferayWindowState.POP_UP.toString() %>">
 						<portlet:param name="mvcPath" value="/edit_calendar.jsp" />
-						<portlet:param name="redirect" value="<%= currentURL %>" />
 						<portlet:param name="calendarId" value="{calendarId}" />
 					</portlet:renderURL>
 
@@ -156,10 +170,10 @@ String backURL = PortalUtil.getCurrentURL(request);
 							dialog: {
 								after: {
 									destroy: function(event) {
-										scheduler.load();
+										<portlet:namespace />scheduler.load();
 									}
 								},
-								destroyOnClose: true,
+								destroyOnHide: true,
 								modal: true
 							},
 							refreshWindow: window,
@@ -199,10 +213,10 @@ String backURL = PortalUtil.getCurrentURL(request);
 							dialog: {
 								after: {
 									destroy: function(event) {
-										scheduler.load();
+										<portlet:namespace />scheduler.load();
 									}
 								},
-								destroyOnClose: true,
+								destroyOnHide: true,
 								modal: true
 							},
 							refreshWindow: window,
@@ -375,16 +389,16 @@ String backURL = PortalUtil.getCurrentURL(request);
 	A.one('#<portlet:namespace />calendarListContainer').delegate(
 		'click',
 		function(event) {
-			var target = event.target;
+			var currentTarget = event.currentTarget;
 
 			window.<portlet:namespace />calendarListsMenu.setAttrs(
 				{
-					'align.node': target,
+					alignNode: currentTarget,
 					visible: !window.<portlet:namespace />calendarListsMenu.get('visible')
 				}
 			);
 
-			window.<portlet:namespace />calendarListsMenu.calendarResourceId = target.getAttribute('data-calendarResourceId');
+			window.<portlet:namespace />calendarListsMenu.calendarResourceId = currentTarget.getAttribute('data-calendarResourceId');
 
 			event.stopImmediatePropagation();
 		},

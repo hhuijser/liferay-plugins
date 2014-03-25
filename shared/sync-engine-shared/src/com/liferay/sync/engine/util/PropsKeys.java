@@ -24,7 +24,24 @@ public interface PropsKeys {
 
 	public static final String SYNC_DATABASE_NAME = "sync.database.name";
 
+	public static final String SYNC_FILE_PATCHING_IGNORE_FILE_EXTENSIONS =
+		"sync.file.patching.ignore.file.extensions";
+
+	public static final String SYNC_FILE_PATCHING_SIZE_RATIO_THRESHOLD =
+		"sync.file.patching.size.ratio.threshold";
+
+	public static final String SYNC_IGNORE_FILE_NAMES =
+		"sync.ignore.file.names";
+
+	public static final String SYNC_IGNORE_HIDDEN_FILES =
+		"sync.ignore.hidden.files";
+
 	public static final String SYNC_LOGGER_CONFIGURATION_FILE =
 		"sync.logger.configuration.file";
+
+	public static final String SYNC_NOTIFICATION_FIELD_NAMES_PREFIX =
+		"sync.notification.field.names";
+
+	public static final String SYNC_PRODUCT_NAME = "sync.product.name";
 
 }

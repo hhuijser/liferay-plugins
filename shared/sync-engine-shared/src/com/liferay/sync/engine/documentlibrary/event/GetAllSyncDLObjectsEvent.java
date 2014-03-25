@@ -14,13 +14,15 @@
 
 package com.liferay.sync.engine.documentlibrary.event;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import com.liferay.sync.engine.documentlibrary.model.SyncDLObjectUpdate;
+import com.liferay.sync.engine.documentlibrary.handler.Handler;
+import com.liferay.sync.engine.documentlibrary.handler.SyncDLObjectUpdateHandler;
 import com.liferay.sync.engine.model.SyncFile;
+import com.liferay.sync.engine.model.SyncSite;
 import com.liferay.sync.engine.service.SyncFileService;
-import com.liferay.sync.engine.util.FilePathUtil;
+import com.liferay.sync.engine.util.FileUtil;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import java.util.Map;
 
@@ -36,35 +38,29 @@ public class GetAllSyncDLObjectsEvent extends BaseEvent {
 	}
 
 	@Override
-	protected void processResponse(String response) throws Exception {
-		ObjectMapper objectMapper = new ObjectMapper();
+	protected Handler<?> getHandler() {
+		return new SyncDLObjectUpdateHandler(this);
+	}
 
-		SyncDLObjectUpdate syncDLObjectUpdate = objectMapper.readValue(
-			response, new TypeReference<SyncDLObjectUpdate>() {});
+	@Override
+	protected void processRequest() throws Exception {
+		SyncSite syncSite = (SyncSite)getParameterValue("syncSite");
 
-		for (SyncFile syncFile : syncDLObjectUpdate.getSyncDLObjects()) {
-			SyncFile parentSyncFile = SyncFileService.fetchSyncFile(
-				syncFile.getParentFolderId(), syncFile.getRepositoryId(),
-				getSyncAccountId());
+		String filePathName = syncSite.getFilePathName();
 
-			String filePath = null;
+		SyncFile syncFile = SyncFileService.fetchSyncFile(
+			filePathName, getSyncAccountId());
 
-			if (parentSyncFile != null) {
-				filePath = FilePathUtil.getFilePath(
-					parentSyncFile.getFilePath(), syncFile.getName());
-			}
+		if (syncFile == null) {
+			Files.createDirectories(Paths.get(filePathName));
 
-			syncFile.setFilePath(filePath);
-
-			syncFile.setSyncAccountId(getSyncAccountId());
-
-			SyncFileService.update(syncFile);
-
-			DownloadFileEvent downloadFileEvent = new DownloadFileEvent(
-				getSyncAccountId(), syncFile, false);
-
-			downloadFileEvent.run();
+			SyncFileService.addSyncFile(
+				null, null, filePathName, FileUtil.getFileKey(filePathName),
+				filePathName, null, filePathName, 0, syncSite.getGroupId(),
+				syncSite.getSyncAccountId(), SyncFile.TYPE_FOLDER);
 		}
+
+		super.processRequest();
 	}
 
 	private static final String _URL_PATH =

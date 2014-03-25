@@ -14,6 +14,11 @@
 
 package com.liferay.sync.engine.documentlibrary.event;
 
+import com.liferay.sync.engine.documentlibrary.handler.AddFileFolderHandler;
+import com.liferay.sync.engine.documentlibrary.handler.Handler;
+import com.liferay.sync.engine.model.SyncFile;
+import com.liferay.sync.engine.service.SyncFileService;
+
 import java.util.Map;
 
 /**
@@ -28,8 +33,20 @@ public class AddFileEntryEvent extends BaseEvent {
 	}
 
 	@Override
-	protected void processResponse(String response) throws Exception {
-		System.out.println(response);
+	protected Handler<?> getHandler() {
+		return new AddFileFolderHandler(this);
+	}
+
+	@Override
+	protected void processRequest() throws Exception {
+		SyncFile syncFile = (SyncFile)getParameterValue("syncFile");
+
+		syncFile.setState(SyncFile.STATE_IN_PROGRESS);
+		syncFile.setUiEvent(SyncFile.UI_EVENT_UPLOADING);
+
+		SyncFileService.update(syncFile);
+
+		super.processRequest();
 	}
 
 	private static final String _URL_PATH =

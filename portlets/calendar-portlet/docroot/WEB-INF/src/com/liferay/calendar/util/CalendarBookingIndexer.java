@@ -40,6 +40,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
 
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 import javax.portlet.PortletURL;
 
 /**
@@ -100,7 +102,8 @@ public class CalendarBookingIndexer extends BaseIndexer {
 
 			document.addText(
 				Field.DESCRIPTION.concat(StringPool.UNDERLINE).concat(
-					descriptionLanguageId), description);
+					descriptionLanguageId),
+				description);
 		}
 
 		String titleDefaultLanguageId = LocalizationUtil.getDefaultLanguageId(
@@ -118,7 +121,8 @@ public class CalendarBookingIndexer extends BaseIndexer {
 
 			document.addText(
 				Field.TITLE.concat(StringPool.UNDERLINE).concat(
-					titleLanguageId), title);
+					titleLanguageId),
+				title);
 		}
 
 		String calendarBookingId = String.valueOf(
@@ -140,8 +144,8 @@ public class CalendarBookingIndexer extends BaseIndexer {
 
 	@Override
 	protected Summary doGetSummary(
-		Document document, Locale locale, String snippet,
-		PortletURL portletURL) {
+		Document document, Locale locale, String snippet, PortletURL portletURL,
+		PortletRequest portletRequest, PortletResponse portletResponse) {
 
 		String calendarBookingId = document.get(Field.ENTRY_CLASS_PK);
 

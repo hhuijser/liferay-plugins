@@ -14,6 +14,12 @@
 
 package com.liferay.sync.engine.documentlibrary.event;
 
+import com.liferay.sync.engine.documentlibrary.handler.Handler;
+import com.liferay.sync.engine.documentlibrary.handler.SyncDLObjectUpdateHandler;
+import com.liferay.sync.engine.model.SyncSite;
+import com.liferay.sync.engine.service.SyncSiteService;
+
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -28,8 +34,41 @@ public class GetSyncDLObjectUpdateEvent extends BaseEvent {
 	}
 
 	@Override
-	protected void processResponse(String response) throws Exception {
-		System.out.println(response);
+	protected Handler<?> getHandler() {
+		return new SyncDLObjectUpdateHandler(this);
+	}
+
+	@Override
+	protected void processRequest() throws Exception {
+		SyncSite syncSite = (SyncSite)getParameterValue("syncSite");
+
+		// Refetch for updated last remote sync time
+
+		syncSite = SyncSiteService.fetchSyncSite(
+			syncSite.getGroupId(), syncSite.getSyncAccountId());
+
+		if (syncSite.getLastRemoteSyncTime() == 0) {
+			Map<String, Object> parameters = new HashMap<String, Object>();
+
+			parameters.put("folderId", 0);
+			parameters.put("repositoryId", syncSite.getGroupId());
+			parameters.put("syncSite", syncSite);
+
+			GetAllSyncDLObjectsEvent getAllSyncDLObjectsEvent =
+				new GetAllSyncDLObjectsEvent(getSyncAccountId(), parameters);
+
+			getAllSyncDLObjectsEvent.run();
+
+			return;
+		}
+
+		Map<String, Object> parameters = new HashMap<String, Object>();
+
+		parameters.put("companyId", syncSite.getCompanyId());
+		parameters.put("lastAccessTime", syncSite.getLastRemoteSyncTime());
+		parameters.put("repositoryId", syncSite.getGroupId());
+
+		executePost(_URL_PATH, parameters);
 	}
 
 	private static final String _URL_PATH =
