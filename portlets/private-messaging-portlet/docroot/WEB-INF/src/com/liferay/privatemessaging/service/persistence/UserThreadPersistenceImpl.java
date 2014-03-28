@@ -34,7 +34,6 @@ import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.UnmodifiableList;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.model.ModelListener;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
@@ -227,7 +226,7 @@ public class UserThreadPersistenceImpl extends BasePersistenceImpl<UserThread>
 
 					Collections.sort(list);
 
-					list = new UnmodifiableList<UserThread>(list);
+					list = Collections.unmodifiableList(list);
 				}
 				else {
 					list = (List<UserThread>)QueryUtil.list(q, getDialect(),
@@ -717,7 +716,7 @@ public class UserThreadPersistenceImpl extends BasePersistenceImpl<UserThread>
 
 					Collections.sort(list);
 
-					list = new UnmodifiableList<UserThread>(list);
+					list = Collections.unmodifiableList(list);
 				}
 				else {
 					list = (List<UserThread>)QueryUtil.list(q, getDialect(),
@@ -1457,7 +1456,7 @@ public class UserThreadPersistenceImpl extends BasePersistenceImpl<UserThread>
 
 					Collections.sort(list);
 
-					list = new UnmodifiableList<UserThread>(list);
+					list = Collections.unmodifiableList(list);
 				}
 				else {
 					list = (List<UserThread>)QueryUtil.list(q, getDialect(),
@@ -2002,7 +2001,7 @@ public class UserThreadPersistenceImpl extends BasePersistenceImpl<UserThread>
 
 					Collections.sort(list);
 
-					list = new UnmodifiableList<UserThread>(list);
+					list = Collections.unmodifiableList(list);
 				}
 				else {
 					list = (List<UserThread>)QueryUtil.list(q, getDialect(),
@@ -2454,7 +2453,7 @@ public class UserThreadPersistenceImpl extends BasePersistenceImpl<UserThread>
 			CacheRegistryUtil.clear(UserThreadImpl.class.getName());
 		}
 
-		EntityCacheUtil.clearCache(UserThreadImpl.class.getName());
+		EntityCacheUtil.clearCache(UserThreadImpl.class);
 
 		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_ENTITY);
 		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
@@ -2998,7 +2997,7 @@ public class UserThreadPersistenceImpl extends BasePersistenceImpl<UserThread>
 
 					Collections.sort(list);
 
-					list = new UnmodifiableList<UserThread>(list);
+					list = Collections.unmodifiableList(list);
 				}
 				else {
 					list = (List<UserThread>)QueryUtil.list(q, getDialect(),

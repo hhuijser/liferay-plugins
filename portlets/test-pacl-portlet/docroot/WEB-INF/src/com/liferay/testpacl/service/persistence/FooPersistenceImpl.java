@@ -33,7 +33,6 @@ import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.UnmodifiableList;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.model.ModelListener;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
@@ -222,7 +221,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 
 					Collections.sort(list);
 
-					list = new UnmodifiableList<Foo>(list);
+					list = Collections.unmodifiableList(list);
 				}
 				else {
 					list = (List<Foo>)QueryUtil.list(q, getDialect(), start, end);
@@ -616,7 +615,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 			CacheRegistryUtil.clear(FooImpl.class.getName());
 		}
 
-		EntityCacheUtil.clearCache(FooImpl.class.getName());
+		EntityCacheUtil.clearCache(FooImpl.class);
 
 		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_ENTITY);
 		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
@@ -1033,7 +1032,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 
 					Collections.sort(list);
 
-					list = new UnmodifiableList<Foo>(list);
+					list = Collections.unmodifiableList(list);
 				}
 				else {
 					list = (List<Foo>)QueryUtil.list(q, getDialect(), start, end);

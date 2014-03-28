@@ -14,13 +14,19 @@
 
 package com.liferay.sync.engine.service;
 
+import com.liferay.sync.engine.documentlibrary.event.GetUserSitesGroupsEvent;
+import com.liferay.sync.engine.model.ModelListener;
 import com.liferay.sync.engine.model.SyncSite;
 import com.liferay.sync.engine.service.persistence.SyncSitePersistence;
 
 import java.sql.SQLException;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,21 +35,6 @@ import org.slf4j.LoggerFactory;
  * @author Shinn Lok
  */
 public class SyncSiteService {
-
-	public static SyncSite addSyncSite(
-			String filePath, long groupId, long syncAccountId)
-		throws Exception {
-
-		SyncSite syncSite = new SyncSite();
-
-		syncSite.setFilePath(filePath);
-		syncSite.setGroupId(groupId);
-		syncSite.setSyncAccountId(syncAccountId);
-
-		_syncSitePersistence.create(syncSite);
-
-		return syncSite;
-	}
 
 	public static void deleteSyncSite(long syncSiteId) {
 		try {
@@ -56,9 +47,37 @@ public class SyncSiteService {
 		}
 	}
 
+	public static SyncSite fetchSyncSite(long syncSiteId) {
+		try {
+			return _syncSitePersistence.queryForId(syncSiteId);
+		}
+		catch (SQLException sqle) {
+			if (_logger.isDebugEnabled()) {
+				_logger.debug(sqle.getMessage(), sqle);
+			}
+
+			return null;
+		}
+	}
+
 	public static SyncSite fetchSyncSite(long groupId, long syncAccountId) {
 		try {
-			return _syncSitePersistence.fetchSyncSite(groupId, syncAccountId);
+			return _syncSitePersistence.fetchByG_S(groupId, syncAccountId);
+		}
+		catch (SQLException sqle) {
+			if (_logger.isDebugEnabled()) {
+				_logger.debug(sqle.getMessage(), sqle);
+			}
+
+			return null;
+		}
+	}
+
+	public static SyncSite fetchSyncSite(
+		String filePathName, long syncAccountId) {
+
+		try {
+			return _syncSitePersistence.fetchByF_S(filePathName, syncAccountId);
 		}
 		catch (SQLException sqle) {
 			if (_logger.isDebugEnabled()) {
@@ -71,7 +90,7 @@ public class SyncSiteService {
 
 	public static List<SyncSite> findSyncSites(long syncAccountId) {
 		try {
-			return _syncSitePersistence.findSyncSites(syncAccountId);
+			return _syncSitePersistence.findBySyncAccountId(syncAccountId);
 		}
 		catch (SQLException sqle) {
 			if (_logger.isDebugEnabled()) {
@@ -79,6 +98,30 @@ public class SyncSiteService {
 			}
 
 			return Collections.emptyList();
+		}
+	}
+
+	public static Set<Long> getActiveSyncSiteIds(long syncAccountId) {
+		try {
+			Set<Long> activeSyncSiteIds = _activeSyncSiteIds.get(syncAccountId);
+
+			if (activeSyncSiteIds != null) {
+				return activeSyncSiteIds;
+			}
+
+			activeSyncSiteIds = new HashSet<Long>(
+				_syncSitePersistence.findByA_S(true, syncAccountId));
+
+			_activeSyncSiteIds.put(syncAccountId, activeSyncSiteIds);
+
+			return activeSyncSiteIds;
+		}
+		catch (SQLException sqle) {
+			if (_logger.isDebugEnabled()) {
+				_logger.debug(sqle.getMessage(), sqle);
+			}
+
+			return Collections.emptySet();
 		}
 	}
 
@@ -99,6 +142,26 @@ public class SyncSiteService {
 		return _syncSitePersistence;
 	}
 
+	public static void registerModelListener(
+		ModelListener<SyncSite> modelListener) {
+
+		_syncSitePersistence.registerModelListener(modelListener);
+	}
+
+	public static void synchronizeSyncSites(long syncAccountId) {
+		GetUserSitesGroupsEvent getUserSitesGroupsEvent =
+			new GetUserSitesGroupsEvent(
+				syncAccountId, Collections.<String, Object>emptyMap());
+
+		getUserSitesGroupsEvent.run();
+	}
+
+	public static void unregisterModelListener(
+		ModelListener<SyncSite> modelListener) {
+
+		_syncSitePersistence.unregisterModelListener(modelListener);
+	}
+
 	public static SyncSite update(SyncSite syncSite) {
 		try {
 			_syncSitePersistence.createOrUpdate(syncSite);
@@ -117,6 +180,8 @@ public class SyncSiteService {
 	private static Logger _logger = LoggerFactory.getLogger(
 		SyncSiteService.class);
 
+	private static Map<Long, Set<Long>> _activeSyncSiteIds =
+		new HashMap<Long, Set<Long>>();
 	private static SyncSitePersistence _syncSitePersistence =
 		getSyncSitePersistence();
 

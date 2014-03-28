@@ -649,7 +649,7 @@ public class FileSystemImporter extends BaseImporter {
 
 		String content = StringUtil.read(inputStream);
 
-		content = processJournalArticleContent(content);
+		content = replaceFileEntryURL(content);
 
 		Locale articleDefaultLocale = LocaleUtil.fromLanguageId(
 			LocalizationUtil.getDefaultLanguageId(content));
@@ -1124,34 +1124,6 @@ public class FileSystemImporter extends BaseImporter {
 		return filesList.toArray(new File[filesList.size()]);
 	}
 
-	protected String processJournalArticleContent(String content)
-		throws Exception {
-
-		content = replaceFileEntryURL(content);
-
-		if (content.contains("<?xml version=\"1.0\"")) {
-			return content;
-		}
-
-		StringBundler sb = new StringBundler(13);
-
-		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		sb.append("<root available-locales=\"");
-		sb.append(LocaleUtil.getDefault());
-		sb.append("\" default-locale=\"");
-		sb.append(LocaleUtil.getDefault());
-		sb.append("\">");
-		sb.append("<static-content language-id=\"");
-		sb.append(LocaleUtil.getDefault());
-		sb.append("\">");
-		sb.append("<![CDATA[");
-		sb.append(content);
-		sb.append("]]>");
-		sb.append("</static-content></root>");
-
-		return sb.toString();
-	}
-
 	protected String replaceFileEntryURL(String content) throws Exception {
 		Matcher matcher = _fileEntryPattern.matcher(content);
 
@@ -1228,6 +1200,8 @@ public class FileSystemImporter extends BaseImporter {
 			setupAssets(assetsJSONArray);
 		}
 
+		addDLFileEntries(_DL_DOCUMENTS_DIR_NAME);
+
 		addApplicationDisplayTemplates(_APPLICATION_DISPLAY_TEMPLATE_DIR_NAME);
 
 		addDDLStructures(_DDL_STRUCTURE_DIR_NAME);
@@ -1235,11 +1209,6 @@ public class FileSystemImporter extends BaseImporter {
 		addDDMStructures(StringPool.BLANK, _JOURNAL_DDM_STRUCTURES_DIR_NAME);
 
 		addDDMTemplates(StringPool.BLANK, _JOURNAL_DDM_TEMPLATES_DIR_NAME);
-
-		addDLFileEntries(_DL_DOCUMENTS_DIR_NAME);
-
-		addJournalArticles(
-			StringPool.BLANK, StringPool.BLANK, _JOURNAL_ARTICLES_DIR_NAME);
 
 		addLayoutTemplate(_LAYOUT_TEMPLATE_DIR_NAME);
 	}

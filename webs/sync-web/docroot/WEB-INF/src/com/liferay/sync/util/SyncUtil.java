@@ -14,23 +14,23 @@
 
 package com.liferay.sync.util;
 
+import com.liferay.io.delta.ByteChannelReader;
+import com.liferay.io.delta.ByteChannelWriter;
+import com.liferay.io.delta.DeltaUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.Folder;
+import com.liferay.portal.kernel.util.Digester;
 import com.liferay.portal.kernel.util.DigesterUtil;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.StreamUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.Lock;
+import com.liferay.portlet.documentlibrary.model.DLFileEntryConstants;
 import com.liferay.portlet.documentlibrary.model.DLFileVersion;
-import com.liferay.portlet.documentlibrary.model.DLSyncConstants;
-import com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil;
-import com.liferay.portlet.documentlibrary.service.DLFileEntryLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLFileVersionLocalServiceUtil;
-import com.liferay.sync.io.delta.ByteChannelReader;
-import com.liferay.sync.io.delta.ByteChannelWriter;
-import com.liferay.sync.io.delta.DeltaUtil;
+import com.liferay.sync.model.SyncConstants;
 import com.liferay.sync.model.SyncDLObject;
 import com.liferay.sync.model.impl.SyncDLObjectImpl;
 
@@ -44,6 +44,8 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+
+import java.util.Date;
 
 /**
  * @author Dennis Ju
@@ -73,15 +75,13 @@ public class SyncUtil {
 	}
 
 	public static String getChecksum(InputStream inputStream) {
-		return DigesterUtil.digestBase64(inputStream);
+		return DigesterUtil.digestBase64(Digester.SHA_1, inputStream);
 	}
 
-	public static InputStream getFileDeltaAsStream(
-			long userId, long fileEntryId, String sourceVersion,
-			String destinationVersion)
+	public static File getFileDelta(File sourceFile, File targetFile)
 		throws PortalException {
 
-		InputStream deltaInputStream = null;
+		File deltaFile = null;
 
 		FileInputStream sourceFileInputStream = null;
 		FileChannel sourceFileChannel = null;
@@ -90,9 +90,6 @@ public class SyncUtil {
 		WritableByteChannel checksumsWritableByteChannel = null;
 
 		try {
-			File sourceFile = DLFileEntryLocalServiceUtil.getFile(
-				userId, fileEntryId, sourceVersion, false);
-
 			sourceFileInputStream = new FileInputStream(sourceFile);
 
 			sourceFileChannel = sourceFileInputStream.getChannel();
@@ -119,22 +116,17 @@ public class SyncUtil {
 			StreamUtil.cleanUp(checksumsWritableByteChannel);
 		}
 
-		InputStream destinationInputStream = null;
-		ReadableByteChannel destinationReadableByteChannel = null;
+		FileInputStream targetFileInputStream = null;
+		ReadableByteChannel targetReadableByteChannel = null;
 		InputStream checksumsInputStream = null;
 		ReadableByteChannel checksumsReadableByteChannel = null;
 		OutputStream deltaOutputStream = null;
 		WritableByteChannel deltaOutputStreamWritableByteChannel = null;
 
 		try {
-			FileEntry fileEntry = DLAppLocalServiceUtil.getFileEntry(
-				fileEntryId);
+			targetFileInputStream = new FileInputStream(targetFile);
 
-			destinationInputStream = fileEntry.getContentStream(
-				destinationVersion);
-
-			destinationReadableByteChannel = Channels.newChannel(
-				destinationInputStream);
+			targetReadableByteChannel = targetFileInputStream.getChannel();
 
 			checksumsInputStream = new FileInputStream(checksumsFile);
 
@@ -144,7 +136,7 @@ public class SyncUtil {
 			ByteChannelReader checksumsByteChannelReader =
 				new ByteChannelReader(checksumsReadableByteChannel);
 
-			File deltaFile = FileUtil.createTempFile();
+			deltaFile = FileUtil.createTempFile();
 
 			deltaOutputStream = new FileOutputStream(deltaFile);
 
@@ -155,19 +147,17 @@ public class SyncUtil {
 				deltaOutputStreamWritableByteChannel);
 
 			DeltaUtil.delta(
-				destinationReadableByteChannel, checksumsByteChannelReader,
+				targetReadableByteChannel, checksumsByteChannelReader,
 				deltaByteChannelWriter);
 
 			deltaByteChannelWriter.finish();
-
-			deltaInputStream = new FileInputStream(deltaFile);
 		}
 		catch (Exception e) {
 			throw new PortalException(e);
 		}
 		finally {
-			StreamUtil.cleanUp(destinationInputStream);
-			StreamUtil.cleanUp(destinationReadableByteChannel);
+			StreamUtil.cleanUp(targetFileInputStream);
+			StreamUtil.cleanUp(targetReadableByteChannel);
 			StreamUtil.cleanUp(checksumsInputStream);
 			StreamUtil.cleanUp(checksumsReadableByteChannel);
 			StreamUtil.cleanUp(deltaOutputStream);
@@ -176,7 +166,7 @@ public class SyncUtil {
 			FileUtil.delete(checksumsFile);
 		}
 
-		return deltaInputStream;
+		return deltaFile;
 	}
 
 	public static boolean isSupportedFolder(Folder folder) {
@@ -233,44 +223,53 @@ public class SyncUtil {
 	public static SyncDLObject toSyncDLObject(FileEntry fileEntry, String event)
 		throws PortalException, SystemException {
 
-		SyncDLObject syncDLObject = new SyncDLObjectImpl();
+		DLFileVersion dlFileVersion = null;
 
-		syncDLObject.setCompanyId(fileEntry.getCompanyId());
-		syncDLObject.setCreateDate(fileEntry.getCreateDate());
-		syncDLObject.setModifiedDate(fileEntry.getModifiedDate());
-		syncDLObject.setRepositoryId(fileEntry.getRepositoryId());
-		syncDLObject.setParentFolderId(fileEntry.getFolderId());
-		syncDLObject.setName(fileEntry.getTitle());
-		syncDLObject.setExtension(fileEntry.getExtension());
-		syncDLObject.setMimeType(fileEntry.getMimeType());
-		syncDLObject.setDescription(fileEntry.getDescription());
-
-		DLFileVersion dlFileVersion =
-			DLFileVersionLocalServiceUtil.getLatestFileVersion(
-				fileEntry.getFileEntryId(), false);
-
-		syncDLObject.setChangeLog(dlFileVersion.getChangeLog());
-		syncDLObject.setExtraSettings(dlFileVersion.getExtraSettings());
-
-		syncDLObject.setVersion(fileEntry.getVersion());
-		syncDLObject.setSize(fileEntry.getSize());
-		syncDLObject.setChecksum(getChecksum(dlFileVersion));
-		syncDLObject.setEvent(event);
+		Date lockExpirationDate = null;
+		long lockUserId = 0;
+		String lockUserName = StringPool.BLANK;
+		String type = null;
 
 		Lock lock = fileEntry.getLock();
 
 		if (lock != null) {
-			syncDLObject.setLockExpirationDate(lock.getExpirationDate());
-			syncDLObject.setLockUserId(lock.getUserId());
-			syncDLObject.setLockUserName(lock.getUserName());
+			dlFileVersion = DLFileVersionLocalServiceUtil.getFileVersion(
+				fileEntry.getFileEntryId(),
+				DLFileEntryConstants.PRIVATE_WORKING_COPY_VERSION);
+
+			lockExpirationDate = lock.getExpirationDate();
+			lockUserId = lock.getUserId();
+			lockUserName = lock.getUserName();
+			type = SyncConstants.TYPE_PRIVATE_WORKNG_COPY;
 		}
 		else {
-			syncDLObject.setLockExpirationDate(null);
-			syncDLObject.setLockUserId(0);
-			syncDLObject.setLockUserName(StringPool.BLANK);
+			dlFileVersion = DLFileVersionLocalServiceUtil.getFileVersion(
+				fileEntry.getFileEntryId(), fileEntry.getVersion());
+
+			type = SyncConstants.TYPE_FILE;
 		}
 
-		syncDLObject.setType(DLSyncConstants.TYPE_FILE);
+		SyncDLObject syncDLObject = new SyncDLObjectImpl();
+
+		syncDLObject.setCompanyId(dlFileVersion.getCompanyId());
+		syncDLObject.setCreateDate(dlFileVersion.getCreateDate());
+		syncDLObject.setModifiedDate(dlFileVersion.getModifiedDate());
+		syncDLObject.setRepositoryId(dlFileVersion.getRepositoryId());
+		syncDLObject.setParentFolderId(dlFileVersion.getFolderId());
+		syncDLObject.setName(dlFileVersion.getTitle());
+		syncDLObject.setExtension(dlFileVersion.getExtension());
+		syncDLObject.setMimeType(dlFileVersion.getMimeType());
+		syncDLObject.setDescription(dlFileVersion.getDescription());
+		syncDLObject.setChangeLog(dlFileVersion.getChangeLog());
+		syncDLObject.setExtraSettings(dlFileVersion.getExtraSettings());
+		syncDLObject.setVersion(dlFileVersion.getVersion());
+		syncDLObject.setSize(dlFileVersion.getSize());
+		syncDLObject.setChecksum(getChecksum(dlFileVersion));
+		syncDLObject.setEvent(event);
+		syncDLObject.setLockExpirationDate(lockExpirationDate);
+		syncDLObject.setLockUserId(lockUserId);
+		syncDLObject.setLockUserName(lockUserName);
+		syncDLObject.setType(type);
 		syncDLObject.setTypePK(fileEntry.getFileEntryId());
 		syncDLObject.setTypeUuid(fileEntry.getUuid());
 
@@ -292,13 +291,13 @@ public class SyncUtil {
 		syncDLObject.setChangeLog(StringPool.BLANK);
 		syncDLObject.setExtraSettings(StringPool.BLANK);
 		syncDLObject.setVersion(StringPool.BLANK);
-		syncDLObject.setSize(-1);
+		syncDLObject.setSize(0);
 		syncDLObject.setChecksum(StringPool.BLANK);
 		syncDLObject.setEvent(event);
 		syncDLObject.setLockExpirationDate(null);
 		syncDLObject.setLockUserId(0);
 		syncDLObject.setLockUserName(StringPool.BLANK);
-		syncDLObject.setType(DLSyncConstants.TYPE_FOLDER);
+		syncDLObject.setType(SyncConstants.TYPE_FOLDER);
 		syncDLObject.setTypePK(folder.getFolderId());
 		syncDLObject.setTypeUuid(folder.getUuid());
 

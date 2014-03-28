@@ -40,7 +40,6 @@ import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.UnmodifiableList;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.model.CacheModel;
@@ -241,7 +240,7 @@ public class KBTemplatePersistenceImpl extends BasePersistenceImpl<KBTemplate>
 
 					Collections.sort(list);
 
-					list = new UnmodifiableList<KBTemplate>(list);
+					list = Collections.unmodifiableList(list);
 				}
 				else {
 					list = (List<KBTemplate>)QueryUtil.list(q, getDialect(),
@@ -1051,7 +1050,7 @@ public class KBTemplatePersistenceImpl extends BasePersistenceImpl<KBTemplate>
 
 					Collections.sort(list);
 
-					list = new UnmodifiableList<KBTemplate>(list);
+					list = Collections.unmodifiableList(list);
 				}
 				else {
 					list = (List<KBTemplate>)QueryUtil.list(q, getDialect(),
@@ -1596,7 +1595,7 @@ public class KBTemplatePersistenceImpl extends BasePersistenceImpl<KBTemplate>
 
 					Collections.sort(list);
 
-					list = new UnmodifiableList<KBTemplate>(list);
+					list = Collections.unmodifiableList(list);
 				}
 				else {
 					list = (List<KBTemplate>)QueryUtil.list(q, getDialect(),
@@ -2360,7 +2359,7 @@ public class KBTemplatePersistenceImpl extends BasePersistenceImpl<KBTemplate>
 			CacheRegistryUtil.clear(KBTemplateImpl.class.getName());
 		}
 
-		EntityCacheUtil.clearCache(KBTemplateImpl.class.getName());
+		EntityCacheUtil.clearCache(KBTemplateImpl.class);
 
 		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_ENTITY);
 		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
@@ -2890,7 +2889,7 @@ public class KBTemplatePersistenceImpl extends BasePersistenceImpl<KBTemplate>
 
 					Collections.sort(list);
 
-					list = new UnmodifiableList<KBTemplate>(list);
+					list = Collections.unmodifiableList(list);
 				}
 				else {
 					list = (List<KBTemplate>)QueryUtil.list(q, getDialect(),
