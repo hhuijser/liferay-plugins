@@ -30,6 +30,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistryUtil;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.User;
@@ -66,9 +67,9 @@ public class MessageLocalServiceImpl extends MessageLocalServiceBaseImpl {
 		message.setAccountId(folder.getAccountId());
 		message.setFolderId(folderId);
 		message.setSender(sender);
-		message.setTo(to);
-		message.setCc(cc);
-		message.setBcc(bcc);
+		message.setTo(formatEmailAddresses(to));
+		message.setCc(formatEmailAddresses(cc));
+		message.setBcc(formatEmailAddresses(bcc));
 		message.setSentDate(sentDate);
 		message.setSubject(subject);
 		message.setPreview(getPreview(body));
@@ -307,9 +308,9 @@ public class MessageLocalServiceImpl extends MessageLocalServiceBaseImpl {
 		message.setModifiedDate(new Date());
 		message.setFolderId(folderId);
 		message.setSender(sender);
-		message.setTo(to);
-		message.setCc(cc);
-		message.setBcc(bcc);
+		message.setTo(formatEmailAddresses(to));
+		message.setCc(formatEmailAddresses(cc));
+		message.setBcc(formatEmailAddresses(bcc));
 		message.setSentDate(sentDate);
 		message.setSubject(subject);
 		message.setPreview(getPreview(body));
@@ -327,6 +328,17 @@ public class MessageLocalServiceImpl extends MessageLocalServiceBaseImpl {
 		indexer.reindex(message);
 
 		return message;
+	}
+
+	protected String formatEmailAddresses(String address) {
+		String[] addresses = StringUtil.split(address, StringPool.COMMA);
+
+		if (addresses.length > 1) {
+			return StringUtil.merge(
+				addresses, StringPool.COMMA + StringPool.SPACE);
+		}
+
+		return address;
 	}
 
 	protected String getBody(String body) {
