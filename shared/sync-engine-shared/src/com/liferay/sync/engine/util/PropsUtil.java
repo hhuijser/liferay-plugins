@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -30,6 +30,10 @@ public class PropsUtil {
 		return _instance._get(key);
 	}
 
+	public static String[] getArray(String key) {
+		return _instance._getArray(key);
+	}
+
 	public static void set(String key, String value) {
 		_instance._set(key, value);
 	}
@@ -51,6 +55,10 @@ public class PropsUtil {
 		}
 
 		return value.replace("${user.home}", System.getProperty("user.home"));
+	}
+
+	private String[] _getArray(String key) {
+		return _configuration.getStringArray(key);
 	}
 
 	private void _set(String key, String value) {
