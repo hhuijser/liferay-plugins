@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,23 +14,25 @@
 
 package com.liferay.chat.video;
 
+import com.liferay.portal.kernel.json.JSONObject;
+
 /**
  * @author Philippe Proulx
  */
 public abstract class WebRTCMail {
 
-	public WebRTCMail(long sourceUserId, String messageJSON) {
+	public WebRTCMail(long sourceUserId, JSONObject messageJSONObject) {
 		_sourceUserId = sourceUserId;
-		_messageJSON = messageJSON;
+		_messageJSONObject = messageJSONObject;
 	}
 
 	public WebRTCMail(WebRTCMail webRTCMail) {
 		_sourceUserId = webRTCMail._sourceUserId;
-		_messageJSON = webRTCMail._messageJSON;
+		_messageJSONObject = webRTCMail._messageJSONObject;
 	}
 
-	public String getMessageJSON() {
-		return _messageJSON;
+	public JSONObject getMessageJSONObject() {
+		return _messageJSONObject;
 	}
 
 	public abstract String getMessageType();
@@ -39,7 +41,7 @@ public abstract class WebRTCMail {
 		return _sourceUserId;
 	}
 
-	private final String _messageJSON;
+	private final JSONObject _messageJSONObject;
 	private final long _sourceUserId;
 
 }
