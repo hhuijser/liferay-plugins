@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -111,7 +111,7 @@ public class CalendarResourceStagedModelDataHandler
 				calendarResource.getClassPK());
 
 			portletDataContext.addReferenceElement(
-				calendarResource, calendarResourceElement, user, User.class,
+				calendarResource, calendarResourceElement, user,
 				PortletDataContext.REFERENCE_TYPE_DEPENDENCY_DISPOSABLE, true);
 		}
 
@@ -202,10 +202,12 @@ public class CalendarResourceStagedModelDataHandler
 		String calendarResourceName = calendarResource.getName(
 			LocaleUtil.getDefault());
 
-		Group sourceGroup = GroupLocalServiceUtil.getGroup(
+		Group sourceGroup = GroupLocalServiceUtil.fetchGroup(
 			portletDataContext.getSourceGroupId());
 
-		if (!calendarResourceName.equals(sourceGroup.getName())) {
+		if ((sourceGroup == null) ||
+			!calendarResourceName.equals(sourceGroup.getName())) {
+
 			return calendarResource.getNameMap();
 		}
 

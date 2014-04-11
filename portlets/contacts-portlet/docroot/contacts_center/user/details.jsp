@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -28,9 +28,9 @@ User selUser = (User)request.getAttribute("user.selUser");
 <h3><liferay-ui:message key="details" /></h3>
 
 <aui:fieldset column="<%= true %>" cssClass="w50">
-	<aui:input name="screenName" />
+	<aui:input autocapitalize="off" autocorrect="off" name="screenName" type="text" />
 
-	<aui:input bean="<%= user %>" model="<%= User.class %>" name="emailAddress">
+	<aui:input bean="<%= user %>" model="<%= User.class %>" name="emailAddress" type="email">
 		<c:if test="<%= PrefsPropsUtil.getBoolean(company.getCompanyId(), PropsKeys.USERS_EMAIL_ADDRESS_REQUIRED) %>">
 			<aui:validator name="required" />
 		</c:if>

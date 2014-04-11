@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,18 @@
 
 package com.liferay.sync.engine.documentlibrary.event;
 
+import com.liferay.sync.engine.documentlibrary.handler.GetSyncDLObjectUpdateHandler;
+import com.liferay.sync.engine.documentlibrary.handler.Handler;
+import com.liferay.sync.engine.model.SyncFile;
+import com.liferay.sync.engine.model.SyncSite;
+import com.liferay.sync.engine.service.SyncFileService;
+import com.liferay.sync.engine.service.SyncSiteService;
+import com.liferay.sync.engine.util.FileUtil;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -28,8 +40,42 @@ public class GetSyncDLObjectUpdateEvent extends BaseEvent {
 	}
 
 	@Override
-	protected void processResponse(String response) throws Exception {
-		System.out.println(response);
+	protected Handler<?> getHandler() {
+		return new GetSyncDLObjectUpdateHandler(this);
+	}
+
+	@Override
+	protected void processRequest() throws Exception {
+		SyncSite syncSite = (SyncSite)getParameterValue("syncSite");
+
+		// Refetch for updated last remote sync time
+
+		syncSite = SyncSiteService.fetchSyncSite(
+			syncSite.getGroupId(), syncSite.getSyncAccountId());
+
+		if (syncSite.getRemoteSyncTime() == 0) {
+			String filePathName = syncSite.getFilePathName();
+
+			SyncFile syncFile = SyncFileService.fetchSyncFile(
+				filePathName, getSyncAccountId());
+
+			if (syncFile == null) {
+				Files.createDirectories(Paths.get(filePathName));
+
+				SyncFileService.addSyncFile(
+					null, null, filePathName, FileUtil.getFileKey(filePathName),
+					filePathName, null, filePathName, 0, syncSite.getGroupId(),
+					syncSite.getSyncAccountId(), SyncFile.TYPE_FOLDER);
+			}
+		}
+
+		Map<String, Object> parameters = new HashMap<String, Object>();
+
+		parameters.put("companyId", syncSite.getCompanyId());
+		parameters.put("lastAccessTime", syncSite.getRemoteSyncTime());
+		parameters.put("repositoryId", syncSite.getGroupId());
+
+		executePost(_URL_PATH, parameters);
 	}
 
 	private static final String _URL_PATH =
