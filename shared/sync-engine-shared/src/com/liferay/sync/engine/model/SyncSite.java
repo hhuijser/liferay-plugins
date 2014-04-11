@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -25,8 +25,24 @@ import com.liferay.sync.engine.service.persistence.BasePersistenceImpl;
  * @author Shinn Lok
  */
 @DatabaseTable(daoClass = BasePersistenceImpl.class, tableName = "SyncSite")
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class SyncSite {
+@JsonIgnoreProperties(ignoreUnknown = true, value = "active")
+public class SyncSite extends StateAwareModel {
+
+	public static final int STATE_CONNECTED = 1;
+
+	public static final int STATE_DISCONNECTED = 0;
+
+	public static final int TYPE_OPEN = 1;
+
+	public static final int TYPE_PRIVATE = 3;
+
+	public static final int TYPE_RESTRICTED = 2;
+
+	public static final int TYPE_SYSTEM = 4;
+
+	public boolean getActive() {
+		return active;
+	}
 
 	public long getCompanyId() {
 		return companyId;
@@ -36,12 +52,8 @@ public class SyncSite {
 		return description;
 	}
 
-	public boolean getEnabled() {
-		return enabled;
-	}
-
-	public String getFilePath() {
-		return filePath;
+	public String getFilePathName() {
+		return filePathName;
 	}
 
 	public String getFriendlyURL() {
@@ -52,12 +64,12 @@ public class SyncSite {
 		return groupId;
 	}
 
-	public long getLastRemoteSyncTime() {
-		return lastRemoteSyncTime;
-	}
-
 	public String getName() {
 		return name;
+	}
+
+	public long getRemoteSyncTime() {
+		return remoteSyncTime;
 	}
 
 	public boolean getSite() {
@@ -80,6 +92,18 @@ public class SyncSite {
 		return typeSettings;
 	}
 
+	public boolean isActive() {
+		return getActive();
+	}
+
+	public boolean isSite() {
+		return getSite();
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
 	public void setCompanyId(long companyId) {
 		this.companyId = companyId;
 	}
@@ -88,12 +112,8 @@ public class SyncSite {
 		this.description = description;
 	}
 
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
+	public void setFilePathName(String filePathName) {
+		this.filePathName = filePathName;
 	}
 
 	public void setFriendlyURL(String friendlyURL) {
@@ -104,12 +124,12 @@ public class SyncSite {
 		this.groupId = groupId;
 	}
 
-	public void setLastRemoteSyncTime(long lastRemoteSyncTime) {
-		this.lastRemoteSyncTime = lastRemoteSyncTime;
-	}
-
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public void setRemoteSyncTime(long remoteSyncTime) {
+		this.remoteSyncTime = remoteSyncTime;
 	}
 
 	public void setSite(boolean site) {
@@ -133,16 +153,16 @@ public class SyncSite {
 	}
 
 	@DatabaseField(useGetSet = true)
+	protected boolean active;
+
+	@DatabaseField(useGetSet = true)
 	protected long companyId;
 
 	@DatabaseField(useGetSet = true, width = 16777216)
 	protected String description;
 
-	@DatabaseField(useGetSet = true)
-	protected boolean enabled;
-
 	@DatabaseField(useGetSet = true, width = 16777216)
-	protected String filePath;
+	protected String filePathName;
 
 	@DatabaseField(useGetSet = true)
 	protected String friendlyURL;
@@ -151,10 +171,10 @@ public class SyncSite {
 	protected long groupId;
 
 	@DatabaseField(useGetSet = true)
-	protected long lastRemoteSyncTime;
+	protected String name;
 
 	@DatabaseField(useGetSet = true)
-	protected String name;
+	protected long remoteSyncTime;
 
 	@DatabaseField(useGetSet = true)
 	protected boolean site;

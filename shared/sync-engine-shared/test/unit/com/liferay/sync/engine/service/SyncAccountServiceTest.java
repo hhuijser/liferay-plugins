@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -27,14 +27,17 @@ import org.junit.Test;
 public class SyncAccountServiceTest extends BaseTestCase {
 
 	@After
-	public void tearDown() {
+	@Override
+	public void tearDown() throws Exception {
+		super.tearDown();
+
 		SyncAccountService.deleteSyncAccount(_syncAccount.getSyncAccountId());
 	}
 
 	@Test
 	public void testAddAccount() throws Exception {
 		SyncAccount syncAccount = SyncAccountService.addSyncAccount(
-			null, "test@liferay.com", "test",
+			filePathName, 10, "test@liferay.com", "test", "test", false,
 			"http://localhost:8080/api/jsonws");
 
 		_syncAccount = SyncAccountService.fetchSyncAccount(
