@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -17,6 +17,7 @@ package com.liferay.portal.patcher;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.FileUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.StreamUtil;
 import com.liferay.portal.kernel.util.StringPool;
@@ -32,6 +33,7 @@ import java.util.Properties;
 /**
  * @author Zsolt Balogh
  * @author Brian Wing Shun Chan
+ * @author Igor Beslic
  */
 public class PatcherImpl implements Patcher {
 
@@ -114,6 +116,22 @@ public class PatcherImpl implements Patcher {
 	}
 
 	@Override
+	public int getPatchingToolVersion() {
+		if (_patchingToolVersion != 0) {
+			return _patchingToolVersion;
+		}
+
+		Properties properties = getProperties();
+
+		if (properties.containsKey(PROPERTY_PATCHING_TOOL_VERSION)) {
+			_patchingToolVersion = GetterUtil.getInteger(
+				properties.getProperty(PROPERTY_PATCHING_TOOL_VERSION));
+		}
+
+		return _patchingToolVersion;
+	}
+
+	@Override
 	public String[] getPatchLevels() {
 		if (_patchLevels != null) {
 			return _patchLevels;
@@ -175,6 +193,7 @@ public class PatcherImpl implements Patcher {
 	private String[] _fixedIssueKeys;
 	private String[] _installedPatchNames;
 	private File _patchDirectory;
+	private int _patchingToolVersion;
 	private String[] _patchLevels;
 	private Properties _properties;
 

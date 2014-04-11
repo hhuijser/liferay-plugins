@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,17 +14,16 @@
 
 package com.liferay.sync.engine.documentlibrary.event;
 
-import com.liferay.sync.engine.util.HttpUtil;
+import com.liferay.sync.engine.documentlibrary.handler.Handler;
+import com.liferay.sync.engine.session.Session;
+import com.liferay.sync.engine.session.SessionManager;
 
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Shinn Lok
  */
-public abstract class BaseEvent implements Runnable {
+public abstract class BaseEvent implements Event {
 
 	public BaseEvent(
 		long syncAccountId, String urlPath, Map<String, Object> parameters) {
@@ -34,31 +33,55 @@ public abstract class BaseEvent implements Runnable {
 		_parameters = parameters;
 	}
 
-	@Override
-	public void run() {
-		try {
-			String response = processRequest();
+	public <T> T executeGet(String urlPath) throws Exception {
+		Session session = SessionManager.getSession(_syncAccountId);
 
-			processResponse(response);
-		}
-		catch (Exception e) {
-			_logger.error(e.getMessage(), e);
-		}
+		return session.executeGet(urlPath, (Handler<? extends T>)_handler);
 	}
 
-	protected long getSyncAccountId() {
+	public <T> T executePost(String urlPath, Map<String, Object> parameters)
+		throws Exception {
+
+		Session session = SessionManager.getSession(_syncAccountId);
+
+		return session.executePost(
+			urlPath, parameters, (Handler<? extends T>)_handler);
+	}
+
+	@Override
+	public Map<String, Object> getParameters() {
+		return _parameters;
+	}
+
+	@Override
+	public Object getParameterValue(String key) {
+		return _parameters.get(key);
+	}
+
+	@Override
+	public long getSyncAccountId() {
 		return _syncAccountId;
 	}
 
-	protected String processRequest() throws Exception {
-		return HttpUtil.executePost(_syncAccountId, _urlPath, _parameters);
+	@Override
+	public void run() {
+		_handler = getHandler();
+
+		try {
+			processRequest();
+		}
+		catch (Exception e) {
+			_handler.handleException(e);
+		}
 	}
 
-	protected abstract void processResponse(String response)
-		throws Exception;
+	protected abstract Handler<?> getHandler();
 
-	private static Logger _logger = LoggerFactory.getLogger(BaseEvent.class);
+	protected void processRequest() throws Exception {
+		executePost(_urlPath, _parameters);
+	}
 
+	private Handler<?> _handler;
 	private Map<String, Object> _parameters;
 	private long _syncAccountId;
 	private String _urlPath;

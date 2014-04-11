@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -13,6 +13,11 @@
  */
 
 package com.liferay.sync.engine.documentlibrary.event;
+
+import com.liferay.sync.engine.documentlibrary.handler.CheckInCheckOutHandler;
+import com.liferay.sync.engine.documentlibrary.handler.Handler;
+import com.liferay.sync.engine.model.SyncFile;
+import com.liferay.sync.engine.service.SyncFileService;
 
 import java.util.Map;
 
@@ -28,8 +33,19 @@ public class CheckOutFileEntryEvent extends BaseEvent {
 	}
 
 	@Override
-	protected void processResponse(String response) throws Exception {
-		System.out.println(response);
+	protected Handler<?> getHandler() {
+		return new CheckInCheckOutHandler(this);
+	}
+
+	@Override
+	protected void processRequest() throws Exception {
+		SyncFile syncFile = (SyncFile)getParameterValue("syncFile");
+
+		syncFile.setState(SyncFile.STATE_IN_PROGRESS);
+
+		SyncFileService.update(syncFile);
+
+		super.processRequest();
 	}
 
 	private static final String _URL_PATH =

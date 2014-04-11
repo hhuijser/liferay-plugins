@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -33,11 +33,11 @@ KBArticleDisplayTerms displayTerms = (KBArticleDisplayTerms)searchContainer.getD
 
 			<aui:input inlineField="<%= true %>" name="<%= displayTerms.CONTENT %>" size="40" value="<%= displayTerms.getContent() %>" />
 
-			<aui:select ignoreRequestValue="<%= true %>" inlineField="<%= true %>" name="<%= displayTerms.STATUS %>">
-				<aui:option label="<%= WorkflowConstants.getStatusLabel(WorkflowConstants.STATUS_ANY) %>" selected="<%= displayTerms.getStatus() == WorkflowConstants.STATUS_ANY %>" value="<%= WorkflowConstants.STATUS_ANY %>" />
-				<aui:option label="<%= WorkflowConstants.getStatusLabel(WorkflowConstants.STATUS_APPROVED) %>" selected="<%= displayTerms.getStatus() == WorkflowConstants.STATUS_APPROVED %>" value="<%= WorkflowConstants.STATUS_APPROVED %>" />
-				<aui:option label="<%= WorkflowConstants.getStatusLabel(WorkflowConstants.STATUS_DRAFT) %>" selected="<%= displayTerms.getStatus() == WorkflowConstants.STATUS_DRAFT %>" value="<%= WorkflowConstants.STATUS_DRAFT %>" />
-				<aui:option label="<%= WorkflowConstants.getStatusLabel(WorkflowConstants.STATUS_PENDING) %>" selected="<%= displayTerms.getStatus() == WorkflowConstants.STATUS_PENDING %>" value="<%= WorkflowConstants.STATUS_PENDING %>" />
+			<aui:select ignoreRequestValue="<%= true %>" inlineField="<%= true %>" name="<%= displayTerms.STATUS %>" value="<%= displayTerms.getStatus() %>">
+				<aui:option label="<%= WorkflowConstants.getStatusLabel(WorkflowConstants.STATUS_ANY) %>" value="<%= WorkflowConstants.STATUS_ANY %>" />
+				<aui:option label="<%= WorkflowConstants.getStatusLabel(WorkflowConstants.STATUS_APPROVED) %>" value="<%= WorkflowConstants.STATUS_APPROVED %>" />
+				<aui:option label="<%= WorkflowConstants.getStatusLabel(WorkflowConstants.STATUS_DRAFT) %>" value="<%= WorkflowConstants.STATUS_DRAFT %>" />
+				<aui:option label="<%= WorkflowConstants.getStatusLabel(WorkflowConstants.STATUS_PENDING) %>" value="<%= WorkflowConstants.STATUS_PENDING %>" />
 			</aui:select>
 		</div>
 
