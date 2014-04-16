@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -35,6 +35,7 @@ import com.liferay.portal.service.persistence.LayoutActionableDynamicQuery;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.so.service.SocialOfficeServiceUtil;
 import com.liferay.so.util.LayoutSetPrototypeUtil;
+import com.liferay.so.util.LayoutUtil;
 import com.liferay.so.util.PortletKeys;
 import com.liferay.so.util.SocialOfficeConstants;
 
@@ -138,6 +139,8 @@ public class UpgradeLayout extends UpgradeProcess {
 				}
 
 				LayoutLocalServiceUtil.updateLayout(layout);
+
+				LayoutUtil.addResources(layout, PortletKeys.SO_ANNOUNCEMENTS);
 			}
 
 			protected long getLayoutSetPrototypeGroupId(

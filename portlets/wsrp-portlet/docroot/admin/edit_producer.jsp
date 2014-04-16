@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -60,9 +60,9 @@ ServletContext portalServletContext = ServletContextPool.get(portalServletContex
 	<aui:fieldset>
 		<aui:input name="name" />
 
-		<aui:select name="version">
-			<aui:option label="<%= Constants.WSRP_V2 %>" selected="<%= version.equals(Constants.WSRP_V2) %>" value="<%= Constants.WSRP_V2 %>" />
-			<aui:option label="<%= Constants.WSRP_V1 %>" selected="<%= version.equals(Constants.WSRP_V1) %>" value="<%= Constants.WSRP_V1 %>" />
+		<aui:select name="version" value="<%= version %>">
+			<aui:option label="<%= Constants.WSRP_V2 %>" />
+			<aui:option label="<%= Constants.WSRP_V1 %>" />
 		</aui:select>
 
 		<c:if test="<%= wsrpProducer != null %>">

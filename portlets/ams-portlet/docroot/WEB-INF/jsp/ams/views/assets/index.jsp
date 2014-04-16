@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -78,10 +78,12 @@
 			<portlet:param name="format" value="html" />
 		</portlet:actionURL>
 
-		<liferay-ui:search-container-column-text
-			href="javascript:submitForm(document.hrefFm, '${deleteAssetURL}&p_p_state=normal');"
-			value="X"
-		/>
+		<c:if test='${alloyPermission:contains(themeDisplay, "assets", "delete")}'>
+			<liferay-ui:search-container-column-text
+				href="javascript:submitForm(document.hrefFm, '${deleteAssetURL}&p_p_state=normal');"
+				value="X"
+			/>
+		</c:if>
 	</liferay-ui:search-container-row>
 
 	<liferay-ui:search-iterator />
