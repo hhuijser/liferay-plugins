@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -25,7 +25,6 @@ import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.util.CalendarUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.InstanceFactory;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -34,7 +33,6 @@ import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.UnmodifiableList;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.model.ModelListener;
@@ -45,6 +43,8 @@ import com.liferay.portal.workflow.kaleo.model.impl.KaleoInstanceImpl;
 import com.liferay.portal.workflow.kaleo.model.impl.KaleoInstanceModelImpl;
 
 import java.io.Serializable;
+
+import java.sql.Timestamp;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -229,7 +229,7 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 
 					Collections.sort(list);
 
-					list = new UnmodifiableList<KaleoInstance>(list);
+					list = Collections.unmodifiableList(list);
 				}
 				else {
 					list = (List<KaleoInstance>)QueryUtil.list(q, getDialect(),
@@ -727,7 +727,7 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 
 					Collections.sort(list);
 
-					list = new UnmodifiableList<KaleoInstance>(list);
+					list = Collections.unmodifiableList(list);
 				}
 				else {
 					list = (List<KaleoInstance>)QueryUtil.list(q, getDialect(),
@@ -1238,7 +1238,7 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 
 					Collections.sort(list);
 
-					list = new UnmodifiableList<KaleoInstance>(list);
+					list = Collections.unmodifiableList(list);
 				}
 				else {
 					list = (List<KaleoInstance>)QueryUtil.list(q, getDialect(),
@@ -1825,7 +1825,7 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 				qPos.add(kaleoDefinitionVersion);
 
 				if (bindCompletionDate) {
-					qPos.add(CalendarUtil.getTimestamp(completionDate));
+					qPos.add(new Timestamp(completionDate.getTime()));
 				}
 
 				if (!pagination) {
@@ -1834,7 +1834,7 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 
 					Collections.sort(list);
 
-					list = new UnmodifiableList<KaleoInstance>(list);
+					list = Collections.unmodifiableList(list);
 				}
 				else {
 					list = (List<KaleoInstance>)QueryUtil.list(q, getDialect(),
@@ -2182,7 +2182,7 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 		qPos.add(kaleoDefinitionVersion);
 
 		if (bindCompletionDate) {
-			qPos.add(CalendarUtil.getTimestamp(completionDate));
+			qPos.add(new Timestamp(completionDate.getTime()));
 		}
 
 		if (orderByComparator != null) {
@@ -2301,7 +2301,7 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 				qPos.add(kaleoDefinitionVersion);
 
 				if (bindCompletionDate) {
-					qPos.add(CalendarUtil.getTimestamp(completionDate));
+					qPos.add(new Timestamp(completionDate.getTime()));
 				}
 
 				count = (Long)q.uniqueResult();
@@ -2383,7 +2383,7 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 			CacheRegistryUtil.clear(KaleoInstanceImpl.class.getName());
 		}
 
-		EntityCacheUtil.clearCache(KaleoInstanceImpl.class.getName());
+		EntityCacheUtil.clearCache(KaleoInstanceImpl.class);
 
 		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_ENTITY);
 		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
@@ -2886,7 +2886,7 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 
 					Collections.sort(list);
 
-					list = new UnmodifiableList<KaleoInstance>(list);
+					list = Collections.unmodifiableList(list);
 				}
 				else {
 					list = (List<KaleoInstance>)QueryUtil.list(q, getDialect(),

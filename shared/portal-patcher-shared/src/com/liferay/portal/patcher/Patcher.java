@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -34,6 +34,9 @@ public interface Patcher {
 
 	public static final String PROPERTY_PATCH_LEVELS = "patch.levels";
 
+	public static final String PROPERTY_PATCHING_TOOL_VERSION =
+		"patching.tool.version";
+
 	public boolean applyPatch(File patchFile);
 
 	public String[] getFixedIssues();
@@ -41,6 +44,8 @@ public interface Patcher {
 	public String[] getInstalledPatches();
 
 	public File getPatchDirectory();
+
+	public int getPatchingToolVersion();
 
 	public String[] getPatchLevels();
 

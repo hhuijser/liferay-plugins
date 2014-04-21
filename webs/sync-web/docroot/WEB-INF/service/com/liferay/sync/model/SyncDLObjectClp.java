@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -15,13 +15,16 @@
 package com.liferay.sync.model;
 
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.BaseModel;
+import com.liferay.portal.model.User;
 import com.liferay.portal.model.impl.BaseModelImpl;
-import com.liferay.portal.util.PortalUtil;
+import com.liferay.portal.service.UserLocalServiceUtil;
 
 import com.liferay.sync.service.ClpSerializer;
 import com.liferay.sync.service.SyncDLObjectLocalServiceUtil;
@@ -54,17 +57,17 @@ public class SyncDLObjectClp extends BaseModelImpl<SyncDLObject>
 
 	@Override
 	public long getPrimaryKey() {
-		return _objectId;
+		return _syncDLObjectId;
 	}
 
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		setObjectId(primaryKey);
+		setSyncDLObjectId(primaryKey);
 	}
 
 	@Override
 	public Serializable getPrimaryKeyObj() {
-		return _objectId;
+		return _syncDLObjectId;
 	}
 
 	@Override
@@ -76,7 +79,7 @@ public class SyncDLObjectClp extends BaseModelImpl<SyncDLObject>
 	public Map<String, Object> getModelAttributes() {
 		Map<String, Object> attributes = new HashMap<String, Object>();
 
-		attributes.put("objectId", getObjectId());
+		attributes.put("syncDLObjectId", getSyncDLObjectId());
 		attributes.put("companyId", getCompanyId());
 		attributes.put("createTime", getCreateTime());
 		attributes.put("modifiedTime", getModifiedTime());
@@ -107,10 +110,10 @@ public class SyncDLObjectClp extends BaseModelImpl<SyncDLObject>
 
 	@Override
 	public void setModelAttributes(Map<String, Object> attributes) {
-		Long objectId = (Long)attributes.get("objectId");
+		Long syncDLObjectId = (Long)attributes.get("syncDLObjectId");
 
-		if (objectId != null) {
-			setObjectId(objectId);
+		if (syncDLObjectId != null) {
+			setSyncDLObjectId(syncDLObjectId);
 		}
 
 		Long companyId = (Long)attributes.get("companyId");
@@ -244,21 +247,21 @@ public class SyncDLObjectClp extends BaseModelImpl<SyncDLObject>
 	}
 
 	@Override
-	public long getObjectId() {
-		return _objectId;
+	public long getSyncDLObjectId() {
+		return _syncDLObjectId;
 	}
 
 	@Override
-	public void setObjectId(long objectId) {
-		_objectId = objectId;
+	public void setSyncDLObjectId(long syncDLObjectId) {
+		_syncDLObjectId = syncDLObjectId;
 
 		if (_syncDLObjectRemoteModel != null) {
 			try {
 				Class<?> clazz = _syncDLObjectRemoteModel.getClass();
 
-				Method method = clazz.getMethod("setObjectId", long.class);
+				Method method = clazz.getMethod("setSyncDLObjectId", long.class);
 
-				method.invoke(_syncDLObjectRemoteModel, objectId);
+				method.invoke(_syncDLObjectRemoteModel, syncDLObjectId);
 			}
 			catch (Exception e) {
 				throw new UnsupportedOperationException(e);
@@ -660,12 +663,18 @@ public class SyncDLObjectClp extends BaseModelImpl<SyncDLObject>
 
 	@Override
 	public String getLockUserUuid() throws SystemException {
-		return PortalUtil.getUserValue(getLockUserId(), "uuid", _lockUserUuid);
+		try {
+			User user = UserLocalServiceUtil.getUserById(getLockUserId());
+
+			return user.getUuid();
+		}
+		catch (PortalException pe) {
+			return StringPool.BLANK;
+		}
 	}
 
 	@Override
 	public void setLockUserUuid(String lockUserUuid) {
-		_lockUserUuid = lockUserUuid;
 	}
 
 	@Override
@@ -861,7 +870,7 @@ public class SyncDLObjectClp extends BaseModelImpl<SyncDLObject>
 	public Object clone() {
 		SyncDLObjectClp clone = new SyncDLObjectClp();
 
-		clone.setObjectId(getObjectId());
+		clone.setSyncDLObjectId(getSyncDLObjectId());
 		clone.setCompanyId(getCompanyId());
 		clone.setCreateTime(getCreateTime());
 		clone.setModifiedTime(getModifiedTime());
@@ -977,8 +986,8 @@ public class SyncDLObjectClp extends BaseModelImpl<SyncDLObject>
 	public String toString() {
 		StringBundler sb = new StringBundler(45);
 
-		sb.append("{objectId=");
-		sb.append(getObjectId());
+		sb.append("{syncDLObjectId=");
+		sb.append(getSyncDLObjectId());
 		sb.append(", companyId=");
 		sb.append(getCompanyId());
 		sb.append(", createTime=");
@@ -1035,8 +1044,8 @@ public class SyncDLObjectClp extends BaseModelImpl<SyncDLObject>
 		sb.append("</model-name>");
 
 		sb.append(
-			"<column><column-name>objectId</column-name><column-value><![CDATA[");
-		sb.append(getObjectId());
+			"<column><column-name>syncDLObjectId</column-name><column-value><![CDATA[");
+		sb.append(getSyncDLObjectId());
 		sb.append("]]></column-value></column>");
 		sb.append(
 			"<column><column-name>companyId</column-name><column-value><![CDATA[");
@@ -1128,7 +1137,7 @@ public class SyncDLObjectClp extends BaseModelImpl<SyncDLObject>
 		return sb.toString();
 	}
 
-	private long _objectId;
+	private long _syncDLObjectId;
 	private long _companyId;
 	private long _createTime;
 	private long _modifiedTime;
@@ -1146,7 +1155,6 @@ public class SyncDLObjectClp extends BaseModelImpl<SyncDLObject>
 	private String _event;
 	private Date _lockExpirationDate;
 	private long _lockUserId;
-	private String _lockUserUuid;
 	private String _lockUserName;
 	private String _type;
 	private long _typePK;

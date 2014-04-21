@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -149,14 +149,14 @@ MailManager mailManager = MailManager.getInstance(request);
 							String date = StringPool.DASH;
 
 							if (mailAccount.getSentFolderId() == folderId) {
-								address = message.getTo();
+								address = StringUtil.replace(message.getTo(), StringPool.COMMA, StringPool.COMMA_AND_SPACE);
 
 								if (Validator.isNotNull(message.getCc())) {
-									address += ", " + message.getCc();
+									address += StringPool.COMMA_AND_SPACE + StringUtil.replace(message.getCc(), StringPool.COMMA, StringPool.COMMA_AND_SPACE);
 								}
 
 								if (Validator.isNotNull(message.getBcc())) {
-									address += ", " + message.getBcc();
+									address += StringPool.COMMA_AND_SPACE + StringUtil.replace(message.getBcc(), StringPool.COMMA, StringPool.COMMA_AND_SPACE);
 								}
 							}
 							else {

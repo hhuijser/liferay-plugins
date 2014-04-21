@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -39,8 +39,8 @@ if (messageType.equals("new")) {
 else if (messageType.equals("edit")) {
 	message = MessageLocalServiceUtil.getMessage(messageId);
 
-	to = message.getTo();
-	cc = message.getCc();
+	to = StringUtil.replace(message.getTo(), StringPool.COMMA, StringPool.COMMA_AND_SPACE);
+	cc = StringUtil.replace(message.getCc(), StringPool.COMMA, StringPool.COMMA_AND_SPACE);
 	subject = message.getSubject();
 	body = message.getBody();
 }
@@ -56,8 +56,8 @@ else {
 		subject = LanguageUtil.format(pageContext, "re-x", replyMessage.getSubject(), false);
 	}
 	else if (messageType.equals("reply-all")) {
-		to = replyMessage.getSender() + ", " + replyMessage.getTo();
-		cc = replyMessage.getCc();
+		to = replyMessage.getSender() + StringPool.COMMA_AND_SPACE + StringUtil.replace(replyMessage.getTo(), StringPool.COMMA, StringPool.COMMA_AND_SPACE);
+		cc = StringUtil.replace(replyMessage.getCc(), StringPool.COMMA, StringPool.COMMA_AND_SPACE);
 		subject = LanguageUtil.format(pageContext, "re-x", replyMessage.getSubject(), false);
 	}
 	else if (messageType.equals("forward")) {

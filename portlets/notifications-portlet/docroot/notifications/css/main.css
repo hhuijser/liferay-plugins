@@ -58,13 +58,17 @@
 	}
 
 	.dropdown-menu {
+		@include box-sizing(border-box);
+
 		width: 350px;
 	}
 
 	.user-notifications-list {
 		list-style: none;
+		padding: 5px;
 
 		.message {
+			padding: 5px;
 			text-align: center;
 
 			.left-nav {
@@ -114,12 +118,18 @@
 				float: left;
 				position: relative;
 
-				.user-thumbnail img {
+				.user-thumbnail {
 					@include border-radius(50%);
 					@include box-shadow(0 0 0 2px #5594E0);
 
+					display: block;
+					height: 30px;
 					margin: 5px 10px 0 0;
-					width: 30px;
+					overflow: hidden;
+
+					img {
+						width: 30px;
+					}
 				}
 
 				.portlet-icon {
@@ -153,12 +163,6 @@
 }
 
 .notifications-portlet {
-	.user-notifications-sidebar {
-		float: left;
-		padding: 0 10px 0 0;
-		width: 18%;
-	}
-
 	.nav {
 		margin-bottom: 10px;
 
@@ -185,10 +189,12 @@
 		}
 	}
 
+	.notifications-container, .user-notifications-list-container {
+		@include box-sizing(border-box);
+	}
+
 	.user-notifications-list-container {
 		border: 1px solid #D5D5D5;
-		float: left;
-		width: 80%;
 
 		.loading-mask {
 			min-height: 30px;
@@ -196,19 +202,14 @@
 	}
 
 	.user-notifications-list {
+		margin: 0;
+
 		.user-notification {
 			color: #000;
 
 			&:hover {
 				color: #FFF;
-			}
-
-			&.unread {
-				background-color: #FAFAFA;
-
-				&:hover {
-					background: #2FA4F5;
-				}
+				background: #2FA4F5
 			}
 
 			a {
@@ -222,7 +223,11 @@
 	}
 
 	.manage-notifications {
-		padding: 5px;
+		overflow: auto;
+
+		.table {
+			max-width: none;
+		}
 
 		.title {
 			margin-bottom: 10px;
@@ -241,6 +246,15 @@
 				margin-bottom: 10px 0;
 				text-align: left;
 			}
+		}
+	}
+}
+
+.span1, .span2, .span3, .span4, .span5, .span6 {
+	.notifications-portlet {
+		.user-notifications-sidebar, .user-notifications-list-container {
+			margin-left: 0;
+			width: 100%;
 		}
 	}
 }
@@ -266,4 +280,8 @@
 			right: 20px;
 		}
 	}
+}
+
+.ie8 .user-thumbnail img {
+	max-width: none;
 }
