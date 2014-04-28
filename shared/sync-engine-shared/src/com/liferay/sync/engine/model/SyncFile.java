@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -26,11 +26,61 @@ import com.liferay.sync.engine.service.persistence.BasePersistenceImpl;
  */
 @DatabaseTable(daoClass = BasePersistenceImpl.class, tableName = "SyncFile")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SyncFile {
+public class SyncFile extends StateAwareModel {
+
+	public static final String EVENT_ADD = "add";
+
+	public static final String EVENT_DELETE = "delete";
+
+	public static final String EVENT_GET = "get";
+
+	public static final String EVENT_MOVE = "move";
+
+	public static final String EVENT_RESTORE = "restore";
+
+	public static final String EVENT_TRASH = "trash";
+
+	public static final String EVENT_UPDATE = "update";
+
+	public static final int STATE_ERROR = 2;
+
+	public static final int STATE_IN_PROGRESS = 1;
+
+	public static final int STATE_SYNCED = 0;
 
 	public static final String TYPE_FILE = "file";
 
 	public static final String TYPE_FOLDER = "folder";
+
+	public static final String TYPE_SYSTEM = "system";
+
+	public static final int UI_EVENT_ADDED_LOCAL = 1;
+
+	public static final int UI_EVENT_ADDED_REMOTE = 2;
+
+	public static final int UI_EVENT_DELETED_LOCAL = 3;
+
+	public static final int UI_EVENT_DELETED_REMOTE = 4;
+
+	public static final int UI_EVENT_DOWNLOADED = 5;
+
+	public static final int UI_EVENT_DOWNLOADING = 6;
+
+	public static final int UI_EVENT_MOVED_LOCAL = 7;
+
+	public static final int UI_EVENT_MOVED_REMOTE = 8;
+
+	public static final int UI_EVENT_TRASHED_LOCAL = 9;
+
+	public static final int UI_EVENT_TRASHED_REMOTE = 10;
+
+	public static final int UI_EVENT_UPDATED_LOCAL = 11;
+
+	public static final int UI_EVENT_UPDATED_REMOTE = 12;
+
+	public static final int UI_EVENT_UPLOADED = 13;
+
+	public static final int UI_EVENT_UPLOADING = 14;
 
 	public String getChangeLog() {
 		return changeLog;
@@ -52,6 +102,10 @@ public class SyncFile {
 		return description;
 	}
 
+	public String getEvent() {
+		return event;
+	}
+
 	public String getExtension() {
 		return extension;
 	}
@@ -60,15 +114,23 @@ public class SyncFile {
 		return extraSettings;
 	}
 
-	public String getFilePath() {
-		return filePath;
+	public String getFileKey() {
+		return fileKey;
+	}
+
+	public String getFilePathName() {
+		return filePathName;
+	}
+
+	public long getLocalSyncTime() {
+		return localSyncTime;
 	}
 
 	public long getLockExpirationDate() {
 		return lockExpirationDate;
 	}
 
-	public String getLockUserId() {
+	public long getLockUserId() {
 		return lockUserId;
 	}
 
@@ -120,8 +182,16 @@ public class SyncFile {
 		return typeUuid;
 	}
 
-	public double getVersion() {
+	public String getVersion() {
 		return version;
+	}
+
+	public boolean isFolder() {
+		return type.equals(TYPE_FOLDER);
+	}
+
+	public boolean isSystem() {
+		return type.equals(TYPE_SYSTEM);
 	}
 
 	public void setChangeLog(String changeLog) {
@@ -152,15 +222,23 @@ public class SyncFile {
 		this.extraSettings = extraSettings;
 	}
 
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
+	public void setFileKey(String fileKey) {
+		this.fileKey = fileKey;
+	}
+
+	public void setFilePathName(String filePathName) {
+		this.filePathName = filePathName;
+	}
+
+	public void setLocalSyncTime(long localSyncTime) {
+		this.localSyncTime = localSyncTime;
 	}
 
 	public void setLockExpirationDate(long lockExpirationDate) {
 		this.lockExpirationDate = lockExpirationDate;
 	}
 
-	public void setLockUserId(String lockUserId) {
+	public void setLockUserId(long lockUserId) {
 		this.lockUserId = lockUserId;
 	}
 
@@ -212,7 +290,7 @@ public class SyncFile {
 		this.typeUuid = typeUuid;
 	}
 
-	public void setVersion(double version) {
+	public void setVersion(String version) {
 		this.version = version;
 	}
 
@@ -231,20 +309,29 @@ public class SyncFile {
 	@DatabaseField(useGetSet = true, width = 16777216)
 	protected String description;
 
+	@DatabaseField(persisted = false)
+	protected String event;
+
 	@DatabaseField(useGetSet = true)
 	protected String extension;
 
 	@DatabaseField(useGetSet = true, width = 16777216)
 	protected String extraSettings;
 
+	@DatabaseField(useGetSet = true)
+	protected String fileKey;
+
 	@DatabaseField(useGetSet = true, width = 16777216)
-	protected String filePath;
+	protected String filePathName;
+
+	@DatabaseField(useGetSet = true)
+	protected long localSyncTime;
 
 	@DatabaseField(useGetSet = true)
 	protected long lockExpirationDate;
 
 	@DatabaseField(useGetSet = true)
-	protected String lockUserId;
+	protected long lockUserId;
 
 	@DatabaseField(useGetSet = true)
 	protected String lockUserName;
@@ -283,6 +370,6 @@ public class SyncFile {
 	protected String typeUuid;
 
 	@DatabaseField(useGetSet = true)
-	protected double version;
+	protected String version;
 
 }

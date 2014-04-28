@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -101,7 +101,7 @@ for (CalendarBooking calendarBooking : calendarBookings) {
 
 	startTimeJCalendar.setTimeInMillis(startTime);
 
-	if (startTimeJCalendar.get(Calendar.DAY_OF_MONTH) <= jCalendar.get(Calendar.DAY_OF_MONTH)) {
+	if ((startTimeJCalendar.get(Calendar.DAY_OF_YEAR) <= jCalendar.get(Calendar.DAY_OF_YEAR)) && (startTimeJCalendar.get(Calendar.YEAR) <= jCalendar.get(Calendar.YEAR))) {
 		todayBookings.add(calendarBooking);
 	}
 	else {
