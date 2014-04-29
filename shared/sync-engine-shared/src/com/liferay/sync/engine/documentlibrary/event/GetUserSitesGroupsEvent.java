@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,13 +14,9 @@
 
 package com.liferay.sync.engine.documentlibrary.event;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.liferay.sync.engine.documentlibrary.handler.GetUserSitesGroupsHandler;
+import com.liferay.sync.engine.documentlibrary.handler.Handler;
 
-import com.liferay.sync.engine.model.SyncSite;
-import com.liferay.sync.engine.service.SyncSiteService;
-
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,17 +31,8 @@ public class GetUserSitesGroupsEvent extends BaseEvent {
 	}
 
 	@Override
-	protected void processResponse(String response) throws Exception {
-		ObjectMapper objectMapper = new ObjectMapper();
-
-		List<SyncSite> syncSites = objectMapper.readValue(
-			response, new TypeReference<List<SyncSite>>() {});
-
-		for (SyncSite syncSite : syncSites) {
-			syncSite.setSyncAccountId(getSyncAccountId());
-
-			SyncSiteService.update(syncSite);
-		}
+	protected Handler<?> getHandler() {
+		return new GetUserSitesGroupsHandler(this);
 	}
 
 	private static final String _URL_PATH =

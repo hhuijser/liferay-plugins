@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -105,8 +105,7 @@ public class UpgradeUser extends UpgradeProcess {
 			group.getGroupId(), false);
 
 		PortalClassInvoker.invoke(
-			true, _mergeLayoutSetPrototypeLayoutsMethodKey, group,
-			publicLayoutSet);
+			_mergeLayoutSetPrototypeLayoutsMethodKey, group, publicLayoutSet);
 
 		LayoutLocalServiceUtil.deleteLayouts(
 			group.getGroupId(), true, new ServiceContext());
@@ -119,8 +118,7 @@ public class UpgradeUser extends UpgradeProcess {
 			group.getGroupId(), true);
 
 		PortalClassInvoker.invoke(
-			true, _mergeLayoutSetPrototypeLayoutsMethodKey, group,
-			privateLayoutSet);
+			_mergeLayoutSetPrototypeLayoutsMethodKey, group, privateLayoutSet);
 
 		SocialOfficeUtil.enableSocialOffice(group);
 	}

@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -27,12 +27,12 @@ KBComment kbComment = (KBComment)request.getAttribute("template_comment.jsp-kb_c
 	<tr>
 		<td align="center" valign="top">
 			<liferay-ui:user-display
-				displayStyle="<%= 2 %>"
+				displayStyle="2"
 				userId="<%= kbComment.getUserId() %>"
 				userName="<%= kbComment.getUserName() %>"
 			/>
 		</td>
-		<td valign="top" width="99%">
+		<td valign="top" width="90%">
 			<div>
 				<strong class="kb-question"><liferay-ui:message key="was-this-information-helpful" /></strong>
 

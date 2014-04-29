@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -22,7 +22,6 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.notifications.BaseUserNotificationHandler;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.util.HtmlUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -101,19 +100,15 @@ public class PrivateMessagingUserNotificationHandler
 			userId = mbMessage.getUserId();
 		}
 
-		StringBundler sb = new StringBundler(5);
+		String title = serviceContext.translate(
+			"x-sent-you-a-message",
+			HtmlUtil.escape(PortalUtil.getUserName(userId, StringPool.BLANK)));
 
-		sb.append("<div class=\"title\">");
-		sb.append(
-			serviceContext.translate(
-				"x-sent-you-a-message",
-				HtmlUtil.escape(
-					PortalUtil.getUserName(userId, StringPool.BLANK))));
-		sb.append("</div><div class=\"body\">");
-		sb.append(HtmlUtil.escape(StringUtil.shorten(body, 50)));
-		sb.append("</div>");
-
-		return sb.toString();
+		return StringUtil.replace(
+			getBodyTemplate(), new String[] {"[$BODY$]", "[$TITLE$]"},
+			new String[] {
+				HtmlUtil.escape(StringUtil.shorten(body, 50)), title
+			});
 	}
 
 	@Override

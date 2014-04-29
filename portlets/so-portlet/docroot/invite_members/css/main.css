@@ -1,3 +1,6 @@
+@import "compass";
+@import "mixins";
+
 .so-portlet-invite-members {
 	.email-invited h2 span {
 		color: #999;
@@ -176,5 +179,34 @@
 	.invited, .user {
 		border-bottom: 1px solid #FFF;
 		border-top: 1px solid #FFF;
+	}
+}
+
+/* ---------- Responsive ---------- */
+
+@include respond-to(phone) {
+	.so-portlet-invite-members.modal {
+		.user-search-wrapper {
+			float: none;
+			margin-top: 10px;
+
+			h2 {
+				line-height: 1em;
+			}
+		}
+
+		.search {
+			height: auto;
+			max-height: 300px;
+			width: auto;
+		}
+
+		.invited-users-wrapper {
+			margin-left: 0;
+		}
+
+		.user-invited h2 span {
+			display: none;
+		}
 	}
 }

@@ -1,6 +1,7 @@
 @import "compass";
+@import "mixins";
 
-$border-color: #DDD;
+$border-color: #C9C9C9;
 $section-header-bg: #CCE6F7;
 
 #wrapper .contacts-portlet .panel-page-body {
@@ -135,6 +136,10 @@ $section-header-bg: #CCE6F7;
 		}
 	}
 
+	.toggle-user {
+		display: none;
+	}
+
 	.contacts-result, .my-contacts {
 		.lfr-contact-grid-item {
 			cursor: pointer;
@@ -229,8 +234,11 @@ $section-header-bg: #CCE6F7;
 	.contacts-profile {
 		.lfr-detail-info {
 			border-bottom-width: 0;
-			padding: 10px 10px 5px;
 			width: 100%;
+		}
+
+		.lfr-contact-thumb, .lfr-contact-info {
+			padding: 10px 10px 5px;
 		}
 
 		.lfr-contact-name {
@@ -300,10 +308,13 @@ $section-header-bg: #CCE6F7;
 		}
 
 		.contacts-container {
-			border-left: 1px solid $border-color;
 			float: none;
 			min-height: 600px;
 			width: 100%;
+
+			.contacts-container-content {
+				border-left: 1px solid $border-color;
+			}
 
 			.lfr-button-column {
 				border-bottom: 1px solid $border-color;
@@ -315,6 +326,14 @@ $section-header-bg: #CCE6F7;
 					overflow: visible;
 				}
 			}
+
+			.view-more-button {
+				display: none;
+			}
+		}
+
+		.contacts-action-content .action {
+			padding: 5px 4px;
 		}
 
 		.contacts-profile .lfr-contact-info {
@@ -327,6 +346,7 @@ $section-header-bg: #CCE6F7;
 
 		a {
 			display: inline-block;
+			margin: 4px 0;
 			padding: 3px 4px;
 
 			&:hover {
@@ -340,7 +360,6 @@ $section-header-bg: #CCE6F7;
 
 		.action {
 			display: inline-block;
-			padding: 3px 4px 0px;
 		}
 	}
 
@@ -522,6 +541,10 @@ $section-header-bg: #CCE6F7;
 		margin-top: 1em;
 	}
 
+	.contacts-profile {
+		overflow: hidden;
+	}
+
 	.my-profile .field-group {
 		position: relative;
 
@@ -695,5 +718,147 @@ $section-header-bg: #CCE6F7;
 
 	.message-body {
 		width: 90%;
+	}
+}
+
+/* ---------- Responsive ---------- */
+
+@include respond-to(phone) {
+	.contacts-portlet {
+		.layout .toolbar-content {
+			.filter-container {
+				width: 58%;
+
+				.contact-group-filter-content {
+					padding: 7px 7px 8px;
+
+					> .control-group {
+						margin-left: 4px;
+						width: 85%;
+					}
+				}
+
+				.contact-group-filter-select {
+					height: 31px;
+					width: 100%;
+				}
+			}
+
+			.add-contact {
+				font-size: 14px;
+				margin: 4px 2%;
+				max-width: 38%;
+				padding: 8px 10px;
+			}
+		}
+
+		.contacts-result-container-content {
+			overflow: hidden;
+			padding-left: 100%;
+
+			.contacts-list, .contacts-result, .contacts-result-content {
+				width: 100%;
+			}
+
+			.contacts-list .contacts-search .search-input {
+				margin: 0;
+				padding-left: 0;
+				padding-right: 0;
+				text-indent: 5px;
+				width: 100%;
+			}
+		}
+
+		.form {
+			left: 0;
+			position: relative;
+
+			@include transition-duration(.3s);
+			@include transition-property(left);
+
+			z-index: 1;
+		}
+
+		.contacts-list {
+			background: #FFF;
+			margin-left: 0;
+
+			@include transition-duration(.3s);
+			@include transition-property(margin-left);
+
+			z-index: 1;
+		}
+
+		&.show-user {
+			.form {
+				left: -100%;
+				position: absolute;
+				width: 100%;
+				z-index: 1;
+			}
+
+			.contacts-result-container-content {
+				overflow: visible;
+				padding-left: 0;
+
+				.contacts-list {
+					margin-left: -100%;
+					top: 47px;
+				}
+			}
+
+			.toggle-user {
+				background-color: #EEE;
+				background-color: rgba(0,0,0, 0.4);
+
+				@include border-radius(0 8px 8px 0);
+
+				cursor: pointer;
+				display: inline-block;
+				left: 100%;
+				position: absolute;
+				top: -43px;
+
+				i {
+					color: #FFF;
+					display: block;
+					font-size: 2em;
+					padding: 16px 11px;
+				}
+			}
+
+			.contacts-container {
+				.lfr-button-column {
+					padding-bottom: 0;
+					padding-left: 3.2em;
+				}
+
+				.view-more-button {
+					display: block;
+					margin-right: 0;
+				}
+			}
+
+			.edit-toolbar {
+				float: left;
+				width: auto;
+
+				&.hide-more-buttons .more {
+					display: none;
+				}
+			}
+		}
+
+		.contacts-container .btn {
+			float: left;
+			font-size: 14px;
+			margin: 0 5px 4px 0;
+			padding: 10px;
+			width: auto;
+
+			i {
+				display: block;
+			}
+		}
 	}
 }

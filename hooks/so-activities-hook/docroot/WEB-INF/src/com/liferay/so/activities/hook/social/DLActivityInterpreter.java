@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -17,6 +17,7 @@ package com.liferay.so.activities.hook.social;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portal.kernel.repository.model.Folder;
+import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
@@ -95,10 +96,6 @@ public class DLActivityInterpreter extends SOSocialActivityInterpreter {
 		if (activitySet.getType() ==
 				SocialActivityKeyConstants.DL_UPDATE_FILE_ENTRY) {
 
-			if (!hasPermissions(activitySet, serviceContext)) {
-				return null;
-			}
-
 			return getBody(
 				activitySet.getClassName(), activitySet.getClassPK(),
 				serviceContext);
@@ -136,7 +133,7 @@ public class DLActivityInterpreter extends SOSocialActivityInterpreter {
 
 		sb.append(
 			StringUtil.shorten(
-				assetRenderer.getSummary(serviceContext.getLocale()), 200));
+				HtmlUtil.escape(assetRenderer.getSummary(), 200)));
 
 		sb.append("</div></div></div>");
 
@@ -215,8 +212,6 @@ public class DLActivityInterpreter extends SOSocialActivityInterpreter {
 			String title, ServiceContext serviceContext)
 		throws Exception {
 
-		int activityCount = activitySet.getActivityCount();
-
 		if (activitySet.getType() ==
 				SocialActivityKeyConstants.DL_UPDATE_FILE_ENTRY) {
 
@@ -224,11 +219,13 @@ public class DLActivityInterpreter extends SOSocialActivityInterpreter {
 				activitySet.getClassPK(), serviceContext);
 
 			if (Validator.isNotNull(folderLink)) {
-				return new Object[] {activityCount, folderLink};
+				return new Object[] {
+					activitySet.getActivityCount(), folderLink};
 			}
 		}
 
-		return new Object[] {activityCount};
+		return super.getTitleArguments(
+			groupName, activitySet, link, title, serviceContext);
 	}
 
 	@Override

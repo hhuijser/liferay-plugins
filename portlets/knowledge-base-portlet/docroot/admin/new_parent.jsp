@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -27,8 +27,8 @@ long parentResourcePrimKey = BeanParamUtil.getLong(kbArticle, request, "parentRe
 double priority = BeanParamUtil.getDouble(kbArticle, request, "priority");
 %>
 
-<div class="input-append kb-new-parent">
-	<liferay-ui:input-resource url='<%= parentResourcePrimKey != KBArticleConstants.DEFAULT_PARENT_RESOURCE_PRIM_KEY ? BeanPropertiesUtil.getString(KBArticleServiceUtil.getLatestKBArticle(parentResourcePrimKey, status), "title") : "(" + LanguageUtil.get(pageContext, "none") + ")" %>' />
+<div class="control-group kb-new-parent">
+	<aui:input type="resource" value='<%= parentResourcePrimKey != KBArticleConstants.DEFAULT_PARENT_RESOURCE_PRIM_KEY ? BeanPropertiesUtil.getString(KBArticleServiceUtil.getLatestKBArticle(parentResourcePrimKey, status), "title") : "(" + LanguageUtil.get(pageContext, "none") + ")" %>' />
 
 	<aui:input cssClass="input-mini kb-priority" inlineField="<%= true %>" label="" name="priority" type="text" value="<%= BigDecimal.valueOf(priority).toPlainString() %>" />
 

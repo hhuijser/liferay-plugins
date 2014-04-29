@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -22,7 +22,7 @@ String actionName = ParamUtil.getString(renderRequest, ActionRequest.ACTION_NAME
 
 <portlet:actionURL name="<%= actionName %>" var="submitURL" />
 
-<aui:form action="<%= submitURL %>" method="post" name="fm">
+<aui:form action="<%= submitURL %>" enctype="multipart/form-data" method="post" name="fm">
 	<aui:fieldset>
 		<aui:input label="title" name="title" />
 		<aui:input label="file" name="fileName" size="50" type="file" />

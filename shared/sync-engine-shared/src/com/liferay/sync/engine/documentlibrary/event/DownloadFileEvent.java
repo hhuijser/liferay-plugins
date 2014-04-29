@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,81 +14,67 @@
 
 package com.liferay.sync.engine.documentlibrary.event;
 
+import com.liferay.sync.engine.documentlibrary.handler.DownloadFileHandler;
+import com.liferay.sync.engine.documentlibrary.handler.Handler;
 import com.liferay.sync.engine.model.SyncAccount;
 import com.liferay.sync.engine.model.SyncFile;
 import com.liferay.sync.engine.service.SyncAccountService;
-import com.liferay.sync.engine.util.HttpUtil;
+import com.liferay.sync.engine.service.SyncFileService;
 
-import java.io.File;
-import java.io.FileOutputStream;
-
-import java.net.URL;
+import java.util.Map;
 
 /**
  * @author Shinn Lok
  */
 public class DownloadFileEvent extends BaseEvent {
 
-	public DownloadFileEvent(long accountId, SyncFile syncFile, boolean patch) {
-		super(accountId, _URL_PATH, null);
+	public DownloadFileEvent(
+		long syncAccountId, Map<String, Object> parameters) {
 
-		_syncFile = syncFile;
-		_patch = patch;
+		super(syncAccountId, _URL_PATH, parameters);
 	}
 
 	@Override
-	protected String processRequest() throws Exception {
-		StringBuilder sb = new StringBuilder(7);
-
-		sb.append(replaceUrlPath(getSyncAccountId()));
-		sb.append("/");
-		sb.append(_syncFile.getRepositoryId());
-		sb.append("/");
-		sb.append(_syncFile.getTypeUuid());
-		sb.append("/");
-		sb.append(_patch);
-
-		return HttpUtil.executeGet(getSyncAccountId(), sb.toString());
+	protected Handler<?> getHandler() {
+		return new DownloadFileHandler(this);
 	}
 
 	@Override
-	protected void processResponse(String response) throws Exception {
-		FileOutputStream fileOutputStream = null;
+	protected void processRequest() throws Exception {
+		SyncFile syncFile = (SyncFile)getParameterValue("syncFile");
 
-		try {
-			File file = new File(_syncFile.getFilePath());
+		syncFile.setState(SyncFile.STATE_IN_PROGRESS);
+		syncFile.setUiEvent(SyncFile.UI_EVENT_DOWNLOADING);
 
-			File dir = file.getParentFile();
+		SyncFileService.update(syncFile);
 
-			if (!dir.exists()) {
-				dir.mkdirs();
-			}
+		StringBuilder sb = new StringBuilder(9);
 
-			fileOutputStream = new FileOutputStream(file);
-
-			fileOutputStream.write(response.getBytes());
-		}
-		finally {
-			if (fileOutputStream != null) {
-				fileOutputStream.close();
-			}
-		}
-	}
-
-	protected String replaceUrlPath(long syncAccountId) throws Exception {
 		SyncAccount syncAccount = SyncAccountService.fetchSyncAccount(
-			syncAccountId);
+			getSyncAccountId());
 
-		String url = syncAccount.getUrl();
+		sb.append(syncAccount.getUrl());
 
-		URL urlObj = new URL(url);
+		sb.append(_URL_PATH);
+		sb.append("/");
+		sb.append(syncFile.getRepositoryId());
+		sb.append("/");
+		sb.append(syncFile.getTypeUuid());
 
-		return url.replace(urlObj.getPath(), _URL_PATH);
+		if ((Boolean)getParameterValue("patch")) {
+			sb.append("?patch=true&sourceVersion=");
+			sb.append(getParameterValue("sourceVersion"));
+			sb.append("&targetVersion=");
+			sb.append(getParameterValue("targetVersion"));
+		}
+		else {
+			sb.append("?version=");
+			sb.append(syncFile.getVersion());
+		}
+
+		executeGet(sb.toString());
 	}
 
 	private static final String _URL_PATH = "/sync-web/download";
-
-	private static boolean _patch;
-	private static SyncFile _syncFile;
 
 }
