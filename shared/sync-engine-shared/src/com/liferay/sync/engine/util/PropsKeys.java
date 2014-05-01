@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -19,12 +19,36 @@ package com.liferay.sync.engine.util;
  */
 public interface PropsKeys {
 
+	public static final String SYNC_CHAR_BLACKLIST = "sync.char.blacklist";
+
+	public static final String SYNC_CHAR_LAST_BLACKLIST =
+		"sync.char.last.blacklist";
+
 	public static final String SYNC_CONFIGURATION_DIRECTORY =
 		"sync.configuration.directory";
 
 	public static final String SYNC_DATABASE_NAME = "sync.database.name";
 
+	public static final String SYNC_FILE_PATCHING_IGNORE_FILE_EXTENSIONS =
+		"sync.file.patching.ignore.file.extensions";
+
+	public static final String SYNC_FILE_PATCHING_SIZE_RATIO_THRESHOLD =
+		"sync.file.patching.size.ratio.threshold";
+
+	public static final String SYNC_IGNORE_FILE_NAMES =
+		"sync.ignore.file.names";
+
+	public static final String SYNC_IGNORE_HIDDEN_FILES =
+		"sync.ignore.hidden.files";
+
 	public static final String SYNC_LOGGER_CONFIGURATION_FILE =
 		"sync.logger.configuration.file";
+
+	public static final String SYNC_NAME_BLACKLIST = "sync.name.blacklist";
+
+	public static final String SYNC_NOTIFICATION_FIELD_NAMES_PREFIX =
+		"sync.notification.field.names";
+
+	public static final String SYNC_PRODUCT_NAME = "sync.product.name";
 
 }

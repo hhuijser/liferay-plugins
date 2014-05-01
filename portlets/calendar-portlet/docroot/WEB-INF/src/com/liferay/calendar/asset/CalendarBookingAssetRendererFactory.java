@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -28,6 +28,7 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.security.permission.PermissionChecker;
+import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portlet.asset.model.AssetRenderer;
 import com.liferay.portlet.asset.model.BaseAssetRendererFactory;
@@ -42,6 +43,10 @@ public class CalendarBookingAssetRendererFactory
 	extends BaseAssetRendererFactory {
 
 	public static final String TYPE = "calendar";
+
+	public CalendarBookingAssetRendererFactory() {
+		setLinkable(true);
+	}
 
 	@Override
 	public AssetRenderer getAssetRenderer(long classPK, int type)
@@ -79,19 +84,10 @@ public class CalendarBookingAssetRendererFactory
 				WebKeys.THEME_DISPLAY);
 
 		CalendarResource calendarResource =
-			CalendarResourceUtil.getGroupCalendarResource(
+			CalendarResourceUtil.getScopeGroupCalendarResource(
 				liferayPortletRequest, themeDisplay.getScopeGroupId());
 
 		if (calendarResource == null) {
-			return null;
-		}
-
-		Calendar calendar = calendarResource.getDefaultCalendar();
-
-		if (!CalendarPermission.contains(
-				themeDisplay.getPermissionChecker(), calendar.getCalendarId(),
-				ActionKeys.MANAGE_BOOKINGS)) {
-
 			return null;
 		}
 
@@ -99,10 +95,37 @@ public class CalendarBookingAssetRendererFactory
 			PortletKeys.CALENDAR);
 
 		portletURL.setParameter("mvcPath", "/edit_calendar_booking.jsp");
+
+		Calendar calendar = calendarResource.getDefaultCalendar();
+
 		portletURL.setParameter(
 			"calendarId", String.valueOf(calendar.getCalendarId()));
 
 		return portletURL;
+	}
+
+	@Override
+	public boolean hasAddPermission(
+			PermissionChecker permissionChecker, long groupId, long classTypeId)
+		throws Exception {
+
+		ServiceContext serviceContext = new ServiceContext();
+
+		serviceContext.setCompanyId(permissionChecker.getCompanyId());
+
+		CalendarResource calendarResource =
+			CalendarResourceUtil.getScopeGroupCalendarResource(
+				groupId, serviceContext);
+
+		if (calendarResource == null) {
+			return false;
+		}
+
+		Calendar calendar = calendarResource.getDefaultCalendar();
+
+		return CalendarPermission.contains(
+			permissionChecker, calendar.getCalendarId(),
+			ActionKeys.MANAGE_BOOKINGS);
 	}
 
 	@Override
@@ -124,15 +147,8 @@ public class CalendarBookingAssetRendererFactory
 	}
 
 	@Override
-	public boolean isLinkable() {
-		return _LINKABLE;
-	}
-
-	@Override
 	protected String getIconPath(ThemeDisplay themeDisplay) {
 		return themeDisplay.getPathThemeImages() + "/common/date.png";
 	}
-
-	private static final boolean _LINKABLE = true;
 
 }

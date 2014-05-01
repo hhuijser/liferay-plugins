@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -284,6 +284,21 @@ public interface KBArticleModel extends BaseModel<KBArticle>, ResourcedModel,
 	 * @param title the title of this k b article
 	 */
 	public void setTitle(String title);
+
+	/**
+	 * Returns the url title of this k b article.
+	 *
+	 * @return the url title of this k b article
+	 */
+	@AutoEscape
+	public String getUrlTitle();
+
+	/**
+	 * Sets the url title of this k b article.
+	 *
+	 * @param urlTitle the url title of this k b article
+	 */
+	public void setUrlTitle(String urlTitle);
 
 	/**
 	 * Returns the content of this k b article.

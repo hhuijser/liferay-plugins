@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,10 +14,8 @@
 
 package com.liferay.sync.engine.documentlibrary.event;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import com.liferay.sync.engine.model.SyncFile;
+import com.liferay.sync.engine.documentlibrary.handler.GetFileEntrySyncDLObjectHandler;
+import com.liferay.sync.engine.documentlibrary.handler.Handler;
 
 import java.util.Map;
 
@@ -33,13 +31,8 @@ public class GetFileEntrySyncDLObjectEvent extends BaseEvent {
 	}
 
 	@Override
-	protected void processResponse(String response) throws Exception {
-		ObjectMapper objectMapper = new ObjectMapper();
-
-		SyncFile syncFile = objectMapper.readValue(
-			response, new TypeReference<SyncFile>() {});
-
-		System.out.println(syncFile);
+	protected Handler<?> getHandler() {
+		return new GetFileEntrySyncDLObjectHandler(this);
 	}
 
 	private static final String _URL_PATH =

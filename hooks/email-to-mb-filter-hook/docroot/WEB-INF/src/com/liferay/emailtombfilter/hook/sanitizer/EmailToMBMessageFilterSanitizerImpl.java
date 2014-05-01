@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -21,6 +21,8 @@ import com.liferay.portal.kernel.sanitizer.Sanitizer;
 import com.liferay.portal.kernel.sanitizer.SanitizerException;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.StreamUtil;
+import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portlet.messageboards.model.MBMessage;
 
 import java.io.IOException;
@@ -67,7 +69,9 @@ public class EmailToMBMessageFilterSanitizerImpl implements Sanitizer {
 		long classPK, String contentType, String[] modes, String s,
 		Map<String, Object> options) {
 
-		if (!className.equals(MBMessage.class.getName())) {
+		if (Validator.isNull(className) ||
+			!className.equals(MBMessage.class.getName())) {
+
 			return s;
 		}
 
@@ -98,9 +102,38 @@ public class EmailToMBMessageFilterSanitizerImpl implements Sanitizer {
 			_log.debug("Sanitizing " + className + "#" + classPK);
 		}
 
-		s = s.substring(0, matcher.start());
+		StringBuilder sb = new StringBuilder();
 
-		return s.trim();
+		sb.append(s.substring(0, matcher.start()));
+
+		int lastTextPos = 0;
+		int lastQuotedTextPos = 0;
+
+		String quotedText = s.substring(matcher.end(), s.length());
+
+		String[] quotedTextLines = quotedText.split("\r\n|\n|\r");
+
+		for (int i = 0; i < quotedTextLines.length; i++ ) {
+			if (Validator.isNull(quotedTextLines[i])) {
+				continue;
+			}
+
+			if (quotedTextLines[i].startsWith(StringPool.GREATER_THAN)) {
+				lastQuotedTextPos = i;
+
+				if ((lastTextPos > 0) && (lastTextPos < lastQuotedTextPos)) {
+					return s;
+				}
+			}
+			else {
+				lastTextPos = i;
+
+				sb.append(quotedTextLines[i]);
+				sb.append(StringPool.RETURN_NEW_LINE);
+			}
+		}
+
+		return sb.toString();
 	}
 
 	private static final Pattern _pattern = Pattern.compile(

@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -62,9 +62,15 @@ if (user2 != null) {
 }
 %>
 
-<div class="lfr-button-column">
+<div class="lfr-button-column" id="<portlet:namespace />buttonColumn">
 	<div class="lfr-button-column-content">
 		<aui:button-row cssClass="edit-toolbar" id='<%= renderResponse.getNamespace() + "userToolbar" %>' />
+
+		<div class="btn view-more-button">
+			<i class="icon-ellipsis-horizontal"></i>
+
+			<liferay-ui:message key="more" />
+		</div>
 	</div>
 </div>
 
@@ -110,6 +116,7 @@ if (user2 != null) {
 	contactsToolbarChildren.push(
 		new A.Button(
 			{
+				cssClass: 'more',
 				on: {
 					click: function(event) {
 						<portlet:namespace />relationAction(event, '<portlet:actionURL name="addSocialRelation" windowState="<%= LiferayWindowState.NORMAL.toString() %>"><portlet:param name="type" value="<%= String.valueOf(SocialRelationConstants.TYPE_UNI_FOLLOWER) %>" /></portlet:actionURL>');
@@ -127,6 +134,7 @@ if (user2 != null) {
 	contactsToolbarChildren.push(
 		new A.Button(
 			{
+				cssClass: 'more',
 				on: {
 					click: function(event) {
 						<portlet:namespace />relationAction(event, '<portlet:actionURL name="deleteSocialRelation" windowState="<%= LiferayWindowState.NORMAL.toString() %>"><portlet:param name="type" value="<%= String.valueOf(SocialRelationConstants.TYPE_UNI_FOLLOWER) %>" /></portlet:actionURL>');
@@ -144,6 +152,7 @@ if (user2 != null) {
 	contactsToolbarChildren.push(
 		new A.Button(
 			{
+				cssClass: 'more',
 				on: {
 					click: function(event) {
 						<portlet:namespace />relationAction(event, '<portlet:actionURL name="addSocialRelation" windowState="<%= LiferayWindowState.NORMAL.toString() %>"><portlet:param name="type" value="<%= String.valueOf(SocialRelationConstants.TYPE_UNI_ENEMY) %>" /></portlet:actionURL>');
@@ -161,6 +170,7 @@ if (user2 != null) {
 	contactsToolbarChildren.push(
 		new A.Button(
 			{
+				cssClass: 'more',
 				on: {
 					click: function(event) {
 						<portlet:namespace />relationAction(event, '<portlet:actionURL name="deleteSocialRelation" windowState="<%= LiferayWindowState.NORMAL.toString() %>"><portlet:param name="type" value="<%= String.valueOf(SocialRelationConstants.TYPE_UNI_ENEMY) %>" /></portlet:actionURL>');
@@ -228,6 +238,7 @@ if (user2 != null) {
 	contactsToolbarChildren.push(
 		new A.Button(
 			{
+				cssClass: 'more',
 				icon: 'icon-save',
 				id: '<portlet:namespace />exportButton',
 				label: '<%= UnicodeLanguageUtil.get(pageContext, "vcard") %>',
@@ -254,6 +265,24 @@ if (user2 != null) {
 			children: contactsToolbarChildren
 		}
 	).render();
+
+	var editToolbar = A.one('.edit-toolbar');
+
+	editToolbar.toggleClass('hide-more-buttons', true);
+
+	var buttonColumn = A.one('#<portlet:namespace />buttonColumn');
+
+	var viewMoreButton = buttonColumn.one('.view-more-button');
+
+	buttonColumn.delegate(
+		'click',
+		function(event) {
+			editToolbar.toggleClass('hide-more-buttons', false);
+
+			viewMoreButton.hide();
+		},
+		'.view-more-button'
+	);
 
 	function <portlet:namespace />relationAction(event, uri) {
 		var end = <%= ContactsConstants.MAX_RESULT_COUNT %>;
@@ -306,7 +335,7 @@ if (user2 != null) {
 					<portlet:namespace />start: 0,
 					<portlet:namespace />userIds: userIds.join()
 				},
-				dataType: 'json'
+				dataType: 'JSON'
 			}
 		);
 	}

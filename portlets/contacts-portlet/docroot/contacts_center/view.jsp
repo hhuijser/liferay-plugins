@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -90,18 +90,18 @@ portletURL.setWindowState(WindowState.NORMAL);
 						<aui:input label="" name="checkAll" type="checkbox" />
 
 						<c:if test="<%= !userPublicPage %>">
-							<aui:select cssClass="contact-group-filter-select" inlineField="true" label="" name="filterBy">
-								<aui:option label="all" selected="<%= filterBy.equals(ContactsConstants.FILTER_BY_DEFAULT) %>" value="<%= ContactsConstants.FILTER_BY_DEFAULT %>" />
+							<aui:select cssClass="contact-group-filter-select" inlineField="true" label="" name="filterBy" value="<%= filterBy %>">
+								<aui:option label="all" value="<%= ContactsConstants.FILTER_BY_DEFAULT %>" />
 
 								<c:if test="<%= showOnlySiteMembers %>">
-									<aui:option label="administrators" selected="<%= filterBy.equals(ContactsConstants.FILTER_BY_ADMINS) %>" value="<%= ContactsConstants.FILTER_BY_ADMINS %>" />
+									<aui:option label="administrators" value="<%= ContactsConstants.FILTER_BY_ADMINS %>" />
 								</c:if>
 
-								<aui:option label="connections" selected="<%= filterBy.equals(ContactsConstants.FILTER_BY_TYPE_BI_CONNECTION) %>" value="<%= ContactsConstants.FILTER_BY_TYPE_BI_CONNECTION %>" />
-								<aui:option label="following" selected="<%= filterBy.equals(ContactsConstants.FILTER_BY_TYPE_UNI_FOLLOWER) %>" value="<%= ContactsConstants.FILTER_BY_TYPE_UNI_FOLLOWER %>" />
+								<aui:option label="connections" value="<%= ContactsConstants.FILTER_BY_TYPE_BI_CONNECTION %>" />
+								<aui:option label="following" value="<%= ContactsConstants.FILTER_BY_TYPE_UNI_FOLLOWER %>" />
 
 								<c:if test="<%= !showOnlySiteMembers %>">
-									<aui:option label="my-contacts" selected="<%= filterBy.equals(ContactsConstants.FILTER_BY_TYPE_MY_CONTACTS) %>" value="<%= ContactsConstants.FILTER_BY_TYPE_MY_CONTACTS %>" />
+									<aui:option label="my-contacts" value="<%= ContactsConstants.FILTER_BY_TYPE_MY_CONTACTS %>" />
 
 									<%
 									List<Group> groups = user.getGroups();
@@ -115,7 +115,7 @@ portletURL.setWindowState(WindowState.NORMAL);
 											String filterByGroupId = ContactsConstants.FILTER_BY_GROUP + curGroup.getGroupId();
 										%>
 
-											<aui:option label="<%= HtmlUtil.escape(curGroup.getDescriptiveName(locale)) %>" selected="<%= filterBy.equals(filterByGroupId) %>" value="<%= filterByGroupId %>" />
+											<aui:option label="<%= HtmlUtil.escape(curGroup.getDescriptiveName(locale)) %>" value="<%= filterByGroupId %>" />
 
 										<%
 										}
@@ -129,14 +129,18 @@ portletURL.setWindowState(WindowState.NORMAL);
 				</div>
 
 				<c:if test="<%= !showOnlySiteMembers %>">
-					<aui:button cssClass="add-contact btn-primary" icon="icon-plus-sign" id='<%= renderResponse.getNamespace() + "addContact" %>' value="add-contact" />
+					<aui:button cssClass="add-contact" icon="icon-plus-sign" id='<%= renderResponse.getNamespace() + "addContact" %>' value="add-contact" />
 				</c:if>
 			</aui:layout>
 		</aui:form>
 
 		<aui:layout cssClass="contacts-result-container lfr-app-column-view">
 			<aui:column columnWidth="30" cssClass="contacts-list" first="<%= true %>">
-				<div class="lfr-search-column contacts-search search-bar">
+				<div class="toggle-user">
+					<i class="icon-chevron-left"></i>
+				</div>
+
+				<div class="contacts-search lfr-search-column search-bar">
 					<aui:input cssClass="search-input" id="name" label="" name="name" size="30" type="text" value="<%= HtmlUtil.escape(name) %>" />
 
 					<i class="icon-search"></i>
@@ -331,7 +335,7 @@ portletURL.setWindowState(WindowState.NORMAL);
 								int followingUsersCount = UserLocalServiceUtil.searchCount(themeDisplay.getCompanyId(), null, WorkflowConstants.STATUS_APPROVED, params);
 								%>
 
-								<aui:layout cssClass="contacts-count connections">
+								<aui:layout cssClass="connections contacts-count">
 									<a href="javascript:;"><liferay-ui:message arguments="<%= String.valueOf(connectionUsersCount) %>" key='<%= showOnlySiteMembers ? "you-have-x-connections-in-this-site" : "you-have-x-connections" %>' translateArguments="<%= false %>" /></a>
 								</aui:layout>
 
@@ -345,12 +349,12 @@ portletURL.setWindowState(WindowState.NORMAL);
 									int myContactsCount = EntryLocalServiceUtil.getEntriesCount(user.getUserId());
 									%>
 
-									<aui:layout cssClass="contacts-count contacts">
+									<aui:layout cssClass="contacts contacts-count">
 										<a href="javascript:;"><liferay-ui:message arguments="<%= String.valueOf(myContactsCount) %>" key="view-my-x-contacts" translateArguments="<%= false %>" /></a>
 									</aui:layout>
 								</c:if>
 
-								<aui:layout cssClass="contacts-count all">
+								<aui:layout cssClass="all contacts-count">
 									<a href="javascript:;"><liferay-ui:message arguments="<%= String.valueOf(allUsersCount) %>" key="view-all-x-users" translateArguments="<%= false %>" /></a>
 								</aui:layout>
 
@@ -408,11 +412,26 @@ portletURL.setWindowState(WindowState.NORMAL);
 				);
 			</c:if>
 
+			var contactsCenterNode = A.one('#p_p_id<portlet:namespace />');
+
+			var toggleUser = A.one('.contacts-portlet .toggle-user');
+
+			if (toggleUser) {
+				toggleUser.on(
+				'click',
+					function(event) {
+						contactsCenterNode.toggleClass('show-user', false);
+					}
+				);
+			}
+
 			var contactsResult = A.one('.contacts-portlet .contacts-result');
 
 			contactsResult.delegate(
 				'click',
 				function(event) {
+					contactsCenterNode.toggleClass('show-user', true);
+
 					var contactsContainer = A.one('.contacts-portlet .contacts-container');
 
 					contactsContainer.plug(A.LoadingMask);
@@ -431,9 +450,11 @@ portletURL.setWindowState(WindowState.NORMAL);
 									contactsCenter.showMessage(false);
 								},
 								success: function(event, id, obj) {
-									contactsContainer.loadingmask.hide();
-
 									contactsCenter.renderContent(this.get('responseData'), true);
+
+									window.scrollTo(0,0);
+
+									contactsContainer.loadingmask.hide();
 								}
 							}
 						}
@@ -468,7 +489,7 @@ portletURL.setWindowState(WindowState.NORMAL);
 								<portlet:namespace />keywords: searchInput.get('value'),
 								<portlet:namespace />start: start
 							},
-							dataType: 'json'
+							dataType: 'JSON'
 						}
 					);
 				},
@@ -501,7 +522,7 @@ portletURL.setWindowState(WindowState.NORMAL);
 								data: {
 									<portlet:namespace />userId: userId
 								},
-								dataType: 'json'
+								dataType: 'JSON'
 							}
 						);
 					}

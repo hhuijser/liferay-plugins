@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.servlet.PluginContextListener;
 import com.liferay.portal.kernel.servlet.PortletSessionListenerManager;
+import com.liferay.portal.kernel.servlet.ServletContextPool;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HttpUtil;
@@ -85,6 +86,7 @@ import javax.servlet.http.HttpSessionListener;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.service.http.HttpContext;
@@ -94,7 +96,8 @@ import org.osgi.service.http.NamespaceException;
  * @author Raymond Augé
  * @author Miguel Pastor
  */
-public class BundleServletContext extends LiferayServletContext {
+public class BundleServletContext
+	extends LiferayServletContext implements BundleReference {
 
 	public static String getServletContextName(Bundle bundle) {
 		return getServletContextName(bundle, false);
@@ -180,6 +183,8 @@ public class BundleServletContext extends LiferayServletContext {
 	}
 
 	public void close() {
+		ServletContextPool.remove(_servletContextName);
+
 		_httpServiceTracker.close();
 
 		_serviceRegistration.unregister();
@@ -218,6 +223,7 @@ public class BundleServletContext extends LiferayServletContext {
 		return value;
 	}
 
+	@Override
 	public Bundle getBundle() {
 		return _bundle;
 	}
@@ -450,8 +456,14 @@ public class BundleServletContext extends LiferayServletContext {
 
 		BundleContext bundleContext = _bundle.getBundleContext();
 
-		_serviceRegistration = bundleContext.registerService(
-			BundleServletContext.class, this, properties);
+		_serviceRegistration =
+			(ServiceRegistration<ServletContext>)
+				bundleContext.registerService(
+					new String[] {
+						BundleServletContext.class.getName(),
+						ServletContext.class.getName()
+					},
+					this, properties);
 
 		_httpServiceTracker = new HttpServiceTracker(bundleContext, _bundle);
 
@@ -1074,7 +1086,7 @@ public class BundleServletContext extends LiferayServletContext {
 	private HttpContext _httpContext;
 	private HttpServiceTracker _httpServiceTracker;
 	private Map<String, String> _initParameters = new HashMap<String, String>();
-	private ServiceRegistration<BundleServletContext> _serviceRegistration;
+	private ServiceRegistration<ServletContext> _serviceRegistration;
 	private List<ServletContextAttributeListener>
 		_servletContextAttributeListeners =
 			new ArrayList<ServletContextAttributeListener>();

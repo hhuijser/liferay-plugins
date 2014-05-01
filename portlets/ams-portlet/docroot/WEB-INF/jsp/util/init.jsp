@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,7 +14,10 @@
  */
 --%>
 
-<%@ page import="com.liferay.ams.model.Asset" %><%@
+<%@ page import="com.liferay.alloy.mvc.AlloyController" %><%@
+page import="com.liferay.alloy.mvc.AlloySearchResult" %><%@
+page import="com.liferay.alloy.mvc.BaseAlloyIndexer" %><%@
+page import="com.liferay.ams.model.Asset" %><%@
 page import="com.liferay.ams.model.Definition" %><%@
 page import="com.liferay.ams.model.Type" %><%@
 page import="com.liferay.ams.service.AssetLocalServiceUtil" %><%@
@@ -26,13 +29,12 @@ page import="com.liferay.portal.kernel.search.Field" %><%@
 page import="com.liferay.portal.kernel.search.Indexer" %><%@
 page import="com.liferay.portal.kernel.search.SearchContext" %><%@
 page import="com.liferay.portal.kernel.search.Summary" %><%@
-page import="com.liferay.portal.kernel.util.ParamUtil" %><%@
-page import="com.liferay.util.bridges.alloy.AlloyController" %><%@
-page import="com.liferay.util.bridges.alloy.AlloySearchResult" %><%@
-page import="com.liferay.util.bridges.alloy.BaseAlloyIndexer" %>
+page import="com.liferay.portal.kernel.util.ParamUtil" %>
 
 <%@ page import="java.util.Locale" %>
 
-<%@ page import="javax.portlet.PortletURL" %>
+<%@ page import="javax.portlet.PortletRequest" %><%@
+page import="javax.portlet.PortletResponse" %><%@
+page import="javax.portlet.PortletURL" %>
 
 <%@ include file="/WEB-INF/jsp/util/portlet_keys.jspf" %>

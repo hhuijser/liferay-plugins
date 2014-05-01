@@ -10,6 +10,8 @@ AUI().use(
 
 				var currentTarget = event.currentTarget;
 
+				var openDialog = currentTarget.attr('data-openDialog');
+
 				var uri = currentTarget.attr('data-href');
 
 				if (uri) {
@@ -35,36 +37,39 @@ AUI().use(
 													read.setHTML(Liferay.Language.get('read'));
 												}
 
-												if (instance._openWindow(uri)) {
-													Liferay.Util.openWindow(
-														{
-															id: 'notificationsWindow',
-															uri: uri
-														}
-													);
-												}
-												else {
-													var topWindow = Liferay.Util.getTop();
-
-													topWindow.location.href = uri;
-												}
+												instance._redirect(uri, openDialog);
 											}
 										}
 									}
 								},
-								dataType: 'json'
+								dataType: 'JSON'
 							}
 						);
+					}
+					else {
+						var userNotification = currentTarget.ancestor('.user-notification');
+
+						if (userNotification) {
+							instance._redirect(uri, openDialog);
+						}
 					}
 				}
 			},
 
-			_openWindow: function(uri) {
-				if (uri.match('p_p_state=maximized') || uri.match('p_p_state=pop_up') || uri.match('p_p_state=exclusive')) {
-					return true;
-				}
+			_redirect: function(uri, openDialog) {
+				if (openDialog === 'false') {
+					var topWindow = Liferay.Util.getTop();
 
-				return false;
+					topWindow.location.href = uri;
+				}
+				else {
+					Liferay.Util.openWindow(
+						{
+							id: 'notificationsWindow',
+							uri: uri
+						}
+					);
+				}
 			}
 		};
 	}

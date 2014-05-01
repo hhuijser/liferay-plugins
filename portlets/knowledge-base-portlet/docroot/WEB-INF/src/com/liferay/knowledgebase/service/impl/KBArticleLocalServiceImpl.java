@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -17,6 +17,7 @@ package com.liferay.knowledgebase.service.impl;
 import com.liferay.knowledgebase.KBArticleContentException;
 import com.liferay.knowledgebase.KBArticlePriorityException;
 import com.liferay.knowledgebase.KBArticleTitleException;
+import com.liferay.knowledgebase.NoSuchArticleException;
 import com.liferay.knowledgebase.admin.social.AdminActivityKeys;
 import com.liferay.knowledgebase.admin.util.AdminSubscriptionSender;
 import com.liferay.knowledgebase.admin.util.AdminUtil;
@@ -41,6 +42,7 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayInputStream;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
@@ -49,18 +51,18 @@ import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.search.SearchEngineUtil;
+import com.liferay.portal.kernel.systemevent.SystemEvent;
+import com.liferay.portal.kernel.systemevent.SystemEventHierarchyEntryThreadLocal;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.ListUtil;
-import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StreamUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Time;
-import com.liferay.portal.kernel.util.UnmodifiableList;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.workflow.WorkflowHandlerRegistryUtil;
@@ -68,6 +70,7 @@ import com.liferay.portal.model.CompanyConstants;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.ResourceConstants;
 import com.liferay.portal.model.Subscription;
+import com.liferay.portal.model.SystemEventConstants;
 import com.liferay.portal.model.Ticket;
 import com.liferay.portal.model.User;
 import com.liferay.portal.portletfilerepository.PortletFileRepositoryUtil;
@@ -80,10 +83,11 @@ import com.liferay.portlet.documentlibrary.FileNameException;
 import com.liferay.portlet.documentlibrary.NoSuchDirectoryException;
 import com.liferay.portlet.documentlibrary.store.DLStoreUtil;
 
+import java.io.File;
 import java.io.InputStream;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -127,8 +131,8 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 
 	public KBArticle addKBArticle(
 			long userId, long parentResourcePrimKey, String title,
-			String content, String description, String[] sections,
-			String dirName, ServiceContext serviceContext)
+			String urlTitle, String content, String description,
+			String[] sections, String dirName, ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		// KB article
@@ -161,6 +165,8 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 		kbArticle.setParentResourcePrimKey(parentResourcePrimKey);
 		kbArticle.setVersion(KBArticleConstants.DEFAULT_VERSION);
 		kbArticle.setTitle(title);
+		kbArticle.setUrlTitle(
+			getUniqueUrlTitle(kbArticleId, title, urlTitle, serviceContext));
 		kbArticle.setContent(content);
 		kbArticle.setDescription(description);
 		kbArticle.setPriority(priority);
@@ -276,7 +282,7 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 			new KBArticlePriorityComparator());
 
 		for (KBArticle kbArticle : kbArticles) {
-			deleteKBArticle(kbArticle);
+			kbArticleLocalService.deleteKBArticle(kbArticle);
 		}
 
 		// Subscriptions
@@ -293,6 +299,9 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 	}
 
 	@Override
+	@SystemEvent(
+		action = SystemEventConstants.ACTION_SKIP,
+		type = SystemEventConstants.TYPE_DELETE)
 	public KBArticle deleteKBArticle(KBArticle kbArticle)
 		throws PortalException, SystemException {
 
@@ -304,7 +313,7 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 			new KBArticlePriorityComparator());
 
 		for (KBArticle siblingKBArticle : siblingKBArticles) {
-			deleteKBArticle(siblingKBArticle);
+			kbArticleLocalService.deleteKBArticle(siblingKBArticle);
 		}
 
 		// Resources
@@ -367,7 +376,7 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 		KBArticle kbArticle = getLatestKBArticle(
 			resourcePrimKey, WorkflowConstants.STATUS_ANY);
 
-		return deleteKBArticle(kbArticle);
+		return kbArticleLocalService.deleteKBArticle(kbArticle);
 	}
 
 	public void deleteKBArticles(long[] resourcePrimKeys)
@@ -377,8 +386,29 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 			resourcePrimKeys, WorkflowConstants.STATUS_ANY, null);
 
 		for (KBArticle kbArticle : kbArticles) {
-			deleteKBArticle(kbArticle);
+			kbArticleLocalService.deleteKBArticle(kbArticle);
 		}
+	}
+
+	@Override
+	public KBArticle fetchLatestKBArticle(long resourcePrimKey, int status)
+		throws PortalException, SystemException {
+
+		if (status == WorkflowConstants.STATUS_ANY) {
+			return kbArticlePersistence.fetchByResourcePrimKey_First(
+				resourcePrimKey, new KBArticleVersionComparator());
+		}
+
+		return kbArticlePersistence.fetchByR_S_First(
+			resourcePrimKey, status, new KBArticleVersionComparator());
+	}
+
+	@Override
+	public File getAttachment(long companyId, String fileName)
+		throws PortalException, SystemException {
+
+		return DLStoreUtil.getFile(
+			companyId, CompanyConstants.SYSTEM, fileName);
 	}
 
 	public List<KBArticle> getCompanyKBArticles(
@@ -490,7 +520,23 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 			kbArticles = ListUtil.sort(kbArticles, orderByComparator);
 		}
 
-		return new UnmodifiableList<KBArticle>(kbArticles);
+		return Collections.unmodifiableList(kbArticles);
+	}
+
+	public KBArticle getKBArticleByUrlTitle(long groupId, String urlTitle)
+		throws PortalException, SystemException {
+
+		// Get the latest KB article that is approved, if none are approved, get
+		// the latest unapproved KB article
+
+		try {
+			return getLatestKBArticleByUrlTitle(
+				groupId, urlTitle, WorkflowConstants.STATUS_APPROVED);
+		}
+		catch (NoSuchArticleException nsae) {
+			return getLatestKBArticleByUrlTitle(
+				groupId, urlTitle, WorkflowConstants.STATUS_PENDING);
+		}
 	}
 
 	public List<KBArticle> getKBArticles(
@@ -528,7 +574,7 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 			kbArticles = KnowledgeBaseUtil.sort(resourcePrimKeys, kbArticles);
 		}
 
-		return new UnmodifiableList<KBArticle>(kbArticles);
+		return Collections.unmodifiableList(kbArticles);
 	}
 
 	public List<KBArticle> getKBArticleVersions(
@@ -565,6 +611,32 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 
 		return kbArticlePersistence.findByR_S_First(
 			resourcePrimKey, status, new KBArticleVersionComparator());
+	}
+
+	public KBArticle getLatestKBArticleByUrlTitle(
+			long groupId, String urlTitle, int status)
+		throws PortalException, SystemException {
+
+		List<KBArticle> kbArticles = null;
+
+		OrderByComparator orderByComparator = new KBArticleVersionComparator();
+
+		if (status == WorkflowConstants.STATUS_ANY) {
+			kbArticles = kbArticlePersistence.findByG_UT(
+				groupId, urlTitle, 0, 1, orderByComparator);
+		}
+		else {
+			kbArticles = kbArticlePersistence.findByG_UT_ST(
+				groupId, urlTitle, status, 0, 1, orderByComparator);
+		}
+
+		if (kbArticles.isEmpty()) {
+			throw new NoSuchArticleException(
+				"No KBArticle exists with the key {groupId=" + groupId +
+					", urlTitle=" + urlTitle + ", status=" + status + "}");
+		}
+
+		return kbArticles.get(0);
 	}
 
 	public List<KBArticle> getSectionsKBArticles(
@@ -811,6 +883,7 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 
 			kbArticle = kbArticlePersistence.create(kbArticleId);
 
+			kbArticle.setUuid(serviceContext.getUuid());
 			kbArticle.setResourcePrimKey(oldKBArticle.getResourcePrimKey());
 			kbArticle.setGroupId(oldKBArticle.getGroupId());
 			kbArticle.setCompanyId(user.getCompanyId());
@@ -998,8 +1071,15 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 			userId, kbArticle, assetEntry.getCategoryIds(),
 			assetEntry.getTagNames());
 
-		assetEntryLocalService.deleteEntry(
-			KBArticle.class.getName(), kbArticle.getKbArticleId());
+		SystemEventHierarchyEntryThreadLocal.push(KBArticle.class);
+
+		try {
+			assetEntryLocalService.deleteEntry(
+				KBArticle.class.getName(), kbArticle.getKbArticleId());
+		}
+		finally {
+			SystemEventHierarchyEntryThreadLocal.pop(KBArticle.class);
+		}
 
 		assetEntryLocalService.updateVisible(
 			KBArticle.class.getName(), kbArticle.getResourcePrimKey(), true);
@@ -1107,14 +1187,15 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 			InputStream inputStream = null;
 
 			try {
-				inputStream = DLStoreUtil.getFileAsStream(
+				byte[] bytes = DLStoreUtil.getFileAsBytes(
 					serviceContext.getCompanyId(), CompanyConstants.SYSTEM,
 					fileName);
 
-				String shortFileName = FileUtil.getShortFileName(fileName);
+				inputStream = new UnsyncByteArrayInputStream(bytes);
 
-				String mimeType = MimeTypesUtil.getContentType(
-					inputStream, fileName);
+				String mimeType = KnowledgeBaseUtil.getMimeType(
+					bytes, fileName);
+				String shortFileName = FileUtil.getShortFileName(fileName);
 
 				PortletFileRepositoryUtil.addPortletFileEntry(
 					serviceContext.getScopeGroupId(), userId,
@@ -1122,6 +1203,10 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 					PortletKeys.KNOWLEDGE_BASE_ARTICLE,
 					kbArticle.getAttachmentsFolderId(), inputStream,
 					shortFileName, mimeType, true);
+
+				DLStoreUtil.deleteFile(
+					serviceContext.getCompanyId(), CompanyConstants.SYSTEM,
+					dirName + StringPool.SLASH + shortFileName);
 			}
 			finally {
 				StreamUtil.cleanUp(inputStream);
@@ -1226,23 +1311,55 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 	protected void checkAttachments(long companyId)
 		throws PortalException, SystemException {
 
-		String dirName = _TEMP_DIR_NAME_PREFIX.concat(StringPool.SLASH).concat(
-			String.valueOf(counterLocalService.increment()));
+		if (!DLStoreUtil.hasDirectory(
+				companyId, CompanyConstants.SYSTEM, _TEMP_DIR_NAME_PREFIX)) {
 
-		DLStoreUtil.addDirectory(companyId, CompanyConstants.SYSTEM, dirName);
-
-		String[] fileNames = DLStoreUtil.getFileNames(
-			companyId, CompanyConstants.SYSTEM, _TEMP_DIR_NAME_PREFIX);
-
-		Arrays.sort(fileNames);
-
-		for (int i = 0; i < fileNames.length - 50; i++) {
-			DLStoreUtil.deleteDirectory(
-				companyId, CompanyConstants.SYSTEM, fileNames[i]);
+			return;
 		}
 
-		DLStoreUtil.deleteDirectory(
-			companyId, CompanyConstants.SYSTEM, dirName);
+		Date now = new Date();
+
+		String[] dirNames = DLStoreUtil.getFileNames(
+			companyId, CompanyConstants.SYSTEM, _TEMP_DIR_NAME_PREFIX);
+
+		for (String dirName : dirNames) {
+			String[] attachmentDirNames = DLStoreUtil.getFileNames(
+				companyId, CompanyConstants.SYSTEM,
+				KnowledgeBaseUtil.trimLeadingSlash(dirName));
+
+			for (String attachmentDirName : attachmentDirNames) {
+				String[] fileNames = DLStoreUtil.getFileNames(
+					companyId, CompanyConstants.SYSTEM,
+					KnowledgeBaseUtil.trimLeadingSlash(attachmentDirName));
+
+				File file = null;
+
+				for (String fileName : fileNames) {
+					try {
+						file = DLStoreUtil.getFile(
+							companyId, CompanyConstants.SYSTEM,
+							KnowledgeBaseUtil.trimLeadingSlash(fileName));
+					}
+					catch (Exception e) {
+						if (_log.isWarnEnabled()) {
+							_log.warn(
+								"Unable to get temp file: " + e.getMessage());
+						}
+					}
+
+					if (file != null) {
+						break;
+					}
+				}
+
+				if ((file != null) &&
+					(now.getTime() - file.lastModified()) > Time.DAY) {
+
+					DLStoreUtil.deleteDirectory(
+						companyId, CompanyConstants.SYSTEM, dirName);
+				}
+			}
+		}
 	}
 
 	protected void deleteAssets(KBArticle kbArticle)
@@ -1355,6 +1472,75 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 
 	protected Date getTicketExpirationDate() {
 		return new Date(System.currentTimeMillis() + _TICKET_EXPIRATION);
+	}
+
+	protected String getUniqueUrlTitle(
+			long groupId, long kbArticleId, String title)
+		throws PortalException, SystemException {
+
+		String urlTitle = KnowledgeBaseUtil.getUrlTitle(kbArticleId, title);
+
+		for (int i = 1;; i++) {
+			KBArticle kbArticle = null;
+
+			try {
+				kbArticle = getKBArticleByUrlTitle(groupId, urlTitle);
+			}
+			catch (NoSuchArticleException nsae) {
+			}
+
+			if ((kbArticle == null) ||
+				(kbArticleId == kbArticle.getKbArticleId())) {
+
+				break;
+			}
+			else {
+				String suffix = StringPool.DASH + i;
+
+				String prefix = urlTitle;
+
+				if (urlTitle.length() > suffix.length()) {
+					prefix = urlTitle.substring(
+						0, urlTitle.length() - suffix.length());
+				}
+
+				urlTitle = prefix + suffix;
+			}
+		}
+
+		return urlTitle;
+	}
+
+	protected String getUniqueUrlTitle(
+			long kbArticleId, String title, String urlTitle,
+			ServiceContext serviceContext)
+		throws PortalException, SystemException {
+
+		if (Validator.isNotNull(urlTitle)) {
+			urlTitle = KnowledgeBaseUtil.getUrlTitle(kbArticleId, urlTitle);
+		}
+		else {
+			urlTitle = getUniqueUrlTitle(
+				serviceContext.getScopeGroupId(), kbArticleId, title);
+		}
+
+		KBArticle kbArticle = null;
+
+		try {
+			kbArticle = getKBArticleByUrlTitle(
+				serviceContext.getScopeGroupId(), urlTitle);
+		}
+		catch (NoSuchArticleException nsae) {
+		}
+
+		if ((kbArticle != null) &&
+			(kbArticleId != kbArticle.getKbArticleId())) {
+
+			urlTitle = getUniqueUrlTitle(
+				serviceContext.getScopeGroupId(), kbArticleId, urlTitle);
+		}
+
+		return urlTitle;
 	}
 
 	protected boolean isValidDirName(String dirName) throws SystemException {

@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -74,6 +74,8 @@ String dirName = ParamUtil.getString(request, "dirName");
 
 	<aui:fieldset>
 		<aui:input name="title" />
+
+		<aui:input disabled="<%= kbArticle != null %>" name="urlTitle" />
 
 		<aui:field-wrapper label="content">
 			<liferay-ui:input-editor width="100%" />

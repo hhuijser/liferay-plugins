@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -103,7 +103,7 @@ Account mailAccount = AccountLocalServiceUtil.getAccount(accountId);
 			A.io.request(
 				themeDisplay.getLayoutURL() + '/-/mail/update_account',
 				{
-					dataType: 'json',
+					dataType: 'JSON',
 					form: {
 						id: form.getDOMNode()
 					},
@@ -140,7 +140,7 @@ Account mailAccount = AccountLocalServiceUtil.getAccount(accountId);
 							accountId: <%= accountId %>
 						}
 					),
-					dataType: 'json',
+					dataType: 'JSON',
 					method: 'POST',
 					on: {
 						failure: function(event, id, obj) {
@@ -173,7 +173,7 @@ Account mailAccount = AccountLocalServiceUtil.getAccount(accountId);
 							accountId: <%= accountId %>
 						}
 					),
-					dataType: 'json',
+					dataType: 'JSON',
 					method: 'POST',
 					on: {
 						failure: function(event, id, obj) {

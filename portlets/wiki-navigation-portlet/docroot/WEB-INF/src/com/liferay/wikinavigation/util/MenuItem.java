@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,7 @@
 
 package com.liferay.wikinavigation.util;
 
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portlet.wiki.model.WikiNode;
@@ -36,7 +37,8 @@ import javax.portlet.PortletURL;
 public class MenuItem implements Serializable {
 
 	public static List<MenuItem> fromWikiNode(
-		long nodeId, int depth, PortletURL portletURL) {
+			long nodeId, int depth, PortletURL portletURL)
+		throws SystemException {
 
 		List<WikiPage> wikiPages = null;
 
@@ -52,7 +54,8 @@ public class MenuItem implements Serializable {
 	}
 
 	public static List<MenuItem> fromWikiPage(
-		WikiPage wikiPage, PortletURL portletURL) {
+			WikiPage wikiPage, PortletURL portletURL)
+		throws SystemException {
 
 		return _fromWikiPage(wikiPage, portletURL);
 	}
@@ -102,13 +105,14 @@ public class MenuItem implements Serializable {
 	}
 
 	private static List<MenuItem> _fromWikiNode(
-		List<WikiPage> wikiPages, int curDepth, int depth,
-		PortletURL portletURL) {
+			List<WikiPage> wikiPages, int curDepth, int depth,
+			PortletURL portletURL)
+		throws SystemException {
 
 		List<MenuItem> menuItems = new LinkedList<MenuItem>();
 
 		for (WikiPage wikiPage : wikiPages) {
-			if ((wikiPage.getParentPage() != null) && (curDepth == 1)) {
+			if ((wikiPage.fetchParentPage() != null) && (curDepth == 1)) {
 				continue;
 			}
 
@@ -141,14 +145,12 @@ public class MenuItem implements Serializable {
 	}
 
 	private static List<MenuItem> _fromWikiPage(
-		WikiPage wikiPage, PortletURL portletURL) {
+			WikiPage wikiPage, PortletURL portletURL)
+		throws SystemException {
 
 		List<MenuItem> menuItems = new LinkedList<MenuItem>();
 
-		Pattern pattern = Pattern.compile(
-			"((==\\s((.)*)\\s==)*(\\Q[[\\E((.)*)\\Q]]\\E)*)*");
-
-		Matcher matcher = pattern.matcher(wikiPage.getContent());
+		Matcher matcher = _pattern.matcher(wikiPage.getContent());
 
 		MenuItem menuItem = null;
 
@@ -222,6 +224,9 @@ public class MenuItem implements Serializable {
 
 		return menuItems;
 	}
+
+	private static Pattern _pattern = Pattern.compile(
+		"((==\\s((.)*)\\s==)*(\\Q[[\\E((.)*)\\Q]]\\E)*)*");
 
 	private List<MenuItem> _children;
 	private boolean _externalURL;

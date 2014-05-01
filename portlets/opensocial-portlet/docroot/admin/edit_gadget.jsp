@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -79,18 +79,10 @@ if (Validator.isNotNull(editorGadgetURL)) {
 	<aui:fieldset>
 		<c:choose>
 			<c:when test="<%= editorGadget %>">
-				<aui:input name="url" type="hidden" value="<%= editorGadgetURL %>" />
-
-				<aui:field-wrapper label="url">
-					<liferay-ui:input-resource url="<%= editorGadgetURL %>" />
-				</aui:field-wrapper>
+				<aui:input name="url" type="resource" value="<%= editorGadgetURL %>" />
 			</c:when>
 			<c:when test="<%= gadget != null %>">
-				<aui:input name="url" type="hidden" />
-
-				<aui:field-wrapper label="url">
-					<liferay-ui:input-resource url="<%= gadget.getUrl() %>" />
-				</aui:field-wrapper>
+				<aui:input name="url" type="resource" value="<%= gadget.getUrl() %>" />
 			</c:when>
 			<c:otherwise>
 				<aui:input name="url" />

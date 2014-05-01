@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -32,6 +32,7 @@ CalendarResource calendarResource = (CalendarResource)request.getAttribute(WebKe
 		<liferay-portlet:renderURL var="editCalendarURL">
 			<liferay-portlet:param name="mvcPath" value="/edit_calendar.jsp" />
 			<liferay-portlet:param name="redirect" value="<%= currentURL %>" />
+			<liferay-portlet:param name="backURL" value="<%= currentURL %>" />
 			<liferay-portlet:param name="calendarResourceId" value="<%= String.valueOf(calendarResource.getCalendarResourceId()) %>" />
 		</liferay-portlet:renderURL>
 
@@ -91,7 +92,7 @@ CalendarResource calendarResource = (CalendarResource)request.getAttribute(WebKe
 	<liferay-ui:search-iterator />
 </liferay-ui:search-container>
 
-<div class="hide calendar-portlet-import-container" id="<portlet:namespace />importCalendarContainer">
+<div class="calendar-portlet-import-container hide" id="<portlet:namespace />importCalendarContainer">
 	<div class="hide portlet-msg-error" id="<portlet:namespace />portletErrorMessage"></div>
 
 	<div class="hide portlet-msg-success" id="<portlet:namespace />portletSuccessMessage">
@@ -126,12 +127,12 @@ CalendarResource calendarResource = (CalendarResource)request.getAttribute(WebKe
 								A.io.request(
 									url,
 									{
-										dataType: 'json',
+										dataType: 'JSON',
 										form: {
 											id: '<portlet:namespace />importFm',
 											upload: true
 										},
-										method: 'post',
+										method: 'POST',
 										on: {
 											complete: function() {
 												var responseData = this.get('responseData');

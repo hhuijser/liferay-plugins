@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -17,6 +17,7 @@ package com.liferay.wsrp.service.impl;
 import com.liferay.counter.service.CounterLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -25,6 +26,7 @@ import com.liferay.portal.model.GroupConstants;
 import com.liferay.portal.model.LayoutConstants;
 import com.liferay.portal.model.Portlet;
 import com.liferay.portal.model.PortletConstants;
+import com.liferay.portal.model.SystemEventConstants;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.PortletLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
@@ -93,10 +95,13 @@ public class WSRPProducerLocalServiceImpl
 		WSRPProducer wsrpProducer = wsrpProducerPersistence.findByPrimaryKey(
 			wsrpProducerId);
 
-		return deleteWSRPProducer(wsrpProducer);
+		return wsrpProducerLocalService.deleteWSRPProducer(wsrpProducer);
 	}
 
 	@Override
+	@SystemEvent(
+		action = SystemEventConstants.ACTION_SKIP,
+		type = SystemEventConstants.TYPE_DELETE)
 	public WSRPProducer deleteWSRPProducer(WSRPProducer wsrpProducer)
 		throws PortalException, SystemException {
 
@@ -109,6 +114,18 @@ public class WSRPProducerLocalServiceImpl
 		groupLocalService.deleteGroup(wsrpProducer.getGroupId());
 
 		return wsrpProducer;
+	}
+
+	@Override
+	public void deleteWSRPProducers(long companyId)
+		throws PortalException, SystemException {
+
+		List<WSRPProducer> wsrpProducers =
+			wsrpProducerPersistence.findByCompanyId(companyId);
+
+		for (WSRPProducer wsrpProducer : wsrpProducers) {
+			wsrpProducerLocalService.deleteWSRPProducer(wsrpProducer);
+		}
 	}
 
 	public WSRPProducer getWSRPProducer(String wsrpProducerUuid)
