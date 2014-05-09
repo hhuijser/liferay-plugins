@@ -24,7 +24,7 @@ public class TestHookFilterUtil {
 
 	public static class FilterNameList {
 
-		public static List<String> addClassName(String className) {
+		public static List<String> getClassName(String className) {
 			if (!_classNames.contains(className)) {
 				_classNames.add(className);
 			}

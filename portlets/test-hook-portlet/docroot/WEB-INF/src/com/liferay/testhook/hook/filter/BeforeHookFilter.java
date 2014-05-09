@@ -43,7 +43,7 @@ public class BeforeHookFilter implements Filter {
 
 		String className = this.getClass().getSimpleName();
 
-		TestHookFilterUtil.FilterNameList.addClassName(className);
+		TestHookFilterUtil.FilterNameList.getClassName(className);
 
 		filterChain.doFilter(servletRequest, servletResponse);
 	}
