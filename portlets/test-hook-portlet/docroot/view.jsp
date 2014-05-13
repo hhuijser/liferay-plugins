@@ -59,13 +59,39 @@
 <p>
 
 	<%
-	if (TestHookFilterUtil.FilterNameList._classNames.size() > 0) {
+	boolean value = true;
+
+	List<String> classNames = TestHookFilterUtil.FilterNameList.getClassNames();
+
+	List<String> filterNames = new ArrayList<String>();
+
+	filterNames.add("BeforeHookFilter");
+	filterNames.add("HookFilter");
+	filterNames.add("AfterHookFilter");
+
+	if (classNames.size() > 0) {
+		if (classNames.size() != filterNames.size()) {
 	%>
 
-		Filter size=<%= _assertEquals(TestHookFilterUtil.FilterNameList._classNames.size(), 3) %><br />
-		Filter order=<%= _assertEquals(TestHookFilterUtil.FilterNameList._classNames.get(2), "AfterHookFilter") %>
+			filter order size test=<%= _assertFalse(value) %><br />
 
 	<%
+			return;
+		}
+
+		for (int i = 0; i < filterNames.size(); i++) {
+			if (!classNames.get(i).equals(filterNames.get(i))) {
+				value = false;
+
+				break;
+			}
+		}
+	%>
+
+		filter order test=<%= _assertTrue(value) %><br />
+
+	<%
+		TestHookFilterUtil.FilterNameList.clear();
 	}
 	%>
 

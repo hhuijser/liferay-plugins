@@ -29,6 +29,9 @@ page import="com.liferay.testhook.hook.model.impl.TestHookUserImpl" %><%@
 page import="com.liferay.testhook.util.TestHookFilterUtil" %><%@
 page import="com.liferay.testhook.util.TestHookUtil" %>
 
+<%@ page import="java.util.ArrayList" %><%@
+page import="java.util.List" %>
+
 <portlet:defineObjects />
 
 <liferay-theme:defineObjects />

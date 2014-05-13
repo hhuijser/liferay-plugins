@@ -43,7 +43,7 @@ public class AfterHookFilter implements Filter {
 
 		String className = this.getClass().getSimpleName();
 
-		TestHookFilterUtil.FilterNameList.getClassName(className);
+		TestHookFilterUtil.FilterNameList.addClassName(className);
 
 		filterChain.doFilter(servletRequest, servletResponse);
 	}
