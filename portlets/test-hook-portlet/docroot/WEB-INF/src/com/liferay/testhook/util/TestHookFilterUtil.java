@@ -24,15 +24,18 @@ public class TestHookFilterUtil {
 
 	public static class FilterNameList {
 
-		public static List<String> getClassName(String className) {
+		public static void addClassName(String className) {
 			if (!_classNames.contains(className)) {
 				_classNames.add(className);
 			}
+		}
 
+		public static List<String> getClassNames() {
 			return _classNames;
 		}
 
-		public static List<String> _classNames = new ArrayList<String>();
 	}
+
+	private static List<String> _classNames = new ArrayList<String>();
 
 }

@@ -59,11 +59,11 @@
 <p>
 
 	<%
-	if (TestHookFilterUtil.FilterNameList._classNames.size() > 0) {
+	if (TestHookFilterUtil.FilterNameList.getClassNames().size() > 0) {
 	%>
 
-		Filter size=<%= _assertEquals(TestHookFilterUtil.FilterNameList._classNames.size(), 3) %><br />
-		Filter order=<%= _assertEquals(TestHookFilterUtil.FilterNameList._classNames.get(2), "AfterHookFilter") %>
+		Filter size=<%= _assertEquals(TestHookFilterUtil.FilterNameList.getClassNames().size(), filterNameList.length) %><br />
+		Filter order=<%= _assertEquals(TestHookFilterUtil.FilterNameList.getClassNames().get(2), filterNameList[2]) %>
 
 	<%
 	}
@@ -114,4 +114,6 @@ private static String _testProperty(String key, boolean expected) throws Excepti
 
 	return sb.toString();
 }
+
+private static final String[] filterNameList = {"BeforeHookFilter", "HookFilter", "AfterHookFilter"};
 %>
