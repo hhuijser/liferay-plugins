@@ -202,7 +202,16 @@ public class WebFormPortlet extends MVCPortlet {
 			}
 
 			if (emailSuccess && databaseSuccess && fileSuccess) {
-				SessionMessages.add(actionRequest, "success");
+				if (Validator.isNull(successURL)) {
+					SessionMessages.add(actionRequest, "success");
+				}
+				else {
+					SessionMessages.add(
+						actionRequest,
+						PortalUtil.getPortletId(actionRequest) +
+							SessionMessages.
+								KEY_SUFFIX_HIDE_DEFAULT_SUCCESS_MESSAGE);
+				}
 			}
 			else {
 				SessionErrors.add(actionRequest, "error");
