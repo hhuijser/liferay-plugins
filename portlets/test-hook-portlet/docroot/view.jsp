@@ -76,6 +76,8 @@
 			filter order size test=<%= _assertFalse(value) %><br />
 
 	<%
+			TestHookFilterUtil.FilterNameList.clear();
+
 			return;
 		}
 
