@@ -28,10 +28,6 @@ public class TestHookFilterUtil {
 			_classNames.add(className);
 		}
 
-		public static void clear() {
-			_classNames.clear();
-		}
-
 		public static List<String> getClassNames() {
 			return _classNames;
 		}

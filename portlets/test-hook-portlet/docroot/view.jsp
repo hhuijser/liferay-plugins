@@ -71,13 +71,12 @@
 
 	if (classNames.size() > 0) {
 		if (classNames.size() != filterNames.size()) {
+			classNames.clear();
 	%>
 
 			filter order size test=<%= _assertFalse(value) %><br />
 
 	<%
-			TestHookFilterUtil.FilterNameList.clear();
-
 			return;
 		}
 
@@ -88,12 +87,13 @@
 				break;
 			}
 		}
+
+		classNames.clear();
 	%>
 
 		filter order test=<%= _assertTrue(value) %><br />
 
 	<%
-		TestHookFilterUtil.FilterNameList.clear();
 	}
 	%>
 
