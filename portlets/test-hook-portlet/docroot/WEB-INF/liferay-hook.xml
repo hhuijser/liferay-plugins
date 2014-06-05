@@ -27,7 +27,7 @@
 	</servlet-filter-mapping>
 	<servlet-filter-mapping>
 		<servlet-filter-name>HookFilter</servlet-filter-name>
-		<url-pattern>/web/*</url-pattern>
+		<url-pattern>/group/*</url-pattern>
 	</servlet-filter-mapping>
 	<servlet-filter-mapping>
 		<servlet-filter-name>BeforeHookFilter</servlet-filter-name>
