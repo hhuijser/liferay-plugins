@@ -71,7 +71,6 @@
 
 	if (classNames.size() > 0) {
 		if (classNames.size() != filterNames.size()) {
-			classNames.clear();
 	%>
 
 			filter order size test=<%= _assertFalse(value) %><br />
@@ -87,8 +86,6 @@
 				break;
 			}
 		}
-
-		classNames.clear();
 	%>
 
 		filter order test=<%= _assertTrue(value) %><br />
