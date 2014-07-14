@@ -178,12 +178,7 @@ public class AkismetEditPageAction extends BaseStrutsPortletAction {
 						wikiPage.getTitle(), previousVersion, serviceContext);
 				}
 				else {
-					WikiPageLocalServiceUtil.updatePage(
-						themeDisplay.getUserId(), wikiPage.getNodeId(),
-						wikiPage.getTitle(), latestVersion, null,
-						StringPool.BLANK, true, wikiPage.getFormat(),
-						wikiPage.getParentTitle(), wikiPage.getRedirectTitle(),
-						serviceContext);
+					return ;
 				}
 			}
 
