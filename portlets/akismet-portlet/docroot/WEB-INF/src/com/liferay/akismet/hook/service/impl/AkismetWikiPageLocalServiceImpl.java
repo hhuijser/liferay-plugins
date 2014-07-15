@@ -99,16 +99,7 @@ public class AkismetWikiPageLocalServiceImpl
 			page.setSummary(AkismetConstants.WIKI_PAGE_PENDING_APPROVAL);
 			page.setStatus(WorkflowConstants.STATUS_APPROVED);
 
-			page = super.updateWikiPage(page);
-
-			ServiceContext newServiceContext = new ServiceContext();
-
-			newServiceContext.setFormDate(page.getModifiedDate());
-
-			return super.updatePage(
-				userId, nodeId, title, page.getVersion(), null,
-				StringPool.BLANK, true, format, parentTitle, redirectTitle,
-				newServiceContext);
+			return super.updateWikiPage(page);
 		}
 		finally {
 			NotificationThreadLocal.setEnabled(notificationEnabled);
