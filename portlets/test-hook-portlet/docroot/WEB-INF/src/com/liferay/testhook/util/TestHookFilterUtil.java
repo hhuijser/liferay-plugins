@@ -14,8 +14,6 @@
 
 package com.liferay.testhook.util;
 
-import com.liferay.portal.kernel.util.ListUtil;
-
 import java.util.ArrayList;
 import java.util.List;
 
