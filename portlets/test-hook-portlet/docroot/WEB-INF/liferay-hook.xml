@@ -11,15 +11,15 @@
 	</service>
 	<servlet-filter>
 		<servlet-filter-name>Able Test Hook Filter</servlet-filter-name>
-		<servlet-filter-impl>com.liferay.testhook.hook.filter.AbleTestHookFilter</servlet-filter-impl>
+		<servlet-filter-impl>com.liferay.testhook.hook.filter.TestHookFilter</servlet-filter-impl>
 	</servlet-filter>
 	<servlet-filter>
 		<servlet-filter-name>Baker Test Hook Filter</servlet-filter-name>
-		<servlet-filter-impl>com.liferay.testhook.hook.filter.BakerTestHookFilter</servlet-filter-impl>
+		<servlet-filter-impl>com.liferay.testhook.hook.filter.TestHookFilter</servlet-filter-impl>
 	</servlet-filter>
 	<servlet-filter>
 		<servlet-filter-name>Charlie Test Hook Filter</servlet-filter-name>
-		<servlet-filter-impl>com.liferay.testhook.hook.filter.CharlieTestHookFilter</servlet-filter-impl>
+		<servlet-filter-impl>com.liferay.testhook.hook.filter.TestHookFilter</servlet-filter-impl>
 	</servlet-filter>
 	<servlet-filter-mapping>
 		<servlet-filter-name>Able Test Hook Filter</servlet-filter-name>

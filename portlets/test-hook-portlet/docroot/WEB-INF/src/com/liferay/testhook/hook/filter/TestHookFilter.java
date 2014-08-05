@@ -28,7 +28,7 @@ import javax.servlet.ServletResponse;
 /**
  * @author Eric Min
  */
-public class BakerTestHookFilter implements Filter {
+public class TestHookFilter implements Filter {
 
 	@Override
 	public void destroy() {
@@ -40,13 +40,16 @@ public class BakerTestHookFilter implements Filter {
 			FilterChain filterChain)
 		throws IOException, ServletException {
 
-		TestHookFilterUtil.addFilterClass(getClass());
+		TestHookFilterUtil.addFilterName(_filterConfig.getFilterName());
 
 		filterChain.doFilter(servletRequest, servletResponse);
 	}
 
 	@Override
 	public void init(FilterConfig filterConfig) {
+		_filterConfig = filterConfig;
 	}
+
+	private FilterConfig _filterConfig;
 
 }

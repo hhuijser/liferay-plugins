@@ -57,7 +57,7 @@
 <h3>servlet-filter</h3>
 
 <p>
-	<%= _assertEquals(ListUtil.fromArray(new String[] {"AbleTestHookFilter", "BakerTestHookFilter", "CharlieTestHookFilter"}), TestHookFilterUtil.getFilterClassNames()) %>
+	<%= _assertEquals(ListUtil.fromArray(new String[] {"Able Test Hook Filter", "Baker Test Hook Filter", "Charlie Test Hook Filter"}), TestHookFilterUtil.getFilterNames()) %>
 </p>
 
 <%!
