@@ -9,4 +9,30 @@
 		<service-type>com.liferay.portal.service.UserLocalService</service-type>
 		<service-impl>com.liferay.testhook.hook.service.impl.TestHookUserLocalServiceImpl</service-impl>
 	</service>
+	<servlet-filter>
+		<servlet-filter-name>Able Test Hook Filter</servlet-filter-name>
+		<servlet-filter-impl>com.liferay.testhook.hook.filter.TestHookFilter</servlet-filter-impl>
+	</servlet-filter>
+	<servlet-filter>
+		<servlet-filter-name>Baker Test Hook Filter</servlet-filter-name>
+		<servlet-filter-impl>com.liferay.testhook.hook.filter.TestHookFilter</servlet-filter-impl>
+	</servlet-filter>
+	<servlet-filter>
+		<servlet-filter-name>Charlie Test Hook Filter</servlet-filter-name>
+		<servlet-filter-impl>com.liferay.testhook.hook.filter.TestHookFilter</servlet-filter-impl>
+	</servlet-filter>
+	<servlet-filter-mapping>
+		<servlet-filter-name>Able Test Hook Filter</servlet-filter-name>
+		<before-filter>Baker Test Hook Filter</before-filter>
+		<url-pattern>/*</url-pattern>
+	</servlet-filter-mapping>
+	<servlet-filter-mapping>
+		<servlet-filter-name>Baker Test Hook Filter</servlet-filter-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-filter-mapping>
+	<servlet-filter-mapping>
+		<servlet-filter-name>Charlie Test Hook Filter</servlet-filter-name>
+		<after-filter>Baker Test Hook Filter</after-filter>
+		<url-pattern>/*</url-pattern>
+	</servlet-filter-mapping>
 </hook>

@@ -54,6 +54,12 @@
 	com.liferay.portal.service.UserLocalService=<%= _assertEquals(TestHookUserImpl.class.getName(), UserLocalServiceUtil.getUserByEmailAddress(themeDisplay.getCompanyId(), "test@liferay.com").getClass().getName()) %>
 </p>
 
+<h3>servlet-filter</h3>
+
+<p>
+	<%= _assertEquals(ListUtil.fromArray(new String[] {"Able Test Hook Filter", "Baker Test Hook Filter", "Charlie Test Hook Filter"}), TestHookFilter.getFilterNames()) %>
+</p>
+
 <%!
 private static String _assertEquals(Object expected, Object actual) {
 	return _assertTrue(Validator.equals(expected, actual));
