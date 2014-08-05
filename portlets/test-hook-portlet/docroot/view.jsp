@@ -54,7 +54,7 @@
 	com.liferay.portal.service.UserLocalService=<%= _assertEquals(TestHookUserImpl.class.getName(), UserLocalServiceUtil.getUserByEmailAddress(themeDisplay.getCompanyId(), "test@liferay.com").getClass().getName()) %>
 </p>
 
-<h3>filter order</h3>
+<h3>servlet-filter</h3>
 
 <p>
 
