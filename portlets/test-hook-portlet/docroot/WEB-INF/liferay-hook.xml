@@ -22,12 +22,12 @@
 		<servlet-filter-impl>com.liferay.testhook.hook.filter.CharlieTestHookFilter</servlet-filter-impl>
 	</servlet-filter>
 	<servlet-filter-mapping>
-		<servlet-filter-name>Baker Test Hook Filter</servlet-filter-name>
+		<servlet-filter-name>Able Test Hook Filter</servlet-filter-name>
+		<before-filter>Baker Test Hook Filter</before-filter>
 		<url-pattern>/*</url-pattern>
 	</servlet-filter-mapping>
 	<servlet-filter-mapping>
-		<servlet-filter-name>Able Test Hook Filter</servlet-filter-name>
-		<before-filter>Baker Test Hook Filter</before-filter>
+		<servlet-filter-name>Baker Test Hook Filter</servlet-filter-name>
 		<url-pattern>/*</url-pattern>
 	</servlet-filter-mapping>
 	<servlet-filter-mapping>
