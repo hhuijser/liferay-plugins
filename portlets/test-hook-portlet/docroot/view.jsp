@@ -57,14 +57,7 @@
 <h3>servlet-filter</h3>
 
 <p>
-
-	<%
-	List<String> filterClassNames = TestHookFilterUtil.getFilterClassNames();
-
-	List<String> expectedFilterClassNames = ListUtil.fromArray(new String[] {"AbleTestHookFilter", "BakerTestHookFilter", "CharlieTestHookFilter"});
-	%>
-
-	filter order test=<%= _assertEquals(expectedFilterClassNames, filterClassNames) %><br />
+	<%= _assertEquals(ListUtil.fromArray(new String[] {"AbleTestHookFilter", "BakerTestHookFilter", "CharlieTestHookFilter"}), TestHookFilterUtil.getFilterClassNames()) %>
 </p>
 
 <%!
