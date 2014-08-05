@@ -10,16 +10,16 @@
 		<service-impl>com.liferay.testhook.hook.service.impl.TestHookUserLocalServiceImpl</service-impl>
 	</service>
 	<servlet-filter>
-		<servlet-filter-name>CharlieTestHookFilter</servlet-filter-name>
-		<servlet-filter-impl>com.liferay.testhook.hook.filter.CharlieTestHookFilter</servlet-filter-impl>
-	</servlet-filter>
-	<servlet-filter>
 		<servlet-filter-name>AbleTestHookFilter</servlet-filter-name>
 		<servlet-filter-impl>com.liferay.testhook.hook.filter.AbleTestHookFilter</servlet-filter-impl>
 	</servlet-filter>
 	<servlet-filter>
 		<servlet-filter-name>BakerTestHookFilter</servlet-filter-name>
 		<servlet-filter-impl>com.liferay.testhook.hook.filter.BakerTestHookFilter</servlet-filter-impl>
+	</servlet-filter>
+	<servlet-filter>
+		<servlet-filter-name>CharlieTestHookFilter</servlet-filter-name>
+		<servlet-filter-impl>com.liferay.testhook.hook.filter.CharlieTestHookFilter</servlet-filter-impl>
 	</servlet-filter>
 	<servlet-filter-mapping>
 		<servlet-filter-name>BakerTestHookFilter</servlet-filter-name>
