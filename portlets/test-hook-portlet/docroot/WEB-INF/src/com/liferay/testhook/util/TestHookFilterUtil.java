@@ -24,8 +24,8 @@ import java.util.List;
  */
 public class TestHookFilterUtil {
 
-	public static void addFilterClass(Class<?> filterClazz) {
-		_filterClassNames.add(filterClazz.getSimpleName());
+	public static void addFilterClass(Class<?> filterClass) {
+		_filterClassNames.add(filterClass.getSimpleName());
 	}
 
 	public static List<String> getFilterClassNames() {
