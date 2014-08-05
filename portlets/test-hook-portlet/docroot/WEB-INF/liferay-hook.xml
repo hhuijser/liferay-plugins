@@ -10,19 +10,19 @@
 		<service-impl>com.liferay.testhook.hook.service.impl.TestHookUserLocalServiceImpl</service-impl>
 	</service>
 	<servlet-filter>
-		<servlet-filter-name>AbleTestHookFilter</servlet-filter-name>
+		<servlet-filter-name>Able Test Hook Filter</servlet-filter-name>
 		<servlet-filter-impl>com.liferay.testhook.hook.filter.AbleTestHookFilter</servlet-filter-impl>
 	</servlet-filter>
 	<servlet-filter>
-		<servlet-filter-name>BakerTestHookFilter</servlet-filter-name>
+		<servlet-filter-name>Baker Test Hook Filter</servlet-filter-name>
 		<servlet-filter-impl>com.liferay.testhook.hook.filter.BakerTestHookFilter</servlet-filter-impl>
 	</servlet-filter>
 	<servlet-filter>
-		<servlet-filter-name>CharlieTestHookFilter</servlet-filter-name>
+		<servlet-filter-name>Charlie Test Hook Filter</servlet-filter-name>
 		<servlet-filter-impl>com.liferay.testhook.hook.filter.CharlieTestHookFilter</servlet-filter-impl>
 	</servlet-filter>
 	<servlet-filter-mapping>
-		<servlet-filter-name>BakerTestHookFilter</servlet-filter-name>
+		<servlet-filter-name>Baker Test Hook Filter</servlet-filter-name>
 		<url-pattern>/group/*</url-pattern>
 		<url-pattern>/user/*</url-pattern>
 		<url-pattern>/web/*</url-pattern>
@@ -30,14 +30,14 @@
 		<dispatcher>FORWARD</dispatcher>
 	</servlet-filter-mapping>
 	<servlet-filter-mapping>
-		<servlet-filter-name>BakerTestHookFilter</servlet-filter-name>
+		<servlet-filter-name>Baker Test Hook Filter</servlet-filter-name>
 		<url-pattern>*.jsp</url-pattern>
 		<dispatcher>REQUEST</dispatcher>
 		<dispatcher>FORWARD</dispatcher>
 	</servlet-filter-mapping>
 	<servlet-filter-mapping>
-		<servlet-filter-name>AbleTestHookFilter</servlet-filter-name>
-		<before-filter>BakerTestHookFilter</before-filter>
+		<servlet-filter-name>Able Test Hook Filter</servlet-filter-name>
+		<before-filter>Baker Test Hook Filter</before-filter>
 		<url-pattern>/group/*</url-pattern>
 		<url-pattern>/user/*</url-pattern>
 		<url-pattern>/web/*</url-pattern>
@@ -46,8 +46,8 @@
 		<dispatcher>FORWARD</dispatcher>
 	</servlet-filter-mapping>
 	<servlet-filter-mapping>
-		<servlet-filter-name>CharlieTestHookFilter</servlet-filter-name>
-		<after-filter>BakerTestHookFilter</after-filter>
+		<servlet-filter-name>Charlie Test Hook Filter</servlet-filter-name>
+		<after-filter>Baker Test Hook Filter</after-filter>
 		<url-pattern>/group/*</url-pattern>
 		<url-pattern>/user/*</url-pattern>
 		<url-pattern>/web/*</url-pattern>
