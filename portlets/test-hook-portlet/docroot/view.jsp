@@ -61,16 +61,10 @@
 	<%
 	List<String> filterClassNames = TestHookFilterUtil.getFilterClassNames();
 
-	if (filterClassNames.size() > 0) {
-		List<String> expectedFilterClassNames = ListUtil.fromArray(new String[] {"AbleTestHookFilter", "BakerTestHookFilter", "CharlieTestHookFilter"});
+	List<String> expectedFilterClassNames = ListUtil.fromArray(new String[] {"AbleTestHookFilter", "BakerTestHookFilter", "CharlieTestHookFilter"});
 	%>
 
-		filter order test=<%= _assertEquals(expectedFilterClassNames, filterClassNames) %><br />
-
-	<%
-	}
-	%>
-
+	filter order test=<%= _assertEquals(expectedFilterClassNames, filterClassNames) %><br />
 </p>
 
 <%!
