@@ -28,7 +28,7 @@ import javax.servlet.ServletResponse;
 /**
  * @author Eric Min
  */
-public class HookFilter implements Filter {
+public class AbleTestHookFilter implements Filter {
 
 	@Override
 	public void destroy() {

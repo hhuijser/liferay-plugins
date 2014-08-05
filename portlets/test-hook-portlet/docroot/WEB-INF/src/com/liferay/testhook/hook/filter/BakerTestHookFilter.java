@@ -28,7 +28,7 @@ import javax.servlet.ServletResponse;
 /**
  * @author Eric Min
  */
-public class BeforeHookFilter implements Filter {
+public class BakerTestHookFilter implements Filter {
 
 	@Override
 	public void destroy() {
