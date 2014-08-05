@@ -14,9 +14,10 @@
 
 package com.liferay.testhook.hook.filter;
 
-import com.liferay.testhook.util.TestHookFilterUtil;
-
 import java.io.IOException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -30,6 +31,10 @@ import javax.servlet.ServletResponse;
  */
 public class TestHookFilter implements Filter {
 
+	public static List<String> getFilterNames() {
+		return _filterNames;
+	}
+
 	@Override
 	public void destroy() {
 	}
@@ -40,7 +45,7 @@ public class TestHookFilter implements Filter {
 			FilterChain filterChain)
 		throws IOException, ServletException {
 
-		TestHookFilterUtil.addFilterName(_filterConfig.getFilterName());
+		_filterNames.add(_filterConfig.getFilterName());
 
 		filterChain.doFilter(servletRequest, servletResponse);
 	}
@@ -49,6 +54,8 @@ public class TestHookFilter implements Filter {
 	public void init(FilterConfig filterConfig) {
 		_filterConfig = filterConfig;
 	}
+
+	private static List<String> _filterNames = new ArrayList<String>();
 
 	private FilterConfig _filterConfig;
 

@@ -27,7 +27,7 @@ page import="com.liferay.portal.kernel.util.StringPool" %><%@
 page import="com.liferay.portal.kernel.util.Validator" %><%@
 page import="com.liferay.portal.service.UserLocalServiceUtil" %><%@
 page import="com.liferay.testhook.hook.model.impl.TestHookUserImpl" %><%@
-page import="com.liferay.testhook.util.TestHookFilterUtil" %><%@
+page import="com.liferay.testhook.util.TestHookFilter" %><%@
 page import="com.liferay.testhook.util.TestHookUtil" %>
 
 <portlet:defineObjects />
