@@ -29,7 +29,7 @@ public class TestHookFilterUtil {
 	}
 
 	public static List<String> getFilterClassNames() {
-		return ListUtil.unique(_filterClassNames);
+		return _filterClassNames;
 	}
 
 	private static List<String> _filterClassNames = new ArrayList<String>();
