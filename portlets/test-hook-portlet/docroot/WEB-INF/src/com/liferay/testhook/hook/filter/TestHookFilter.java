@@ -32,7 +32,11 @@ import javax.servlet.ServletResponse;
 public class TestHookFilter implements Filter {
 
 	public static List<String> getFilterNames() {
-		return _filterNames;
+		List<String> filterNames = new ArrayList(_filterNames);
+
+		_filterNames.clear();
+
+		return filterNames;
 	}
 
 	@Override
