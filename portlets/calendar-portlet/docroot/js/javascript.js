@@ -454,7 +454,7 @@ AUI.add(
 
 				instance.invokeService(
 					{
-						'/calendar-portlet/calendarbooking/has-child-calendar-bookings': {
+						'/calendar-portlet.calendarbooking/has-child-calendar-bookings': {
 							parentCalendarBookingId: schedulerEvent.get('calendarBookingId')
 						}
 					},
