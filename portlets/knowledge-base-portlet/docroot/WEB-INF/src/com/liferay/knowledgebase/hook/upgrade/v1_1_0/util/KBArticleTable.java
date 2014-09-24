@@ -35,6 +35,7 @@ public class KBArticleTable {
 		{"parentResourcePrimKey", Types.BIGINT},
 		{"version", Types.INTEGER},
 		{"title", Types.VARCHAR},
+		{"urlTitle", Types.VARCHAR},
 		{"content", Types.CLOB},
 		{"description", Types.VARCHAR},
 		{"kbTemplateId", Types.BIGINT},
@@ -43,6 +44,7 @@ public class KBArticleTable {
 		{"viewCount", Types.INTEGER},
 		{"latest", Types.BOOLEAN},
 		{"main", Types.BOOLEAN},
+		{"sourceURL", Types.VARCHAR },
 		{"status", Types.INTEGER},
 		{"statusByUserId", Types.BIGINT},
 		{"statusByUserName", Types.VARCHAR},
@@ -51,7 +53,7 @@ public class KBArticleTable {
 
 	public static final String TABLE_NAME = "KBArticle";
 
-	public static final String TABLE_SQL_CREATE = "create table KBArticle (uuid_ VARCHAR(75) null,kbArticleId LONG not null primary key,resourcePrimKey LONG,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,rootResourcePrimKey LONG,parentResourcePrimKey LONG,version INTEGER,title STRING null,content TEXT null,description STRING null,kbTemplateId LONG,priority DOUBLE,sections STRING null,viewCount INTEGER,latest BOOLEAN,main BOOLEAN,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null)";
+	public static final String TABLE_SQL_CREATE = "create table KBArticle (uuid_ VARCHAR(75) null,kbArticleId LONG not null primary key,resourcePrimKey LONG,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,rootResourcePrimKey LONG,parentResourcePrimKey LONG,version INTEGER,title STRING null,urlTitle VARCHAR(75) null,content TEXT null,description STRING null,kbTemplateId LONG,priority DOUBLE,sections STRING null,viewCount INTEGER,latest BOOLEAN,main BOOLEAN,sourceURL STRING null,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null)";
 
 	public static final String TABLE_SQL_DROP = "drop table KBArticle";
 
