@@ -701,44 +701,8 @@ public class FileSystemImporter extends BaseImporter {
 			privateLayout = true;
 		}
 
-		Map<Locale, String> nameMap = new HashMap<Locale, String>();
-
-		JSONObject nameMapJSONObject = layoutJSONObject.getJSONObject(
-			"nameMap");
-
-		if (nameMapJSONObject != null) {
-			nameMap = (Map<Locale, String>)LocalizationUtil.deserialize(
-				nameMapJSONObject);
-
-			if (!nameMap.containsKey(LocaleUtil.getDefault())) {
-				Collection<String> values = nameMap.values();
-
-				Iterator iterator = values.iterator();
-
-				nameMap.put(LocaleUtil.getDefault(), (String)iterator.next());
-			}
-		}
-		else {
-			String name = layoutJSONObject.getString("name");
-
-			nameMap.put(LocaleUtil.getDefault(), name);
-		}
-
-		Map<Locale, String> titleMap = new HashMap<Locale, String>();
-
-		JSONObject titleMapJSONObject = layoutJSONObject.getJSONObject(
-			"titleMap");
-
-		if (titleMapJSONObject != null) {
-			titleMap = (Map<Locale, String>)LocalizationUtil.deserialize(
-				titleMapJSONObject);
-		}
-		else {
-			String title = layoutJSONObject.getString("title");
-
-			titleMap.put(LocaleUtil.getDefault(), title);
-		}
-
+		Map<Locale, String> nameMap = getMap(layoutJSONObject, "name");
+		Map<Locale, String> titleMap = getMap(layoutJSONObject, "title");
 		String type = GetterUtil.getString(
 			layoutJSONObject.getString("type"), LayoutConstants.TYPE_PORTLET);
 		String typeSettings = layoutJSONObject.getString("typeSettings");
@@ -756,6 +720,22 @@ public class FileSystemImporter extends BaseImporter {
 		}
 
 		friendlyURLMap.put(LocaleUtil.getDefault(), friendlyURL);
+
+		ServiceContext serviceContext = new ServiceContext();
+
+		String layoutPrototypeUuid = layoutJSONObject.getString(
+			"layoutPrototypeUuid");
+
+		if (Validator.isNotNull(layoutPrototypeUuid)) {
+			boolean layoutPrototypeLinkEnabled = GetterUtil.getBoolean(
+				layoutJSONObject.getString("layoutPrototypeLinkEnabled"),
+				false);
+
+			serviceContext.setAttribute(
+				"layoutPrototypeLinkEnabled", layoutPrototypeLinkEnabled);
+			serviceContext.setAttribute(
+				"layoutPrototypeUuid", layoutPrototypeUuid);
+		}
 
 		Layout layout = LayoutLocalServiceUtil.addLayout(
 			userId, groupId, privateLayout, parentLayoutId, nameMap, titleMap,
@@ -887,6 +867,62 @@ public class FileSystemImporter extends BaseImporter {
 		}
 	}
 
+	protected void addLayoutPrototype(JSONObject layoutPrototypeJSONObject)
+		throws Exception {
+
+		Map<Locale, String> nameMap = getMap(
+			layoutPrototypeJSONObject, "name");
+		Map<Locale, String> descriptionMap = getMap(
+			layoutPrototypeJSONObject, "description");
+
+		ServiceContext serviceContext = new ServiceContext();
+
+		String uuid = layoutPrototypeJSONObject.getString("uuid");
+
+		LayoutPrototype layoutPrototype = null;
+
+		if (Validator.isNotNull(uuid)) {
+			serviceContext.setUuid(uuid);
+
+			layoutPrototype =
+				LayoutPrototypeLocalServiceUtil.
+					fetchLayoutPrototypeByUuidAndCompanyId(uuid, companyId);
+		}
+
+		if (layoutPrototype == null) {
+			layoutPrototype =
+				LayoutPrototypeLocalServiceUtil.addLayoutPrototype(
+					userId, companyId, nameMap, descriptionMap, true,
+					serviceContext);
+		}
+		else {
+			LayoutPrototypeLocalServiceUtil.updateLayoutPrototype(
+				layoutPrototype.getLayoutPrototypeId(), nameMap, descriptionMap,
+				layoutPrototype.isActive(), serviceContext);
+		}
+
+		Layout layout = layoutPrototype.getLayout();
+
+		String typeSettings = layoutPrototypeJSONObject.getString(
+			"typeSettings");
+
+		if (Validator.isNotNull(typeSettings)) {
+			layout = LayoutLocalServiceUtil.updateLayout(
+				layout.getGroupId(), layout.isPrivateLayout(),
+				layout.getLayoutId(), typeSettings);
+		}
+
+		JSONArray columnsJSONArray = layoutPrototypeJSONObject.getJSONArray(
+			"columns");
+
+		addLayoutColumns(
+			layout, LayoutTypePortletConstants.COLUMN_PREFIX, columnsJSONArray);
+
+		LayoutLocalServiceUtil.updateLayout(
+			layout.getGroupId(), layout.isPrivateLayout(), layout.getLayoutId(),
+			layout.getTypeSettings());
+	}
+
 	protected void addLayouts(
 			boolean privateLayout, long parentLayoutId,
 			JSONArray layoutsJSONArray)
@@ -974,9 +1010,10 @@ public class FileSystemImporter extends BaseImporter {
 		serviceContext.setAddGuestPermissions(true);
 		serviceContext.setScopeGroupId(groupId);
 
-		setupAssets("assets.json");
-		setupSettings("settings.json");
-		setupSitemap("sitemap.json");
+		setUpAssets("assets.json");
+		setUpLayoutPrototypes("layout_prototypes.json");
+		setUpSettings("settings.json");
+		setUpSitemap("sitemap.json");
 	}
 
 	protected String getDDMTemplateLanguage(String fileName) {
@@ -1077,6 +1114,34 @@ public class FileSystemImporter extends BaseImporter {
 		return StringUtil.toUpperCase(name) + StringPool.DASH + version;
 	}
 
+	protected Map<Locale, String> getMap(
+		JSONObject layoutJSONObject, String name) {
+
+		Map<Locale, String> map = new HashMap<Locale, String>();
+
+		JSONObject jsonObject = layoutJSONObject.getJSONObject(
+			name.concat("Map"));
+
+		if (jsonObject != null) {
+			map = (Map<Locale, String>)LocalizationUtil.deserialize(jsonObject);
+
+			if (!map.containsKey(LocaleUtil.getDefault())) {
+				Collection<String> values = map.values();
+
+				Iterator<String> iterator = values.iterator();
+
+				map.put(LocaleUtil.getDefault(), iterator.next());
+			}
+		}
+		else {
+			String value = layoutJSONObject.getString(name);
+
+			map.put(LocaleUtil.getDefault(), value);
+		}
+
+		return map;
+	}
+
 	protected Map<Locale, String> getMap(Locale locale, String value) {
 		Map<Locale, String> map = new HashMap<Locale, String>();
 
@@ -1162,7 +1227,7 @@ public class FileSystemImporter extends BaseImporter {
 		serviceContext.setAssetTagNames(assetTagNames);
 	}
 
-	protected void setupAssets(JSONArray assetsJSONArray) {
+	protected void setUpAssets(JSONArray assetsJSONArray) {
 		if (assetsJSONArray == null) {
 			return;
 		}
@@ -1176,7 +1241,7 @@ public class FileSystemImporter extends BaseImporter {
 		}
 	}
 
-	protected void setupAssets(String fileName) throws Exception {
+	protected void setUpAssets(String fileName) throws Exception {
 		if (!isCompanyGroup()) {
 			List<AssetTag> assetTags = AssetTagLocalServiceUtil.getGroupTags(
 				groupId);
@@ -1199,7 +1264,7 @@ public class FileSystemImporter extends BaseImporter {
 		if (jsonObject != null) {
 			JSONArray assetsJSONArray = jsonObject.getJSONArray("assets");
 
-			setupAssets(assetsJSONArray);
+			setUpAssets(assetsJSONArray);
 		}
 
 		addDLFileEntries(_DL_DOCUMENTS_DIR_NAME);
@@ -1215,7 +1280,25 @@ public class FileSystemImporter extends BaseImporter {
 		addLayoutTemplate(_LAYOUT_TEMPLATE_DIR_NAME);
 	}
 
-	protected void setupSettings(String fileName) throws Exception {
+	protected void setUpLayoutPrototypes(String fileName) throws Exception {
+		JSONObject jsonObject = getJSONObject(fileName);
+
+		JSONArray layoutPrototypesJSONArray = jsonObject.getJSONArray(
+			"layoutPrototypes");
+
+		if (layoutPrototypesJSONArray == null) {
+			return;
+		}
+
+		for (int i = 0; i < layoutPrototypesJSONArray.length(); i++) {
+			JSONObject layoutPrototypeJSONObject =
+				layoutPrototypesJSONArray.getJSONObject(i);
+
+			addLayoutPrototype(layoutPrototypeJSONObject);
+		}
+	}
+
+	protected void setUpSettings(String fileName) throws Exception {
 		if (targetClassName.equals(Group.class.getName())) {
 			return;
 		}
@@ -1239,7 +1322,7 @@ public class FileSystemImporter extends BaseImporter {
 			layoutSetPrototype);
 	}
 
-	protected void setupSitemap(String fileName) throws Exception {
+	protected void setUpSitemap(String fileName) throws Exception {
 		LayoutLocalServiceUtil.deleteLayouts(
 			groupId, true, new ServiceContext());
 
