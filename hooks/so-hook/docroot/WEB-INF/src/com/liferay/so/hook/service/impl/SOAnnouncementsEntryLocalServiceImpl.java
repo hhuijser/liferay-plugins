@@ -17,6 +17,7 @@
 
 package com.liferay.so.hook.service.impl;
 
+import com.liferay.portal.kernel.dao.shard.ShardUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -46,6 +47,7 @@ import com.liferay.portal.service.OrganizationLocalServiceUtil;
 import com.liferay.portal.service.RoleLocalServiceUtil;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.service.UserNotificationEventLocalServiceUtil;
+import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.announcements.model.AnnouncementsEntry;
 import com.liferay.portlet.announcements.service.AnnouncementsEntryLocalService;
 import com.liferay.portlet.announcements.service.AnnouncementsEntryLocalServiceWrapper;
@@ -115,19 +117,36 @@ public class SOAnnouncementsEntryLocalServiceImpl
 				now.getTime() - _ANNOUNCEMENTS_ENTRY_CHECK_INTERVAL);
 		}
 
-		List<AnnouncementsEntry> announcementEntries =
-			AnnouncementsEntryFinderUtil.findByDisplayDate(
-				now, _previousCheckDate);
+		long[] companyIds = PortalUtil.getCompanyIds();
 
-		if (_log.isDebugEnabled()) {
-			_log.debug("Processing " + announcementEntries.size() + " entries");
-		}
+		for (long companyId : companyIds) {
+			ShardUtil.pushCompanyService(companyId);
 
-		for (AnnouncementsEntry announcementEntry : announcementEntries) {
-			Date displayDate = announcementEntry.getDisplayDate();
+			try {
+				List<AnnouncementsEntry> announcementEntries =
+					AnnouncementsEntryFinderUtil.findByDisplayDate(
+						now, _previousCheckDate, companyId);
 
-			if (displayDate.after(announcementEntry.getCreateDate())) {
-				sendNotificationEvent(announcementEntry);
+				if (_log.isDebugEnabled()) {
+					_log.debug("Processing " + announcementEntries.size() +
+						" entries");
+				}
+
+				for (AnnouncementsEntry announcementEntry :
+						announcementEntries) {
+
+					Date displayDate = announcementEntry.getDisplayDate();
+
+					if (displayDate.after(announcementEntry.getCreateDate())) {
+						sendNotificationEvent(announcementEntry);
+					}
+				}
+			}
+			catch (Exception e) {
+				_log.error(e, e);
+			}
+			finally {
+				ShardUtil.popCompanyService();
 			}
 		}
 
