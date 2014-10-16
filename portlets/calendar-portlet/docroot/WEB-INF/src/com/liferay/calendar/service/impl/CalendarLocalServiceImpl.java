@@ -54,7 +54,12 @@ public class CalendarLocalServiceImpl extends CalendarLocalServiceBaseImpl {
 
 		// Calendar
 
-		User user = userPersistence.findByPrimaryKey(userId);
+		User user = userPersistence.fetchByPrimaryKey(userId);
+
+		if (user == null) {
+			user = userPersistence.fetchByPrimaryKey(
+				serviceContext.getUserId());
+		}
 
 		if (color <= 0) {
 			color = PortletPropsValues.CALENDAR_COLOR_DEFAULT;
