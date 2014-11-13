@@ -17,7 +17,7 @@ package com.liferay.calendar.service.persistence;
 import aQute.bnd.annotation.ProviderType;
 
 /**
- * @author Eduardo Lundgren
+ * @generated
  */
 @ProviderType
 public interface CalendarBookingFinder {
