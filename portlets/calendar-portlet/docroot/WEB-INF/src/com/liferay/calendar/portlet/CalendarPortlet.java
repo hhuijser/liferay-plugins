@@ -768,6 +768,16 @@ public class CalendarPortlet extends MVCPortlet {
 
 				positionalWeekdays.add(
 					new PositionalWeekday(weekday, position));
+
+				if (frequency == Frequency.YEARLY) {
+					int month = ParamUtil.getInteger(
+						actionRequest, "startTimeMonth");
+
+					List<Integer> months = new ArrayList<Integer>();
+
+					months.add(month);
+					recurrence.setMonths(months);
+				}
 			}
 		}
 
