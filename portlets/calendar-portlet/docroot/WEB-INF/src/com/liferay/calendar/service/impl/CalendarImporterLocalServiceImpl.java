@@ -50,6 +50,10 @@ import com.liferay.portlet.asset.model.AssetTag;
 import com.liferay.portlet.asset.model.AssetVocabulary;
 import com.liferay.portlet.calendar.model.CalEvent;
 import com.liferay.portlet.calendar.service.CalEventLocalServiceUtil;
+import com.liferay.portlet.expando.NoSuchTableException;
+import com.liferay.portlet.expando.model.ExpandoRow;
+import com.liferay.portlet.expando.model.ExpandoTable;
+import com.liferay.portlet.expando.model.ExpandoValue;
 import com.liferay.portlet.messageboards.model.MBDiscussion;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBMessageConstants;
@@ -70,6 +74,25 @@ import java.util.Map;
  */
 public class CalendarImporterLocalServiceImpl
 	extends CalendarImporterLocalServiceBaseImpl {
+
+	public void adjustCalExpandoTable(long companyId) throws PortalException {
+		ExpandoTable expandoTable = null;
+
+		try {
+			expandoTable = expandoTableLocalService.getDefaultTable(
+				companyId, CalEvent.class.getName());
+		}
+		catch (NoSuchTableException nste) {
+			return;
+		}
+
+		long CalendarBookingClassNameId = classNameLocalService.getClassNameId(
+			CalendarBooking.class);
+
+		expandoTable.setClassNameId(CalendarBookingClassNameId);
+
+		expandoTableLocalService.updateExpandoTable(expandoTable);
+	}
 
 	@Override
 	public void importCalEvent(CalEvent calEvent) throws PortalException {
@@ -142,6 +165,10 @@ public class CalendarImporterLocalServiceImpl
 			classNameLocalService.getClassNameId(
 				CalendarBooking.class.getName()),
 			calendarBookingId);
+
+		//Expando
+
+		adJustCalExpandoRowAndValue(calEvent, calendarBookingId);
 	}
 
 	@Override
@@ -446,6 +473,41 @@ public class CalendarImporterLocalServiceImpl
 		subscription.setFrequency(frequency);
 
 		subscriptionPersistence.update(subscription);
+	}
+
+	protected void adJustCalExpandoRowAndValue(
+			CalEvent calEvent, long calendarBookingId)
+		throws PortalException {
+
+		ExpandoTable expandoTable = null;
+
+		try {
+			expandoTable = expandoTableLocalService.getDefaultTable(
+				calEvent.getCompanyId(), CalEvent.class.getName());
+		}
+		catch (NoSuchTableException nste) {
+			return;
+		}
+
+		long CalendarBookingClassNameId = classNameLocalService.getClassNameId(
+			CalendarBooking.class);
+
+		ExpandoRow expandoRow = expandoRowLocalService.getRow(
+			expandoTable.getTableId(), calEvent.getEventId());
+
+		expandoRow.setClassPK(calendarBookingId);
+
+		expandoRowLocalService.updateExpandoRow(expandoRow);
+
+		List<ExpandoValue> expandoValues =
+			expandoValueLocalService.getRowValues(expandoRow.getRowId());
+
+		for (ExpandoValue expandoValue : expandoValues) {
+			expandoValue.setClassNameId(CalendarBookingClassNameId);
+			expandoValue.setClassPK(calendarBookingId);
+
+			expandoValueLocalService.updateExpandoValue(expandoValue);
+		}
 	}
 
 	protected CalendarBooking fetchCalendarBooking(CalEvent calEvent)
