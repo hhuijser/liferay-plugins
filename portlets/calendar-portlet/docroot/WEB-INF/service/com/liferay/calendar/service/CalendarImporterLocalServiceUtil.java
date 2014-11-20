@@ -62,6 +62,11 @@ public class CalendarImporterLocalServiceUtil {
 		getService().importCalEvents();
 	}
 
+	public static void importRolePermisions()
+		throws com.liferay.portal.kernel.exception.PortalException {
+		getService().importRolePermisions();
+	}
+
 	public static java.lang.Object invokeMethod(java.lang.String name,
 		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
 		throws java.lang.Throwable {
