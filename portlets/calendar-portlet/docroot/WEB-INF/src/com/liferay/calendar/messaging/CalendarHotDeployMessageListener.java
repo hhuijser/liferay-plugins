@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.messaging.HotDeployMessageListener;
 import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.util.PortalUtil;
 
 import org.apache.commons.lang.time.StopWatch;
 
@@ -44,6 +45,12 @@ public class CalendarHotDeployMessageListener extends HotDeployMessageListener {
 		stopWatch.start();
 
 		CalendarImporterLocalServiceUtil.importCalEvents();
+
+		long[] companyIds = PortalUtil.getCompanyIds();
+
+		for (long companyId : companyIds) {
+			CalendarImporterLocalServiceUtil.adjustCalExpandoTable(companyId);
+		}
 
 		if (_log.isInfoEnabled()) {
 			StringBundler sb = new StringBundler(6);
