@@ -35,15 +35,19 @@ public class CalendarImporterLocalServiceClpInvoker {
 
 		_methodParameterTypes155 = new String[] { "java.lang.String" };
 
-		_methodName158 = "importCalEvent";
+		_methodName158 = "adjustCalExpandoTable";
 
-		_methodParameterTypes158 = new String[] {
+		_methodParameterTypes158 = new String[] { "long" };
+
+		_methodName159 = "importCalEvent";
+
+		_methodParameterTypes159 = new String[] {
 				"com.liferay.portlet.calendar.model.CalEvent"
 			};
 
-		_methodName159 = "importCalEvents";
+		_methodName160 = "importCalEvents";
 
-		_methodParameterTypes159 = new String[] {  };
+		_methodParameterTypes160 = new String[] {  };
 	}
 
 	public Object invokeMethod(String name, String[] parameterTypes,
@@ -62,13 +66,20 @@ public class CalendarImporterLocalServiceClpInvoker {
 
 		if (_methodName158.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes158, parameterTypes)) {
-			CalendarImporterLocalServiceUtil.importCalEvent((com.liferay.portlet.calendar.model.CalEvent)arguments[0]);
+			CalendarImporterLocalServiceUtil.adjustCalExpandoTable(((Long)arguments[0]).longValue());
 
 			return null;
 		}
 
 		if (_methodName159.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes159, parameterTypes)) {
+			CalendarImporterLocalServiceUtil.importCalEvent((com.liferay.portlet.calendar.model.CalEvent)arguments[0]);
+
+			return null;
+		}
+
+		if (_methodName160.equals(name) &&
+				Arrays.deepEquals(_methodParameterTypes160, parameterTypes)) {
 			CalendarImporterLocalServiceUtil.importCalEvents();
 
 			return null;
@@ -85,4 +96,6 @@ public class CalendarImporterLocalServiceClpInvoker {
 	private String[] _methodParameterTypes158;
 	private String _methodName159;
 	private String[] _methodParameterTypes159;
+	private String _methodName160;
+	private String[] _methodParameterTypes160;
 }

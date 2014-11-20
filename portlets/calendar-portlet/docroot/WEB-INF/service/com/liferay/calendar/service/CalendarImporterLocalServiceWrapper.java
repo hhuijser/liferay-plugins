@@ -34,6 +34,12 @@ public class CalendarImporterLocalServiceWrapper
 		_calendarImporterLocalService = calendarImporterLocalService;
 	}
 
+	@Override
+	public void adjustCalExpandoTable(long companyId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		_calendarImporterLocalService.adjustCalExpandoTable(companyId);
+	}
+
 	/**
 	* Returns the Spring bean ID for this bean.
 	*
