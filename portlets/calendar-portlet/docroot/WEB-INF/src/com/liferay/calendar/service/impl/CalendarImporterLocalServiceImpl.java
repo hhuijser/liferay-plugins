@@ -189,6 +189,9 @@ public class CalendarImporterLocalServiceImpl
 					ResourceConstants.SCOPE_COMPANY);
 				importResourcePermissions(
 					className[i][0], className[i][1], companyIds[j],
+					ResourceConstants.SCOPE_GROUP_TEMPLATE);
+				importResourcePermissions(
+					className[i][0], className[i][1], companyIds[j],
 					ResourceConstants.SCOPE_GROUP);
 			}
 		}
