@@ -50,7 +50,6 @@ import com.liferay.portlet.asset.model.AssetTag;
 import com.liferay.portlet.asset.model.AssetVocabulary;
 import com.liferay.portlet.calendar.model.CalEvent;
 import com.liferay.portlet.calendar.service.CalEventLocalServiceUtil;
-import com.liferay.portlet.expando.NoSuchTableException;
 import com.liferay.portlet.expando.model.ExpandoRow;
 import com.liferay.portlet.expando.model.ExpandoTable;
 import com.liferay.portlet.expando.model.ExpandoValue;
@@ -75,14 +74,11 @@ import java.util.Map;
 public class CalendarImporterLocalServiceImpl
 	extends CalendarImporterLocalServiceBaseImpl {
 
-	public void adjustCalExpandoTable(long companyId) throws PortalException {
-		ExpandoTable expandoTable = null;
+	public void adjustCalExpandoTable(long companyId) {
+		ExpandoTable expandoTable = expandoTableLocalService.fetchDefaultTable(
+			companyId, CalEvent.class.getName());
 
-		try {
-			expandoTable = expandoTableLocalService.getDefaultTable(
-				companyId, CalEvent.class.getName());
-		}
-		catch (NoSuchTableException nste) {
+		if (expandoTable == null) {
 			return;
 		}
 
@@ -479,13 +475,10 @@ public class CalendarImporterLocalServiceImpl
 			CalEvent calEvent, long calendarBookingId)
 		throws PortalException {
 
-		ExpandoTable expandoTable = null;
+		ExpandoTable expandoTable = expandoTableLocalService.fetchDefaultTable(
+			calEvent.getCompanyId(), CalEvent.class.getName());
 
-		try {
-			expandoTable = expandoTableLocalService.getDefaultTable(
-				calEvent.getCompanyId(), CalEvent.class.getName());
-		}
-		catch (NoSuchTableException nste) {
+		if (expandoTable == null) {
 			return;
 		}
 
