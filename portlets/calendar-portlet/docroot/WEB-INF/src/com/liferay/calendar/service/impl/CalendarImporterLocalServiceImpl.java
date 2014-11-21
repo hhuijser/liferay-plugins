@@ -50,6 +50,12 @@ import com.liferay.portlet.asset.model.AssetTag;
 import com.liferay.portlet.asset.model.AssetVocabulary;
 import com.liferay.portlet.calendar.model.CalEvent;
 import com.liferay.portlet.calendar.service.CalEventLocalServiceUtil;
+import com.liferay.portlet.expando.NoSuchRowException;
+import com.liferay.portlet.expando.NoSuchTableException;
+import com.liferay.portlet.expando.model.ExpandoColumn;
+import com.liferay.portlet.expando.model.ExpandoRow;
+import com.liferay.portlet.expando.model.ExpandoTable;
+import com.liferay.portlet.expando.model.ExpandoValue;
 import com.liferay.portlet.messageboards.model.MBDiscussion;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBMessageConstants;
@@ -142,6 +148,10 @@ public class CalendarImporterLocalServiceImpl
 			classNameLocalService.getClassNameId(
 				CalendarBooking.class.getName()),
 			calendarBookingId);
+
+		//Expando
+
+		importCalExpandoData(calEvent, calendarBookingId);
 	}
 
 	@Override
@@ -471,6 +481,24 @@ public class CalendarImporterLocalServiceImpl
 		return newResourceAction.getBitwiseValue();
 	}
 
+	protected String[] getActionIds(ResourcePermission resourcePermission) {
+		List<ResourceAction> resourceActions =
+			resourceActionPersistence.findByName(ExpandoColumn.class.getName());
+
+		List<String> acitionIds = new ArrayList<String>();
+
+		for (ResourceAction resourceAction : resourceActions) {
+			boolean hasActionId = resourcePermissionLocalService.hasActionId(
+				resourcePermission, resourceAction);
+
+			if (hasActionId) {
+				acitionIds.add(resourceAction.getActionId());
+			}
+		}
+
+		return ArrayUtil.toStringArray(acitionIds);
+	}
+
 	protected long getActionIds(
 		ResourcePermission resourcePermission, String oldClassName,
 		String newClassName) {
@@ -790,6 +818,121 @@ public class CalendarImporterLocalServiceImpl
 		for (ResourcePermission resourcePermission : resourcePermissions) {
 			importCalendarBookingResourcePermission(
 				resourcePermission, calendarBookingId);
+		}
+	}
+
+	protected void importCalExpandoData(
+			CalEvent calEvent, long calendarBookingId)
+		throws PortalException {
+
+		ExpandoTable calEventExpandoTable =
+			expandoTableLocalService.fetchDefaultTable(
+				calEvent.getCompanyId(), CalEvent.class.getName());
+
+		if (calEventExpandoTable == null) {
+			return;
+		}
+
+		// import ExpandoTable
+
+		ExpandoTable calBookingExpandoTable = null;
+
+		try {
+			calBookingExpandoTable = expandoTableLocalService.getDefaultTable(
+				calEvent.getCompanyId(), CalendarBooking.class.getName());
+		}
+		catch (NoSuchTableException nste) {
+			calBookingExpandoTable = expandoTableLocalService.addDefaultTable(
+				calEvent.getCompanyId(), CalendarBooking.class.getName());
+		}
+
+		//import ExpandoRow
+
+		try {
+			expandoRowLocalService.getRow(
+				calBookingExpandoTable.getTableId(), calendarBookingId);
+		}
+		catch (NoSuchRowException nsre) {
+			expandoRowLocalService.addRow(
+				calBookingExpandoTable.getTableId(), calendarBookingId);
+		}
+
+		// import ExpandoColumn
+
+		if (expandoColumnLocalService.getColumnsCount(
+				calBookingExpandoTable.getTableId()) == 0) {
+
+			List<ExpandoColumn> calEventExpandoColumns =
+				expandoColumnLocalService.getColumns(
+					calEvent.getCompanyId(), CalEvent.class.getName(),
+					calEventExpandoTable.getName());
+
+			for (ExpandoColumn calEventExpandoColumn : calEventExpandoColumns) {
+				ExpandoColumn calBookingExpandoColumn =
+					expandoColumnLocalService.addColumn(
+						calBookingExpandoTable.getTableId(),
+						calEventExpandoColumn.getName(),
+						calEventExpandoColumn.getType(),
+						calEventExpandoColumn.getDefaultData());
+
+				calBookingExpandoColumn.setTypeSettings(
+					calEventExpandoColumn.getTypeSettings());
+
+				expandoColumnLocalService.updateExpandoColumn(
+					calBookingExpandoColumn);
+
+				importCalExpandoPermission(
+					calEventExpandoColumn,
+					calBookingExpandoColumn.getColumnId());
+			}
+		}
+
+		//import ExpandoValue
+
+		ExpandoRow caleEventExpandoRow = expandoRowLocalService.getRow(
+			calEventExpandoTable.getTableId(), calEvent.getEventId());
+
+		List<ExpandoValue> calEventExpandoValues =
+			expandoValueLocalService.getRowValues(
+				caleEventExpandoRow.getRowId());
+
+		for (ExpandoValue calEventExpandoValue : calEventExpandoValues) {
+			ExpandoColumn calEventExpandoColumn =
+				expandoColumnLocalService.getColumn(
+					calEventExpandoValue.getColumnId());
+
+			ExpandoColumn calBookingExpandoColumn =
+				expandoColumnLocalService.getColumn(
+					calBookingExpandoTable.getTableId(),
+					calEventExpandoColumn.getName());
+
+			expandoValueLocalService.addValue(
+				classNameLocalService.getClassNameId(CalendarBooking.class),
+				calBookingExpandoTable.getTableId(),
+				calBookingExpandoColumn.getColumnId(), calendarBookingId,
+				calEventExpandoValue.getData());
+		}
+	}
+
+	protected void importCalExpandoPermission(
+			ExpandoColumn calEventExpandoColumn, long calBookingExpandoColumnId)
+		throws PortalException {
+
+		List<ResourcePermission> resourcePermissions =
+			resourcePermissionPersistence.findByC_N_S_P(
+				calEventExpandoColumn.getCompanyId(),
+				ExpandoColumn.class.getName(),
+				ResourceConstants.SCOPE_INDIVIDUAL,
+				String.valueOf(calEventExpandoColumn.getColumnId()));
+
+		for (ResourcePermission resourcePermission : resourcePermissions) {
+			String[] actionIds = getActionIds(resourcePermission);
+
+			resourcePermissionLocalService.setResourcePermissions(
+				resourcePermission.getCompanyId(), resourcePermission.getName(),
+				resourcePermission.getScope(),
+				String.valueOf(calBookingExpandoColumnId),
+				resourcePermission.getRoleId(), actionIds);
 		}
 	}
 
