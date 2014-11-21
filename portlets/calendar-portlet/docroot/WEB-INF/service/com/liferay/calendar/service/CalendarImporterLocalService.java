@@ -45,6 +45,8 @@ public interface CalendarImporterLocalService extends BaseLocalService,
 	 *
 	 * Never modify or reference this interface directly. Always use {@link CalendarImporterLocalServiceUtil} to access the calendar importer local service. Add custom service methods to {@link com.liferay.calendar.service.impl.CalendarImporterLocalServiceImpl} and rerun ServiceBuilder to automatically copy the method declarations to this interface.
 	 */
+	public void adjustCalExpandoTable(long companyId)
+		throws com.liferay.portal.kernel.exception.PortalException;
 
 	/**
 	* Returns the Spring bean ID for this bean.
