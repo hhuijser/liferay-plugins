@@ -48,6 +48,10 @@ import com.liferay.portlet.asset.service.persistence.AssetEntryPersistence;
 import com.liferay.portlet.asset.service.persistence.AssetLinkPersistence;
 import com.liferay.portlet.asset.service.persistence.AssetVocabularyPersistence;
 import com.liferay.portlet.calendar.service.persistence.CalEventPersistence;
+import com.liferay.portlet.expando.service.persistence.ExpandoColumnPersistence;
+import com.liferay.portlet.expando.service.persistence.ExpandoRowPersistence;
+import com.liferay.portlet.expando.service.persistence.ExpandoTablePersistence;
+import com.liferay.portlet.expando.service.persistence.ExpandoValuePersistence;
 import com.liferay.portlet.messageboards.service.persistence.MBDiscussionPersistence;
 import com.liferay.portlet.messageboards.service.persistence.MBMessagePersistence;
 import com.liferay.portlet.messageboards.service.persistence.MBThreadPersistence;
@@ -1025,6 +1029,196 @@ public abstract class CalendarImporterLocalServiceBaseImpl
 	}
 
 	/**
+	 * Returns the expando column local service.
+	 *
+	 * @return the expando column local service
+	 */
+	public com.liferay.portlet.expando.service.ExpandoColumnLocalService getExpandoColumnLocalService() {
+		return expandoColumnLocalService;
+	}
+
+	/**
+	 * Sets the expando column local service.
+	 *
+	 * @param expandoColumnLocalService the expando column local service
+	 */
+	public void setExpandoColumnLocalService(
+		com.liferay.portlet.expando.service.ExpandoColumnLocalService expandoColumnLocalService) {
+		this.expandoColumnLocalService = expandoColumnLocalService;
+	}
+
+	/**
+	 * Returns the expando column remote service.
+	 *
+	 * @return the expando column remote service
+	 */
+	public com.liferay.portlet.expando.service.ExpandoColumnService getExpandoColumnService() {
+		return expandoColumnService;
+	}
+
+	/**
+	 * Sets the expando column remote service.
+	 *
+	 * @param expandoColumnService the expando column remote service
+	 */
+	public void setExpandoColumnService(
+		com.liferay.portlet.expando.service.ExpandoColumnService expandoColumnService) {
+		this.expandoColumnService = expandoColumnService;
+	}
+
+	/**
+	 * Returns the expando column persistence.
+	 *
+	 * @return the expando column persistence
+	 */
+	public ExpandoColumnPersistence getExpandoColumnPersistence() {
+		return expandoColumnPersistence;
+	}
+
+	/**
+	 * Sets the expando column persistence.
+	 *
+	 * @param expandoColumnPersistence the expando column persistence
+	 */
+	public void setExpandoColumnPersistence(
+		ExpandoColumnPersistence expandoColumnPersistence) {
+		this.expandoColumnPersistence = expandoColumnPersistence;
+	}
+
+	/**
+	 * Returns the expando row local service.
+	 *
+	 * @return the expando row local service
+	 */
+	public com.liferay.portlet.expando.service.ExpandoRowLocalService getExpandoRowLocalService() {
+		return expandoRowLocalService;
+	}
+
+	/**
+	 * Sets the expando row local service.
+	 *
+	 * @param expandoRowLocalService the expando row local service
+	 */
+	public void setExpandoRowLocalService(
+		com.liferay.portlet.expando.service.ExpandoRowLocalService expandoRowLocalService) {
+		this.expandoRowLocalService = expandoRowLocalService;
+	}
+
+	/**
+	 * Returns the expando row persistence.
+	 *
+	 * @return the expando row persistence
+	 */
+	public ExpandoRowPersistence getExpandoRowPersistence() {
+		return expandoRowPersistence;
+	}
+
+	/**
+	 * Sets the expando row persistence.
+	 *
+	 * @param expandoRowPersistence the expando row persistence
+	 */
+	public void setExpandoRowPersistence(
+		ExpandoRowPersistence expandoRowPersistence) {
+		this.expandoRowPersistence = expandoRowPersistence;
+	}
+
+	/**
+	 * Returns the expando table local service.
+	 *
+	 * @return the expando table local service
+	 */
+	public com.liferay.portlet.expando.service.ExpandoTableLocalService getExpandoTableLocalService() {
+		return expandoTableLocalService;
+	}
+
+	/**
+	 * Sets the expando table local service.
+	 *
+	 * @param expandoTableLocalService the expando table local service
+	 */
+	public void setExpandoTableLocalService(
+		com.liferay.portlet.expando.service.ExpandoTableLocalService expandoTableLocalService) {
+		this.expandoTableLocalService = expandoTableLocalService;
+	}
+
+	/**
+	 * Returns the expando table persistence.
+	 *
+	 * @return the expando table persistence
+	 */
+	public ExpandoTablePersistence getExpandoTablePersistence() {
+		return expandoTablePersistence;
+	}
+
+	/**
+	 * Sets the expando table persistence.
+	 *
+	 * @param expandoTablePersistence the expando table persistence
+	 */
+	public void setExpandoTablePersistence(
+		ExpandoTablePersistence expandoTablePersistence) {
+		this.expandoTablePersistence = expandoTablePersistence;
+	}
+
+	/**
+	 * Returns the expando value local service.
+	 *
+	 * @return the expando value local service
+	 */
+	public com.liferay.portlet.expando.service.ExpandoValueLocalService getExpandoValueLocalService() {
+		return expandoValueLocalService;
+	}
+
+	/**
+	 * Sets the expando value local service.
+	 *
+	 * @param expandoValueLocalService the expando value local service
+	 */
+	public void setExpandoValueLocalService(
+		com.liferay.portlet.expando.service.ExpandoValueLocalService expandoValueLocalService) {
+		this.expandoValueLocalService = expandoValueLocalService;
+	}
+
+	/**
+	 * Returns the expando value remote service.
+	 *
+	 * @return the expando value remote service
+	 */
+	public com.liferay.portlet.expando.service.ExpandoValueService getExpandoValueService() {
+		return expandoValueService;
+	}
+
+	/**
+	 * Sets the expando value remote service.
+	 *
+	 * @param expandoValueService the expando value remote service
+	 */
+	public void setExpandoValueService(
+		com.liferay.portlet.expando.service.ExpandoValueService expandoValueService) {
+		this.expandoValueService = expandoValueService;
+	}
+
+	/**
+	 * Returns the expando value persistence.
+	 *
+	 * @return the expando value persistence
+	 */
+	public ExpandoValuePersistence getExpandoValuePersistence() {
+		return expandoValuePersistence;
+	}
+
+	/**
+	 * Sets the expando value persistence.
+	 *
+	 * @param expandoValuePersistence the expando value persistence
+	 */
+	public void setExpandoValuePersistence(
+		ExpandoValuePersistence expandoValuePersistence) {
+		this.expandoValuePersistence = expandoValuePersistence;
+	}
+
+	/**
 	 * Returns the message boards discussion local service.
 	 *
 	 * @return the message boards discussion local service
@@ -1501,6 +1695,26 @@ public abstract class CalendarImporterLocalServiceBaseImpl
 	protected com.liferay.portlet.calendar.service.CalEventLocalService calEventLocalService;
 	@BeanReference(type = CalEventPersistence.class)
 	protected CalEventPersistence calEventPersistence;
+	@BeanReference(type = com.liferay.portlet.expando.service.ExpandoColumnLocalService.class)
+	protected com.liferay.portlet.expando.service.ExpandoColumnLocalService expandoColumnLocalService;
+	@BeanReference(type = com.liferay.portlet.expando.service.ExpandoColumnService.class)
+	protected com.liferay.portlet.expando.service.ExpandoColumnService expandoColumnService;
+	@BeanReference(type = ExpandoColumnPersistence.class)
+	protected ExpandoColumnPersistence expandoColumnPersistence;
+	@BeanReference(type = com.liferay.portlet.expando.service.ExpandoRowLocalService.class)
+	protected com.liferay.portlet.expando.service.ExpandoRowLocalService expandoRowLocalService;
+	@BeanReference(type = ExpandoRowPersistence.class)
+	protected ExpandoRowPersistence expandoRowPersistence;
+	@BeanReference(type = com.liferay.portlet.expando.service.ExpandoTableLocalService.class)
+	protected com.liferay.portlet.expando.service.ExpandoTableLocalService expandoTableLocalService;
+	@BeanReference(type = ExpandoTablePersistence.class)
+	protected ExpandoTablePersistence expandoTablePersistence;
+	@BeanReference(type = com.liferay.portlet.expando.service.ExpandoValueLocalService.class)
+	protected com.liferay.portlet.expando.service.ExpandoValueLocalService expandoValueLocalService;
+	@BeanReference(type = com.liferay.portlet.expando.service.ExpandoValueService.class)
+	protected com.liferay.portlet.expando.service.ExpandoValueService expandoValueService;
+	@BeanReference(type = ExpandoValuePersistence.class)
+	protected ExpandoValuePersistence expandoValuePersistence;
 	@BeanReference(type = com.liferay.portlet.messageboards.service.MBDiscussionLocalService.class)
 	protected com.liferay.portlet.messageboards.service.MBDiscussionLocalService mbDiscussionLocalService;
 	@BeanReference(type = MBDiscussionPersistence.class)
