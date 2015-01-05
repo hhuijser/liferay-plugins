@@ -20,8 +20,11 @@ import com.liferay.calendar.service.CalendarBookingLocalServiceUtil;
 import com.liferay.calendar.service.permission.CalendarPermission;
 import com.liferay.calendar.util.ActionKeys;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.model.User;
 import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.UserLocalServiceUtil;
+import com.liferay.portal.util.PortalUtil;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -116,7 +119,12 @@ public class CalendarBookingApprovalWorkflowImpl
 		CalendarResource calendarResource =
 			calendarBooking.getCalendarResource();
 
-		if (userId != calendarResource.getUserId()) {
+		User user = UserLocalServiceUtil.getUser(calendarResource.getUserId());
+
+		if (user.isDefaultUser() && PortalUtil.isOmniadmin(userId)) {
+			return true;
+		}
+		else if (userId != calendarResource.getUserId()) {
 			return false;
 		}
 
