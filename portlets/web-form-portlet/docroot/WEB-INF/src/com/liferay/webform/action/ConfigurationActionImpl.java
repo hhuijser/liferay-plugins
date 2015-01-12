@@ -63,7 +63,7 @@ public class ConfigurationActionImpl extends DefaultConfigurationAction {
 			return;
 		}
 
-		Locale defaultLocale = LocaleUtil.getDefault();
+		Locale defaultLocale = LocaleUtil.getSiteDefault();
 		String defaultLanguageId = LocaleUtil.toLanguageId(defaultLocale);
 
 		boolean updateFields = ParamUtil.getBoolean(
@@ -226,7 +226,7 @@ public class ConfigurationActionImpl extends DefaultConfigurationAction {
 	protected void validateFields(ActionRequest actionRequest)
 		throws Exception {
 
-		Locale defaultLocale = LocaleUtil.getDefault();
+		Locale defaultLocale = LocaleUtil.getSiteDefault();
 		String defaultLanguageId = LocaleUtil.toLanguageId(defaultLocale);
 
 		boolean sendAsEmail = GetterUtil.getBoolean(
@@ -311,7 +311,7 @@ public class ConfigurationActionImpl extends DefaultConfigurationAction {
 	}
 
 	protected boolean validateUniqueFieldNames(ActionRequest actionRequest) {
-		Locale defaultLocale = LocaleUtil.getDefault();
+		Locale defaultLocale = LocaleUtil.getSiteDefault();
 
 		Set<String> localizedUniqueFieldNames = new HashSet<>();
 
