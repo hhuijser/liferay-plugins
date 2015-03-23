@@ -1001,6 +1001,13 @@
 					YEARLY: 'YEARLY'
 				},
 
+				FREQUENCY_LABELS: {
+					DAILY: Liferay.Language.get('daily'),
+					MONTHLY: Liferay.Language.get('monthly'),
+					WEEKLY: Liferay.Language.get('weekly'),
+					YEARLY: Liferay.Language.get('yearly'),
+				},
+
 				INTERVAL_LABELS: {
 					DAILY: Liferay.Language.get('days'),
 					MONTHLY: Liferay.Language.get('months'),
@@ -1050,7 +1057,7 @@
 					var weekDay = null;
 
 					if (recurrence.interval == 1) {
-						template.push(recurrence.frequency);
+						template.push(instance.FREQUENCY_LABELS[recurrence.frequency]);
 					}
 					else {
 						template.push(Liferay.Language.get('every'), ' {interval} {intervalLabel}');
@@ -1073,7 +1080,12 @@
 					}
 
 					if (recurrence.count && recurrence.endValue === 'after') {
-						template.push(', {count} ', Liferay.Language.get('times'));
+						if (recurrence.count == 1) {
+							template.push(', {count} ', Liferay.Language.get('time'));
+						}
+						else {
+							template.push(', {count} ', Liferay.Language.get('times'));
+						}
 					}
 					else if (recurrence.untilDate && recurrence.endValue === 'on') {
 						var untilDate = recurrence.untilDate;
@@ -1095,6 +1107,8 @@
 						);
 					}
 
+					var labeledWeekdays = instance.getWeekdayLabels(recurrence.weekdays);
+
 					var summary = A.Lang.sub(
 						template.join(STR_BLANK),
 						{
@@ -1104,11 +1118,43 @@
 							month: month,
 							position: position,
 							weekDay: weekDay,
-							weekDays: recurrence.weekdays.join(', ')
+							weekDays: labeledWeekdays.join(', ')
 						}
 					);
 
 					return A.Lang.String.capitalize(summary);
+				},
+
+				getWeekdayLabels: function(weekdays) {
+					var instance = this;
+					var labeledWeekdays = [];
+
+					for (var i = 0; i < weekdays.length; i++) {
+						var weekday = weekdays[i].toString();
+						if ((weekday === instance.WEEKDAY_LABELS['SU']) || (weekday.toLowerCase() === 'sunday')) {
+							labeledWeekdays.push(instance.WEEKDAY_LABELS['SU']);
+						}
+						else if ((weekday === instance.WEEKDAY_LABELS['MO']) || (weekday.toLowerCase() === 'monday')) {
+							labeledWeekdays.push(instance.WEEKDAY_LABELS['MO']);
+						}
+						else if ((weekday === instance.WEEKDAY_LABELS['TU']) || (weekday.toLowerCase() === 'tuesday')) {
+							labeledWeekdays.push(instance.WEEKDAY_LABELS['TU']);
+						}
+						else if ((weekday === instance.WEEKDAY_LABELS['WE']) || (weekday.toLowerCase() === 'wednesday')) {
+							labeledWeekdays.push(instance.WEEKDAY_LABELS['WE']);
+						}
+						else if ((weekday === instance.WEEKDAY_LABELS['TH']) || (weekday.toLowerCase() === 'thursday')) {
+							labeledWeekdays.push(instance.WEEKDAY_LABELS['TH']);
+						}
+						else if ((weekday === instance.WEEKDAY_LABELS['FR']) || (weekday.toLowerCase() === 'friday')) {
+							labeledWeekdays.push(instance.WEEKDAY_LABELS['FR']);
+						}
+						else if ((weekday === instance.WEEKDAY_LABELS['SA']) || (weekday.toLowerCase() === 'saturday')) {
+							labeledWeekdays.push(instance.WEEKDAY_LABELS['SA']);
+						}
+					}
+
+					return labeledWeekdays;
 				},
 
 				openConfirmationPanel: function(actionName, onlyThisInstanceFn, allFollowingFn, allEventsInFn, cancelFn) {
