@@ -1016,18 +1016,18 @@
 				},
 
 				MONTH_LABELS: [
-					Liferay.Language.get('january'),
-					Liferay.Language.get('february'),
-					Liferay.Language.get('march'),
-					Liferay.Language.get('april'),
-					Liferay.Language.get('may'),
-					Liferay.Language.get('june'),
-					Liferay.Language.get('july'),
-					Liferay.Language.get('august'),
-					Liferay.Language.get('september'),
-					Liferay.Language.get('october'),
-					Liferay.Language.get('november'),
-					Liferay.Language.get('december')
+					Liferay.Language.get('month.january'),
+					Liferay.Language.get('month.february'),
+					Liferay.Language.get('month.march'),
+					Liferay.Language.get('month.april'),
+					Liferay.Language.get('month.may'),
+					Liferay.Language.get('month.june'),
+					Liferay.Language.get('month.july'),
+					Liferay.Language.get('month.august'),
+					Liferay.Language.get('month.september'),
+					Liferay.Language.get('month.october'),
+					Liferay.Language.get('month.november'),
+					Liferay.Language.get('month.december')
 				],
 
 				POSITION_LABELS: {
