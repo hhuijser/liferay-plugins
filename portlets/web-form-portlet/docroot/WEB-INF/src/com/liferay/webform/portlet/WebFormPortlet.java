@@ -16,7 +16,7 @@ package com.liferay.webform.portlet;
 
 import com.liferay.counter.service.CounterLocalServiceUtil;
 import com.liferay.mail.service.MailServiceUtil;
-import com.liferay.portal.kernel.captcha.CaptchaTextException;
+import com.liferay.portal.kernel.captcha.CaptchaException;
 import com.liferay.portal.kernel.captcha.CaptchaUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.log.Log;
@@ -130,9 +130,8 @@ public class WebFormPortlet extends MVCPortlet {
 			try {
 				CaptchaUtil.check(actionRequest);
 			}
-			catch (CaptchaTextException cte) {
-				SessionErrors.add(
-					actionRequest, CaptchaTextException.class.getName());
+			catch (CaptchaException ce) {
+				SessionErrors.add(actionRequest, ce.getClass().getName());
 
 				return;
 			}
