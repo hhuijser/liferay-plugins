@@ -1107,7 +1107,7 @@
 						);
 					}
 
-					var labeledWeekdays = instance.getWeekdayLabels(recurrence.weekdays);
+					var weekdayLabels = instance.getWeekdayLabels(recurrence.weekdays);
 
 					var summary = A.Lang.sub(
 						template.join(STR_BLANK),
@@ -1118,7 +1118,7 @@
 							month: month,
 							position: position,
 							weekDay: weekDay,
-							weekDays: labeledWeekdays.join(', ')
+							weekDays: weekdayLabels.join(', ')
 						}
 					);
 
@@ -1127,34 +1127,35 @@
 
 				getWeekdayLabels: function(weekdays) {
 					var instance = this;
-					var labeledWeekdays = [];
+					var weekdayLabels = [];
 
 					for (var i = 0; i < weekdays.length; i++) {
 						var weekday = weekdays[i].toString();
+
 						if ((weekday === instance.WEEKDAY_LABELS['SU']) || (weekday.toLowerCase() === 'sunday')) {
-							labeledWeekdays.push(instance.WEEKDAY_LABELS['SU']);
+							weekdayLabels.push(instance.WEEKDAY_LABELS['SU']);
 						}
 						else if ((weekday === instance.WEEKDAY_LABELS['MO']) || (weekday.toLowerCase() === 'monday')) {
-							labeledWeekdays.push(instance.WEEKDAY_LABELS['MO']);
+							weekdayLabels.push(instance.WEEKDAY_LABELS['MO']);
 						}
 						else if ((weekday === instance.WEEKDAY_LABELS['TU']) || (weekday.toLowerCase() === 'tuesday')) {
-							labeledWeekdays.push(instance.WEEKDAY_LABELS['TU']);
+							weekdayLabels.push(instance.WEEKDAY_LABELS['TU']);
 						}
 						else if ((weekday === instance.WEEKDAY_LABELS['WE']) || (weekday.toLowerCase() === 'wednesday')) {
-							labeledWeekdays.push(instance.WEEKDAY_LABELS['WE']);
+							weekdayLabels.push(instance.WEEKDAY_LABELS['WE']);
 						}
 						else if ((weekday === instance.WEEKDAY_LABELS['TH']) || (weekday.toLowerCase() === 'thursday')) {
-							labeledWeekdays.push(instance.WEEKDAY_LABELS['TH']);
+							weekdayLabels.push(instance.WEEKDAY_LABELS['TH']);
 						}
 						else if ((weekday === instance.WEEKDAY_LABELS['FR']) || (weekday.toLowerCase() === 'friday')) {
-							labeledWeekdays.push(instance.WEEKDAY_LABELS['FR']);
+							weekdayLabels.push(instance.WEEKDAY_LABELS['FR']);
 						}
 						else if ((weekday === instance.WEEKDAY_LABELS['SA']) || (weekday.toLowerCase() === 'saturday')) {
-							labeledWeekdays.push(instance.WEEKDAY_LABELS['SA']);
+							weekdayLabels.push(instance.WEEKDAY_LABELS['SA']);
 						}
 					}
 
-					return labeledWeekdays;
+					return weekdayLabels;
 				},
 
 				openConfirmationPanel: function(actionName, onlyThisInstanceFn, allFollowingFn, allEventsInFn, cancelFn) {
