@@ -1001,6 +1001,13 @@
 					YEARLY: 'YEARLY'
 				},
 
+				FREQUENCY_LABELS: {
+					DAILY: Liferay.Language.get('daily'),
+					MONTHLY: Liferay.Language.get('monthly'),
+					WEEKLY: Liferay.Language.get('weekly'),
+					YEARLY: Liferay.Language.get('yearly'),
+				},
+
 				INTERVAL_LABELS: {
 					DAILY: Liferay.Language.get('days'),
 					MONTHLY: Liferay.Language.get('months'),
@@ -1009,18 +1016,18 @@
 				},
 
 				MONTH_LABELS: [
-					Liferay.Language.get('january'),
-					Liferay.Language.get('february'),
-					Liferay.Language.get('march'),
-					Liferay.Language.get('april'),
-					Liferay.Language.get('may'),
-					Liferay.Language.get('june'),
-					Liferay.Language.get('july'),
-					Liferay.Language.get('august'),
-					Liferay.Language.get('september'),
-					Liferay.Language.get('october'),
-					Liferay.Language.get('november'),
-					Liferay.Language.get('december')
+					Liferay.Language.get('month.january'),
+					Liferay.Language.get('month.february'),
+					Liferay.Language.get('month.march'),
+					Liferay.Language.get('month.april'),
+					Liferay.Language.get('month.may'),
+					Liferay.Language.get('month.june'),
+					Liferay.Language.get('month.july'),
+					Liferay.Language.get('month.august'),
+					Liferay.Language.get('month.september'),
+					Liferay.Language.get('month.october'),
+					Liferay.Language.get('month.november'),
+					Liferay.Language.get('month.december')
 				],
 
 				POSITION_LABELS: {
@@ -1050,7 +1057,7 @@
 					var weekDay = null;
 
 					if (recurrence.interval == 1) {
-						template.push(recurrence.frequency);
+						template.push(instance.FREQUENCY_LABELS[recurrence.frequency]);
 					}
 					else {
 						template.push(Liferay.Language.get('every'), ' {interval} {intervalLabel}');
@@ -1073,7 +1080,12 @@
 					}
 
 					if (recurrence.count && recurrence.endValue === 'after') {
-						template.push(', {count} ', Liferay.Language.get('times'));
+						if (recurrence.count == 1) {
+							template.push(', {count} ', Liferay.Language.get('time'));
+						}
+						else {
+							template.push(', {count} ', Liferay.Language.get('times'));
+						}
 					}
 					else if (recurrence.untilDate && recurrence.endValue === 'on') {
 						var untilDate = recurrence.untilDate;
@@ -1095,6 +1107,8 @@
 						);
 					}
 
+					var weekdayLabels = instance.getWeekdayLabels(recurrence.weekdays);
+
 					var summary = A.Lang.sub(
 						template.join(STR_BLANK),
 						{
@@ -1104,11 +1118,44 @@
 							month: month,
 							position: position,
 							weekDay: weekDay,
-							weekDays: recurrence.weekdays.join(', ')
+							weekDays: weekdayLabels.join(', ')
 						}
 					);
 
 					return A.Lang.String.capitalize(summary);
+				},
+
+				getWeekdayLabels: function(weekdays) {
+					var instance = this;
+					var weekdayLabels = [];
+
+					for (var i = 0; i < weekdays.length; i++) {
+						var weekday = weekdays[i].toString();
+
+						if ((weekday === instance.WEEKDAY_LABELS['SU']) || (weekday.toLowerCase() === 'sunday')) {
+							weekdayLabels.push(instance.WEEKDAY_LABELS['SU']);
+						}
+						else if ((weekday === instance.WEEKDAY_LABELS['MO']) || (weekday.toLowerCase() === 'monday')) {
+							weekdayLabels.push(instance.WEEKDAY_LABELS['MO']);
+						}
+						else if ((weekday === instance.WEEKDAY_LABELS['TU']) || (weekday.toLowerCase() === 'tuesday')) {
+							weekdayLabels.push(instance.WEEKDAY_LABELS['TU']);
+						}
+						else if ((weekday === instance.WEEKDAY_LABELS['WE']) || (weekday.toLowerCase() === 'wednesday')) {
+							weekdayLabels.push(instance.WEEKDAY_LABELS['WE']);
+						}
+						else if ((weekday === instance.WEEKDAY_LABELS['TH']) || (weekday.toLowerCase() === 'thursday')) {
+							weekdayLabels.push(instance.WEEKDAY_LABELS['TH']);
+						}
+						else if ((weekday === instance.WEEKDAY_LABELS['FR']) || (weekday.toLowerCase() === 'friday')) {
+							weekdayLabels.push(instance.WEEKDAY_LABELS['FR']);
+						}
+						else if ((weekday === instance.WEEKDAY_LABELS['SA']) || (weekday.toLowerCase() === 'saturday')) {
+							weekdayLabels.push(instance.WEEKDAY_LABELS['SA']);
+						}
+					}
+
+					return weekdayLabels;
 				},
 
 				openConfirmationPanel: function(actionName, onlyThisInstanceFn, allFollowingFn, allEventsInFn, cancelFn) {
